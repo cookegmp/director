@@ -37,7 +37,7 @@ function ScaffoldingPage() {
             <button
               key={type}
               onClick={() => setSelectedType(type)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-left transition-colors ${
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-[0.75rem] text-sm text-left transition-colors ${
                 selectedType === type
                   ? 'bg-accent text-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
@@ -50,7 +50,7 @@ function ScaffoldingPage() {
         </div>
 
         {/* Document content */}
-        <div className="lg:col-span-3 bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <div className="lg:col-span-3 bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           {selectedDoc ? (
             <div>
               <div className="flex items-center justify-between mb-4">

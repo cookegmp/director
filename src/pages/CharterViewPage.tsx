@@ -130,13 +130,13 @@ function CharterViewPage() {
       {/* Charter document */}
       <div className="space-y-6">
         {/* Overview */}
-        <section className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-3">Project Overview</h2>
           <p className="text-foreground/80 font-light leading-relaxed">{content.projectOverview}</p>
         </section>
 
         {/* Objectives */}
-        <section className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-3">Objectives</h2>
           <ul className="space-y-2">
             {content.objectives.map((obj, i) => (
@@ -149,13 +149,13 @@ function CharterViewPage() {
         </section>
 
         {/* Technical approach */}
-        <section className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-3">Technical Approach</h2>
           <p className="text-foreground/80 font-light leading-relaxed">{content.technicalApproach}</p>
         </section>
 
         {/* Acceptance criteria */}
-        <section className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-3">Acceptance Criteria</h2>
           <ul className="space-y-2">
             {content.acceptanceCriteria.map((criteria, i) => (
@@ -168,19 +168,19 @@ function CharterViewPage() {
         </section>
 
         {/* Timeline */}
-        <section className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-3">Estimated Timeline</h2>
           <p className="text-foreground/80 font-light">{content.estimatedTimeline}</p>
         </section>
 
         {/* Execution plan */}
-        <section className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-4">Execution Plan</h2>
           <div className="space-y-4">
             {content.executionPlan.map((phase, i) => (
               <div
                 key={i}
-                className="border border-border rounded-xl p-4"
+                className="border border-border rounded-[0.75rem] p-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-foreground font-medium text-sm">
@@ -209,7 +209,7 @@ function CharterViewPage() {
         </section>
 
         {/* Scaffolding context (collapsible) */}
-        <section className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <button
             onClick={() => setCollapsedScaffolding(!collapsedScaffolding)}
             className="flex items-center justify-between w-full"
