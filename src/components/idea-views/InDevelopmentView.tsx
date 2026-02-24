@@ -87,7 +87,7 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
 
       {/* Raw Output + Charter Reference — stacked below */}
       <RawOutputPanel lines={rawLines} highlightIndex={highlightLine} />
-      <CharterReferencePanel charterId={charterId} />
+      <CharterReferencePanel charterId={charterId} entries={entries} />
 
       {/* Actions */}
       <div className="flex items-center gap-3">

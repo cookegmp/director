@@ -1,15 +1,47 @@
-import { useState } from 'react';
-import { ChevronRight, CheckCircle } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ChevronRight, CheckCircle, Circle, Activity } from 'lucide-react';
 import { useChartersStore } from '@/stores/charters';
-import { Badge } from '@/components/ui/badge';
+import type { TranslatedEntry } from '@/types';
+
+type PhaseStatus = 'complete' | 'in-progress' | 'not-started';
+
+const STATUS_CONFIG: Record<PhaseStatus, { label: string; icon: typeof CheckCircle; className: string }> = {
+  complete: { label: 'Complete', icon: CheckCircle, className: 'text-green-400' },
+  'in-progress': { label: 'In Progress', icon: Activity, className: 'text-primary' },
+  'not-started': { label: 'Not Started', icon: Circle, className: 'text-muted-foreground' },
+};
 
 interface CharterReferencePanelProps {
   charterId: string;
+  entries?: TranslatedEntry[];
 }
 
-function CharterReferencePanel({ charterId }: CharterReferencePanelProps) {
+function CharterReferencePanel({ charterId, entries = [] }: CharterReferencePanelProps) {
   const charter = useChartersStore((s) => s.getCharter(charterId));
   const [collapsed, setCollapsed] = useState(true);
+
+  // Derive phase status from translated entries
+  const phaseStatuses = useMemo(() => {
+    const planPhases = charter?.content.executionPlan ?? [];
+    const phaseNames = planPhases.map((p) => p.phase.toLowerCase());
+
+    // Collect entry types per phase
+    const phaseEntryTypes = new Map<string, Set<string>>();
+    for (const entry of entries) {
+      const key = entry.phase.toLowerCase();
+      if (!phaseEntryTypes.has(key)) {
+        phaseEntryTypes.set(key, new Set());
+      }
+      phaseEntryTypes.get(key)!.add(entry.type);
+    }
+
+    return phaseNames.map((name): PhaseStatus => {
+      const types = phaseEntryTypes.get(name);
+      if (!types) return 'not-started';
+      if (types.has('complete')) return 'complete';
+      return 'in-progress';
+    });
+  }, [charter, entries]);
 
   if (!charter) return null;
 
@@ -67,26 +99,33 @@ function CharterReferencePanel({ charterId }: CharterReferencePanelProps) {
           <section>
             <h3 className="text-sm font-medium text-foreground mb-2">Execution Plan</h3>
             <div className="space-y-2">
-              {content.executionPlan.map((phase, i) => (
-                <div key={i} className="border border-border rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="text-xs font-medium text-foreground">
-                      Phase {i + 1}: {phase.phase}
-                    </h4>
-                    <Badge variant="outline" className="text-xs text-muted-foreground">
-                      {phase.duration}
-                    </Badge>
+              {content.executionPlan.map((phase, i) => {
+                const status = phaseStatuses[i] ?? 'not-started';
+                const config = STATUS_CONFIG[status];
+                const StatusIcon = config.icon;
+
+                return (
+                  <div key={i} className="border border-border rounded-[1rem] p-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="text-xs font-medium text-foreground">
+                        Phase {i + 1}: {phase.phase}
+                      </h4>
+                      <div className={`flex items-center gap-1.5 ${config.className}`}>
+                        <StatusIcon className="w-3.5 h-3.5" />
+                        <span className="text-xs">{config.label}</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-0.5">
+                      {phase.tasks.map((task, j) => (
+                        <li key={j} className="text-xs text-foreground/60 font-light flex items-start gap-1.5">
+                          <span className="text-muted-foreground">-</span>
+                          {task}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-0.5">
-                    {phase.tasks.map((task, j) => (
-                      <li key={j} className="text-xs text-foreground/60 font-light flex items-start gap-1.5">
-                        <span className="text-muted-foreground">-</span>
-                        {task}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         </div>
