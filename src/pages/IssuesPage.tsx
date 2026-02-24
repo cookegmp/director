@@ -141,7 +141,7 @@ function IssuesPage() {
               <button
                 key={issue.id}
                 onClick={() => setSelectedIssue(issue)}
-                className={`w-full text-left p-4 rounded-xl border transition-colors ${
+                className={`w-full text-left p-4 rounded-[1rem] border transition-colors ${
                   selectedIssue?.id === issue.id
                     ? 'bg-accent/50 border-primary/30'
                     : 'bg-card/50 backdrop-blur-sm border-border hover:border-primary/20'
@@ -170,7 +170,7 @@ function IssuesPage() {
         {/* Detail panel / Form */}
         <div>
           {showForm ? (
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6 space-y-4">
+            <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 space-y-4">
               <h2 className="text-lg font-light text-foreground">New Issue</h2>
               <input
                 type="text"
@@ -233,7 +233,7 @@ function IssuesPage() {
               </div>
             </div>
           ) : selectedIssue ? (
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6 space-y-4">
+            <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={TYPE_COLORS[selectedIssue.type]}>
                   {selectedIssue.type === 'bug' ? 'Bug' : 'Feature Request'}
@@ -269,7 +269,7 @@ function IssuesPage() {
               </p>
             </div>
           ) : (
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6 text-center">
+            <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 text-center">
               <ChevronRight className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">Select an issue to view details</p>
             </div>

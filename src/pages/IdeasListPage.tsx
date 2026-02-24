@@ -20,7 +20,7 @@ function IdeasListPage() {
               <Link
                 key={idea.id}
                 to={`/ideas/${idea.id}`}
-                className="block bg-card/50 backdrop-blur-sm rounded-xl border border-border p-4 hover:border-primary/30 transition-colors"
+                className="block bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-4 hover:border-primary/30 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div>

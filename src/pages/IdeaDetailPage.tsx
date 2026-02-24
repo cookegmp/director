@@ -111,14 +111,14 @@ function IdeaDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Score breakdown */}
-        <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+        <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-4">Priority Score</h2>
           <ScoreBreakdown scores={idea.scores} compositeScore={idea.compositeScore} />
         </div>
 
         {/* Intake summary */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-6">
+          <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
             <h2 className="text-lg font-light text-foreground mb-4">Intake Summary</h2>
             <div className="space-y-4">
               {Object.entries(idea.intakeAnswers).map(([stepId, answer]) => {
