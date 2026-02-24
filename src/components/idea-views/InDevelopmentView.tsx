@@ -85,6 +85,7 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
         entries={entries}
         onEntryClick={(idx) => setHighlightLine(idx)}
         onSendMessage={sendMessage}
+        sessionStatus={sessionStatus}
       />
 
       {/* Raw Output + Charter Reference — stacked below */}

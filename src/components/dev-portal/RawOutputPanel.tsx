@@ -7,7 +7,7 @@ interface RawOutputPanelProps {
   highlightIndex?: number;
 }
 
-function colorize(text: string): JSX.Element {
+function colorize(text: string): React.ReactElement {
   // Simple regex-based coloring
   if (/error|fail|ERR!/i.test(text)) {
     return <span className="text-red-400">{text}</span>;

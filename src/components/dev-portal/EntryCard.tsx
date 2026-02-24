@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2, Check, Mic } from 'lucide-react';
 import GradientButton from '@/components/shared/GradientButton';
-import type { TranslatedEntry, TranslatedEntryType } from '@/types';
+import type { TranslatedEntry, TranslatedEntryType, AgentSessionStatus } from '@/types';
 
 const TYPE_ICONS: Record<TranslatedEntryType, typeof Activity> = {
   progress: Activity,
@@ -19,18 +19,50 @@ const TYPE_COLORS: Record<TranslatedEntryType, string> = {
   complete: 'text-green-400',
 };
 
+function getSuggestions(
+  entryType: TranslatedEntryType | undefined,
+  sessionStatus: AgentSessionStatus | undefined
+): string[] {
+  if (sessionStatus === 'paused') {
+    return ['Resume building', 'Show me what\'s done so far', 'Change the approach'];
+  }
+  if (sessionStatus === 'complete') {
+    return ['Run the tests', 'Show me a summary', 'Deploy it'];
+  }
+  if (sessionStatus === 'error') {
+    return ['What went wrong?', 'Try a different approach', 'Show the error details'];
+  }
+  if (sessionStatus === 'connected' || !entryType) {
+    return ['Start with the database schema', 'Begin with the UI components', 'Set up the project structure first'];
+  }
+
+  // Building — vary by current entry type
+  switch (entryType) {
+    case 'error':
+      return ['What went wrong?', 'Try a different approach', 'Show the error details', 'Skip and continue'];
+    case 'milestone':
+      return ['Looks good continue', 'Let me review this first', 'Can you explain what you built?'];
+    case 'recovery':
+      return ['Good fix keep going', "That's not right try again"];
+    default:
+      return ['What\'s the current status?', 'Skip this step', 'Show me the code'];
+  }
+}
+
 interface EntryCardProps {
   entries: TranslatedEntry[];
   onEntryClick?: (rawLineIndex: number) => void;
   onSendMessage?: (message: string) => void;
+  sessionStatus?: AgentSessionStatus;
 }
 
 const DOT_WINDOW_SIZE = 30;
 
-function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
+function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: EntryCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userNavigated, setUserNavigated] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
+  const [selectedChip, setSelectedChip] = useState<string | null>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-advance to latest entry when new entries arrive (unless user navigated away)
@@ -84,7 +116,20 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
     if (!trimmed || !onSendMessage) return;
     onSendMessage(trimmed);
     setChatMessage('');
+    setSelectedChip(null);
   }, [chatMessage, onSendMessage]);
+
+  const entry = entries[currentIndex];
+
+  const suggestions = useMemo(
+    () => getSuggestions(entry?.type, sessionStatus),
+    [entry?.type, sessionStatus]
+  );
+
+  const handleChipClick = useCallback((chip: string) => {
+    setChatMessage(chip);
+    setSelectedChip(chip);
+  }, []);
 
   // Sliding window for dots when entries > DOT_WINDOW_SIZE
   const dotRange = useMemo(() => {
@@ -106,8 +151,6 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
     return { start, end };
   }, [entries.length, currentIndex]);
 
-  const entry = entries[currentIndex];
-
   // Empty state
   if (entries.length === 0) {
     return (
@@ -120,7 +163,10 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
             <textarea
               ref={chatInputRef}
               value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
+              onChange={(e) => {
+                setChatMessage(e.target.value);
+                setSelectedChip(null);
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.metaKey) {
                   e.preventDefault();
@@ -131,6 +177,23 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
               rows={2}
               className="w-full bg-transparent border-b-2 border-border focus:border-primary text-lg text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors resize-none py-3"
             />
+            {suggestions.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {suggestions.map((chip) => (
+                  <button
+                    key={chip}
+                    onClick={() => handleChipClick(chip)}
+                    className={`px-3 py-1.5 text-sm border rounded-md transition-colors ${
+                      selectedChip === chip
+                        ? 'border-primary text-primary'
+                        : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+                    }`}
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="flex items-center gap-3 mt-6">
               <GradientButton onClick={handleSendMessage} disabled={!chatMessage.trim()}>
                 Send
@@ -257,7 +320,10 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
           <textarea
             ref={chatInputRef}
             value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
+            onChange={(e) => {
+              setChatMessage(e.target.value);
+              setSelectedChip(null);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && e.metaKey) {
                 e.preventDefault();
@@ -268,6 +334,23 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
             rows={2}
             className="w-full bg-transparent border-b-2 border-border focus:border-primary text-lg text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors resize-none py-3"
           />
+          {suggestions.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {suggestions.map((chip) => (
+                <button
+                  key={chip}
+                  onClick={() => handleChipClick(chip)}
+                  className={`px-3 py-1.5 text-sm border rounded-md transition-colors ${
+                    selectedChip === chip
+                      ? 'border-primary text-primary'
+                      : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+                  }`}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="flex items-center gap-3 mt-6">
             <GradientButton onClick={handleSendMessage} disabled={!chatMessage.trim()}>
               Send

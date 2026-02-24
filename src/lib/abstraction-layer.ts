@@ -3,7 +3,7 @@ import type { TranslatedEntryType, CharterPhase } from '@/types';
 interface TranslationRule {
   pattern: RegExp;
   summary: (match: RegExpMatchArray) => string;
-  type: TranslatedEntryType;
+  type: TranslatedEntryType | ((match: RegExpMatchArray) => TranslatedEntryType);
   category: string;
 }
 
