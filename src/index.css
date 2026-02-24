@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+  --color-sidebar-background: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* StageManager — Dark glassmorphism palette (always dark, no light mode) */
+:root {
+  --background: 225 64% 11%;
+  --foreground: 220 14% 96%;
+  --card: 225 50% 15%;
+  --card-foreground: 220 14% 96%;
+  --popover: 225 50% 15%;
+  --popover-foreground: 220 14% 96%;
+  --primary: 217 100% 61%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 225 30% 25%;
+  --secondary-foreground: 220 14% 91%;
+  --muted: 225 30% 20%;
+  --muted-foreground: 220 14% 55%;
+  --accent: 225 40% 22%;
+  --accent-foreground: 220 14% 91%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 225 30% 20%;
+  --input: 225 30% 20%;
+  --ring: 217 100% 61%;
+  --radius: 9999px;
+  --chart-1: 217 100% 61%;
+  --chart-2: 175 63% 47%;
+  --chart-3: 142 71% 45%;
+  --chart-4: 263 80% 65%;
+  --chart-5: 0 72% 51%;
+
+  /* Semantic domain colors */
+  --active: 175 63% 47%;
+  --queued: 217 100% 61%;
+  --completed: 142 71% 45%;
+  --error: 0 72% 51%;
+  --idle: 225 30% 20%;
+
+  /* Sidebar */
+  --sidebar-background: 225 64% 8%;
+  --sidebar-foreground: 220 14% 96%;
+  --sidebar-primary: 217 100% 61%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 225 40% 18%;
+  --sidebar-accent-foreground: 220 14% 91%;
+  --sidebar-border: 225 30% 18%;
+  --sidebar-ring: 217 100% 61%;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    margin: 0;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, hsla(217, 100%, 61%, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, hsla(175, 80%, 55%, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, hsla(263, 80%, 65%, 0.04) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+
+/* Animated gradient text */
+.animated-gradient-text {
+  background-image: linear-gradient(
+    90deg,
+    rgb(229, 67, 99),
+    rgb(56, 132, 255),
+    rgb(44, 195, 183)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 100%;
+  animation: gradient-flow 4s ease-in-out infinite;
+}
+
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Gradient button */
+.gradient-button {
+  background: linear-gradient(to right, hsl(217, 100%, 60%), hsl(175, 80%, 55%), hsl(263, 80%, 65%));
+}
+
+/* Score bar animation */
+@keyframes score-fill {
+  from { width: 0%; }
+  to { width: var(--score-width); }
+}
+
+.score-bar-fill {
+  animation: score-fill 0.8s ease-out forwards;
+}
