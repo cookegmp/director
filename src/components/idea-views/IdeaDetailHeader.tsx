@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { getScoreTier, getTierBadgeClasses } from '@/types';
+import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types';
 import type { Idea, IdeaStatus } from '@/types';
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
@@ -35,7 +35,7 @@ function IdeaDetailHeader({ idea }: IdeaDetailHeaderProps) {
             Score: {Math.round(idea.compositeScore)}
           </Badge>
           <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
-            {idea.status}
+            {STATUS_LABELS[idea.status]}
           </Badge>
         </div>
       </div>

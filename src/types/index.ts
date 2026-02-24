@@ -205,6 +205,14 @@ export function getTierColor(tier: ScoreTier): string {
   }
 }
 
+export const STATUS_LABELS: Record<IdeaStatus, string> = {
+  scored: 'Scored',
+  'charter-generated': 'On Deck',
+  'in-development': 'Development',
+  production: 'Production',
+  archived: 'Archived',
+};
+
 export function getTierBadgeClasses(tier: ScoreTier): string {
   switch (tier) {
     case 'critical': return 'bg-red-500/20 text-red-400 border-red-500/30';

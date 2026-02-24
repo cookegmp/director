@@ -4,6 +4,7 @@ import { useChartersStore } from '@/stores/charters';
 import { useIdeasStore } from '@/stores/ideas';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
+import { STATUS_LABELS } from '@/types';
 import type { CharterContent, IdeaStatus } from '@/types';
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
@@ -57,7 +58,7 @@ function CharterViewPage() {
           <div className="flex items-center gap-2 mt-1">
             {idea && (
               <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
-                {idea.status}
+                {STATUS_LABELS[idea.status]}
               </Badge>
             )}
             <Link

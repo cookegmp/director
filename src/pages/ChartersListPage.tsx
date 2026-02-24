@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useChartersStore } from '@/stores/charters';
 import { useIdeasStore } from '@/stores/ideas';
 import { Badge } from '@/components/ui/badge';
+import { STATUS_LABELS } from '@/types';
 import type { IdeaStatus } from '@/types';
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
@@ -35,7 +36,7 @@ function ChartersListPage() {
                   <h3 className="text-foreground font-light">{charter.title}</h3>
                   {idea && (
                     <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
-                      {idea.status}
+                      {STATUS_LABELS[idea.status]}
                     </Badge>
                   )}
                 </div>

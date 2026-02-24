@@ -18,7 +18,7 @@ import { useIssuesStore } from '@/stores/issues';
 import { useActivityStore } from '@/stores/activity';
 import { Badge } from '@/components/ui/badge';
 import GradientButton from '@/components/shared/GradientButton';
-import { getScoreTier, getTierBadgeClasses } from '@/types';
+import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types';
 import { formatRelativeTime } from '@/lib/utils';
 import type { IdeaStatus } from '@/types';
 
@@ -227,7 +227,7 @@ function DashboardPage() {
                   </h3>
                   <div className="flex items-center gap-2 mt-2">
                     <Badge variant="outline" className={`text-xs ${STATUS_BADGE_CLASSES[idea.status]}`}>
-                      {idea.status}
+                      {STATUS_LABELS[idea.status]}
                     </Badge>
                   </div>
                 </Link>

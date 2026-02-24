@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useIdeasStore } from '@/stores/ideas';
 import { Badge } from '@/components/ui/badge';
-import { getScoreTier, getTierBadgeClasses } from '@/types';
+import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types';
 import type { IdeaStatus } from '@/types';
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
@@ -43,7 +43,7 @@ function IdeasListPage() {
                       {Math.round(idea.compositeScore)}
                     </Badge>
                     <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
-                      {idea.status}
+                      {STATUS_LABELS[idea.status]}
                     </Badge>
                   </div>
                 </div>
