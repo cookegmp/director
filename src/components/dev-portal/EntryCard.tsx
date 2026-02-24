@@ -1,7 +1,22 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ArrowLeft, ArrowRight, Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2, Check, Mic } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2, Check, Mic, Settings, Server, Code, Globe, Sparkles, Hexagon, Cpu } from 'lucide-react';
 import GradientButton from '@/components/shared/GradientButton';
+import SegmentedToggle from '@/components/shared/SegmentedToggle';
+import { useDevSettingsStore } from '@/stores/dev-settings';
+import type { Environment, Model } from '@/stores/dev-settings';
 import type { TranslatedEntry, TranslatedEntryType, AgentSessionStatus } from '@/types';
+
+const ENV_OPTIONS = [
+  { value: 'dsp', label: 'DSP', icon: Server },
+  { value: 'development', label: 'Dev', icon: Code },
+  { value: 'production', label: 'Prod', icon: Globe },
+] as const;
+
+const MODEL_OPTIONS = [
+  { value: 'claude', label: 'Claude', icon: Sparkles },
+  { value: 'gemini', label: 'Gemini', icon: Hexagon },
+  { value: 'codex', label: 'Codex', icon: Cpu },
+] as const;
 
 const TYPE_ICONS: Record<TranslatedEntryType, typeof Activity> = {
   progress: Activity,
@@ -64,6 +79,21 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
   const [chatMessage, setChatMessage] = useState('');
   const [selectedChip, setSelectedChip] = useState<string | null>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { environment, model, setEnvironment, setModel } = useDevSettingsStore();
+
+  // Close settings popover on outside click
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [settingsOpen]);
 
   // Auto-advance to latest entry when new entries arrive (unless user navigated away)
   useEffect(() => {
@@ -154,7 +184,38 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
   // Empty state
   if (entries.length === 0) {
     return (
-      <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 sm:p-10">
+      <div className="relative bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 sm:p-10">
+        {/* Settings popover trigger */}
+        <div ref={settingsRef} className="absolute top-4 right-4 z-20">
+          <button
+            onClick={() => setSettingsOpen((o) => !o)}
+            className={`p-1.5 rounded-lg transition-colors ${
+              settingsOpen
+                ? 'text-primary bg-primary/10'
+                : 'text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/40'
+            }`}
+            aria-label="Dev settings"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+          {settingsOpen && (
+            <div className="absolute right-0 mt-2 w-72 bg-card/90 backdrop-blur-md border border-border shadow-lg [border-radius:8px] p-4 flex flex-col items-stretch gap-3">
+              <SegmentedToggle
+                label="Environment"
+                options={[...ENV_OPTIONS]}
+                value={environment}
+                onChange={(v) => setEnvironment(v as Environment)}
+              />
+              <SegmentedToggle
+                label="Model"
+                options={[...MODEL_OPTIONS]}
+                value={model}
+                onChange={(v) => setModel(v as Model)}
+              />
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center justify-center py-16">
           <p className="text-sm text-muted-foreground">Waiting for build output...</p>
         </div>
@@ -222,7 +283,38 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
   const showFadeRight = entries.length > DOT_WINDOW_SIZE && dotRange.end < entries.length;
 
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 sm:p-10">
+    <div className="relative bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 sm:p-10">
+      {/* Settings popover trigger */}
+      <div ref={settingsRef} className="absolute top-4 right-4 z-20">
+        <button
+          onClick={() => setSettingsOpen((o) => !o)}
+          className={`p-1.5 rounded-lg transition-colors ${
+            settingsOpen
+              ? 'text-primary bg-primary/10'
+              : 'text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/40'
+          }`}
+          aria-label="Dev settings"
+        >
+          <Settings className="w-4 h-4" />
+        </button>
+        {settingsOpen && (
+          <div className="absolute right-0 mt-2 w-72 bg-card/90 backdrop-blur-md border border-border shadow-lg [border-radius:8px] p-4 flex flex-col items-stretch gap-3">
+            <SegmentedToggle
+              label="Environment"
+              options={[...ENV_OPTIONS]}
+              value={environment}
+              onChange={(v) => setEnvironment(v as Environment)}
+            />
+            <SegmentedToggle
+              label="Model"
+              options={[...MODEL_OPTIONS]}
+              value={model}
+              onChange={(v) => setModel(v as Model)}
+            />
+          </div>
+        )}
+      </div>
+
       {/* Dot navigation + arrows */}
       <div className="flex items-center justify-center gap-4 mb-8">
         {/* Back arrow */}

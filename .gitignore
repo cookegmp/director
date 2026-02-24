@@ -19,6 +19,7 @@ dist-ssr
 
 # Screenshots
 *.png
+.playwright-mcp/
 
 # Editor directories and files
 .vscode/*
