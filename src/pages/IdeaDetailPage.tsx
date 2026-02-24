@@ -34,9 +34,9 @@ function renderView(idea: ReturnType<typeof useIdeasStore.getState>['ideas'][num
   switch (idea.status) {
     case 'scored':
       return <ScoredView idea={idea} />;
-    case 'charter-generated':
+    case 'on-deck':
       return <CharterGeneratedView idea={idea} />;
-    case 'in-development':
+    case 'development':
       return <InDevelopmentView idea={idea} />;
     case 'production':
       return <ProductionView idea={idea} />;

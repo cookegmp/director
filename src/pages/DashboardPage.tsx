@@ -37,8 +37,8 @@ const ACTIVITY_ICONS: Record<string, typeof Lightbulb> = {
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
   scored: 'text-muted-foreground',
-  'charter-generated': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  'in-development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  'on-deck': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  'development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   production: 'bg-green-500/20 text-green-400 border-green-500/30',
   archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
 };
@@ -56,10 +56,10 @@ function DashboardPage() {
     .filter((i) => i.status !== 'archived')
     .sort((a, b) => b.compositeScore - a.compositeScore);
 
-  // Active projects: ideas in charter-generated, in-development, or production that have a linked charter
+  // Active projects: ideas in on-deck, development, or production that have a linked charter
   const activeProjectIdeas = ideas.filter(
     (i) =>
-      (i.status === 'charter-generated' || i.status === 'in-development' || i.status === 'production') &&
+      (i.status === 'on-deck' || i.status === 'development' || i.status === 'production') &&
       i.linkedCharterId
   );
 

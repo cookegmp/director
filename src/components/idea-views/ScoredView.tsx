@@ -49,7 +49,7 @@ function ScoredView({ idea }: ScoredViewProps) {
       });
 
       updateIdea(idea.id, {
-        status: 'charter-generated',
+        status: 'on-deck',
         linkedCharterId: charterId,
       });
 

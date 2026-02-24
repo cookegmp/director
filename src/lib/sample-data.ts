@@ -82,7 +82,7 @@ export const sampleIdeas: Idea[] = [
   {
     id: 'idea-004',
     title: 'Engineering document search portal for QMS and SharePoint',
-    status: 'charter-generated',
+    status: 'on-deck',
     intakeAnswers: {
       problem: 'Engineers and quality personnel spend significant time searching for documents across SharePoint, network shares, and the QMS system. There\'s no unified search — you have to know which system a document lives in before you can find it.',
       impact: 'Affects all 15+ engineers, the quality team (4 people), and project managers. Document searches happen 10-20 times per day per person. Estimated 30-60 minutes of wasted time daily across the team.',
@@ -102,7 +102,7 @@ export const sampleIdeas: Idea[] = [
   {
     id: 'idea-005',
     title: 'Customer specification analysis tool with AI-powered extraction',
-    status: 'in-development',
+    status: 'development',
     intakeAnswers: {
       problem: 'When customers send RFQs, engineers manually read through specification documents (often 50-200 pages) to extract relevant requirements. This is time-consuming and error-prone — critical specs are sometimes missed.',
       impact: 'Affects the quoting process for every new project. Each RFQ review takes 2-6 hours of engineer time. Missing a spec during review can lead to costly rework or project overruns. Approximately 3-5 RFQs received per week.',

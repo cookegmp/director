@@ -49,7 +49,7 @@ function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
     });
 
     updateIdea(idea.id, {
-      status: 'in-development',
+      status: 'development',
       activeSessionId: sessionId,
     });
 

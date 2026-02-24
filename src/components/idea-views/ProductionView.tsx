@@ -18,7 +18,7 @@ function ProductionView({ idea }: ProductionViewProps) {
 
   const handleReturnToDevelopment = () => {
     const now = new Date().toISOString();
-    updateIdea(idea.id, { status: 'in-development' });
+    updateIdea(idea.id, { status: 'development' });
     addActivity({
       id: generateId(),
       type: 'build-started',

@@ -4,7 +4,7 @@
 
 // --- Enums ---
 
-export type IdeaStatus = 'scored' | 'charter-generated' | 'in-development' | 'production' | 'archived';
+export type IdeaStatus = 'scored' | 'on-deck' | 'development' | 'production' | 'archived';
 export type IssueType = 'bug' | 'feature-request';
 export type IssueSeverity = 'critical' | 'high' | 'medium' | 'low';
 export type IssueStatus = 'open' | 'in-progress' | 'resolved' | 'closed';
@@ -207,8 +207,8 @@ export function getTierColor(tier: ScoreTier): string {
 
 export const STATUS_LABELS: Record<IdeaStatus, string> = {
   scored: 'Scored',
-  'charter-generated': 'On Deck',
-  'in-development': 'Development',
+  'on-deck': 'On Deck',
+  'development': 'Development',
   production: 'Production',
   archived: 'Archived',
 };

@@ -56,7 +56,7 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
   };
 
   const handleBackToCharter = () => {
-    updateIdea(idea.id, { status: 'charter-generated' });
+    updateIdea(idea.id, { status: 'on-deck' });
   };
 
   const sessionStatus = session?.status ?? 'stopped';
