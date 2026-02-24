@@ -48,16 +48,16 @@ function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
         {projectIssues.map((issue) => (
           <div
             key={issue.id}
-            className="p-3 rounded-lg border border-border hover:border-primary/20 transition-colors"
+            className="p-4 rounded-[1rem] border border-border hover:border-primary/20 transition-colors"
           >
             <div className="flex items-center gap-2 mb-1">
-              <Badge variant="outline" className={`text-xs ${TYPE_COLORS[issue.type]}`}>
+              <Badge variant="outline" className={`text-xs rounded-md ${TYPE_COLORS[issue.type]}`}>
                 {issue.type === 'bug' ? 'Bug' : 'Feature'}
               </Badge>
-              <Badge variant="outline" className={`text-xs ${SEVERITY_COLORS[issue.severity]}`}>
+              <Badge variant="outline" className={`text-xs rounded-md ${SEVERITY_COLORS[issue.severity]}`}>
                 {issue.severity}
               </Badge>
-              <Badge variant="outline" className={`text-xs ${STATUS_COLORS[issue.status]}`}>
+              <Badge variant="outline" className={`text-xs rounded-md ${STATUS_COLORS[issue.status]}`}>
                 {issue.status}
               </Badge>
             </div>
