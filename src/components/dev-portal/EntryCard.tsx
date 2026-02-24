@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ArrowLeft, ArrowRight, Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2, Send } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2, Check, Mic } from 'lucide-react';
+import GradientButton from '@/components/shared/GradientButton';
 import type { TranslatedEntry, TranslatedEntryType } from '@/types';
 
 const TYPE_ICONS: Record<TranslatedEntryType, typeof Activity> = {
@@ -30,7 +31,7 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userNavigated, setUserNavigated] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
-  const chatInputRef = useRef<HTMLInputElement>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-advance to latest entry when new entries arrive (unless user navigated away)
   useEffect(() => {
@@ -116,27 +117,33 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
         </div>
         {onSendMessage && (
           <div className="pt-6 border-t border-border">
-            <div className="flex items-center gap-3">
-              <input
-                ref={chatInputRef}
-                type="text"
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-                placeholder="Send a message to the agent..."
-                className="flex-1 bg-transparent border-b-2 border-border focus:border-primary text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors py-2"
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={!chatMessage.trim()}
-                className="p-2 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              >
-                <Send className="w-4 h-4" />
+            <textarea
+              ref={chatInputRef}
+              value={chatMessage}
+              onChange={(e) => setChatMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.metaKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder="Send a message to the agent..."
+              rows={2}
+              className="w-full bg-transparent border-b-2 border-border focus:border-primary text-lg text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors resize-none py-3"
+            />
+            <div className="flex items-center gap-3 mt-6">
+              <GradientButton onClick={handleSendMessage} disabled={!chatMessage.trim()}>
+                Send
+                <Check className="w-4 h-4" />
+              </GradientButton>
+              <span className="text-sm text-muted-foreground">
+                press{' '}
+                <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                  ⌘+Enter
+                </kbd>
+              </span>
+              <button className="ml-auto relative w-12 h-12 rounded-full flex items-center justify-center bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <Mic className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -247,27 +254,33 @@ function EntryCard({ entries, onEntryClick, onSendMessage }: EntryCardProps) {
       {/* Chat input */}
       {onSendMessage && (
         <div className="mt-6 pt-6 border-t border-border">
-          <div className="flex items-center gap-3">
-            <input
-              ref={chatInputRef}
-              type="text"
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              placeholder="Send a message to the agent..."
-              className="flex-1 bg-transparent border-b-2 border-border focus:border-primary text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors py-2"
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={!chatMessage.trim()}
-              className="p-2 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <Send className="w-4 h-4" />
+          <textarea
+            ref={chatInputRef}
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.metaKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+            placeholder="Send a message to the agent..."
+            rows={2}
+            className="w-full bg-transparent border-b-2 border-border focus:border-primary text-lg text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors resize-none py-3"
+          />
+          <div className="flex items-center gap-3 mt-6">
+            <GradientButton onClick={handleSendMessage} disabled={!chatMessage.trim()}>
+              Send
+              <Check className="w-4 h-4" />
+            </GradientButton>
+            <span className="text-sm text-muted-foreground">
+              press{' '}
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                ⌘+Enter
+              </kbd>
+            </span>
+            <button className="ml-auto relative w-12 h-12 rounded-full flex items-center justify-center bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              <Mic className="w-5 h-5" />
             </button>
           </div>
         </div>
