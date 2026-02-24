@@ -15,16 +15,45 @@ import { useChartersStore } from '@/stores/charters';
 import { useIssuesStore } from '@/stores/issues';
 import { useActivityStore } from '@/stores/activity';
 import { useScaffoldingStore } from '@/stores/scaffolding';
+import { useAgentSessionsStore } from '@/stores/agent-sessions';
 import {
   sampleIdeas,
   sampleCharters,
   sampleIssues,
   sampleActivities,
   sampleScaffolding,
+  sampleAgentSessions,
 } from '@/lib/sample-data';
+
+// Increment this when the data model changes shape to force a re-seed
+const DATA_VERSION = 2;
+const VERSION_KEY = 'stagemanager-data-version';
 
 function SeedData() {
   useEffect(() => {
+    const storedVersion = localStorage.getItem(VERSION_KEY);
+    const currentVersion = parseInt(storedVersion ?? '0', 10);
+
+    // If version mismatch, clear all stores and re-seed
+    if (currentVersion < DATA_VERSION) {
+      localStorage.removeItem('stagemanager-ideas');
+      localStorage.removeItem('stagemanager-charters');
+      localStorage.removeItem('stagemanager-issues');
+      localStorage.removeItem('stagemanager-activity');
+      localStorage.removeItem('stagemanager-scaffolding');
+      localStorage.removeItem('stagemanager-agent-sessions');
+
+      useIdeasStore.setState({ ideas: sampleIdeas });
+      useChartersStore.setState({ charters: sampleCharters });
+      useIssuesStore.setState({ issues: sampleIssues });
+      useActivityStore.setState({ activities: sampleActivities });
+      useScaffoldingStore.getState().setDocuments(sampleScaffolding);
+      useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
+
+      localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
+      return;
+    }
+
     // Only seed if all stores are empty (fresh browser)
     const ideas = useIdeasStore.getState().ideas;
     const charters = useChartersStore.getState().charters;
@@ -44,6 +73,9 @@ function SeedData() {
       useIssuesStore.setState({ issues: sampleIssues });
       useActivityStore.setState({ activities: sampleActivities });
       useScaffoldingStore.getState().setDocuments(sampleScaffolding);
+      useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
+
+      localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
     }
   }, []);
 

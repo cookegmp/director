@@ -4,15 +4,79 @@
 
 // --- Enums ---
 
-export type IdeaStatus = 'new' | 'scored' | 'charter-generated' | 'archived';
-export type CharterStatus = 'draft' | 'reviewed' | 'in-progress' | 'complete';
+export type IdeaStatus = 'scored' | 'charter-generated' | 'in-development' | 'production' | 'archived';
 export type IssueType = 'bug' | 'feature-request';
 export type IssueSeverity = 'critical' | 'high' | 'medium' | 'low';
 export type IssueStatus = 'open' | 'in-progress' | 'resolved' | 'closed';
-export type ActivityType = 'idea-created' | 'charter-generated' | 'issue-filed' | 'status-changed';
-export type EntityType = 'idea' | 'charter' | 'issue';
+export type ActivityType =
+  | 'idea-created'
+  | 'idea-scored'
+  | 'charter-generated'
+  | 'issue-filed'
+  | 'status-changed'
+  | 'build-started'
+  | 'build-paused'
+  | 'build-stopped'
+  | 'build-complete'
+  | 'moved-to-production';
+export type EntityType = 'idea' | 'charter' | 'issue' | 'agent-session';
 export type ScoreTier = 'critical' | 'high' | 'medium' | 'low';
 export type UrgencyLevel = 'Blocking other work' | 'Causing daily friction' | 'Would improve efficiency' | 'Exploring for the future';
+
+// --- Agent Session Types ---
+
+export type AgentSessionStatus = 'connecting' | 'connected' | 'building' | 'paused' | 'complete' | 'error' | 'stopped';
+
+export type TranslatedEntryType = 'progress' | 'milestone' | 'error' | 'recovery' | 'complete';
+
+export interface TranslatedEntry {
+  id: string;
+  timestamp: string;
+  summary: string;
+  type: TranslatedEntryType;
+  phase: string;
+  rawLineIndex: number;
+}
+
+export interface RawOutputLine {
+  index: number;
+  timestamp: string;
+  content: string;
+}
+
+export interface AgentError {
+  timestamp: string;
+  message: string;
+  recoverable: boolean;
+}
+
+export interface AgentSession {
+  id: string;
+  ideaId: string;
+  charterId: string;
+  status: AgentSessionStatus;
+  translatedEntries: TranslatedEntry[];
+  rawOutput: RawOutputLine[];
+  errors: AgentError[];
+  createdAt: string;
+  connectedAt: string | null;
+  completedAt: string | null;
+  stoppedAt: string | null;
+}
+
+// --- WebSocket Messages ---
+
+export type ClientMessage =
+  | { type: 'start-build'; charterId: string; ideaId: string }
+  | { type: 'pause-build' }
+  | { type: 'resume-build' }
+  | { type: 'stop-build' };
+
+export type ServerMessage =
+  | { type: 'status'; status: AgentSessionStatus }
+  | { type: 'output'; line: string; timestamp: string }
+  | { type: 'error'; message: string; recoverable: boolean }
+  | { type: 'complete' };
 
 // --- Scoring ---
 
@@ -36,6 +100,7 @@ export interface Idea {
   updatedAt: string;
   linkedCharterId: string | null;
   linkedIssueIds: string[];
+  activeSessionId: string | null;
 }
 
 export interface CharterContent {
@@ -59,7 +124,6 @@ export interface Charter {
   ideaId: string;
   title: string;
   content: CharterContent;
-  status: CharterStatus;
   scaffoldingRefs: string[];
   createdAt: string;
   updatedAt: string;

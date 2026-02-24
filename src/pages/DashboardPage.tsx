@@ -6,6 +6,11 @@ import {
   FileText,
   ArrowRight,
   TrendingUp,
+  Play,
+  Pause,
+  Square,
+  CheckCircle,
+  Rocket,
 } from 'lucide-react';
 import { useIdeasStore } from '@/stores/ideas';
 import { useChartersStore } from '@/stores/charters';
@@ -15,12 +20,27 @@ import { Badge } from '@/components/ui/badge';
 import GradientButton from '@/components/shared/GradientButton';
 import { getScoreTier, getTierBadgeClasses } from '@/types';
 import { formatRelativeTime } from '@/lib/utils';
+import type { IdeaStatus } from '@/types';
 
 const ACTIVITY_ICONS: Record<string, typeof Lightbulb> = {
   'idea-created': Lightbulb,
+  'idea-scored': Lightbulb,
   'charter-generated': FileText,
   'issue-filed': Bug,
   'status-changed': TrendingUp,
+  'build-started': Play,
+  'build-paused': Pause,
+  'build-stopped': Square,
+  'build-complete': CheckCircle,
+  'moved-to-production': Rocket,
+};
+
+const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
+  scored: 'text-muted-foreground',
+  'charter-generated': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  'in-development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  production: 'bg-green-500/20 text-green-400 border-green-500/30',
+  archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
 };
 
 function DashboardPage() {
@@ -36,9 +56,14 @@ function DashboardPage() {
     .filter((i) => i.status !== 'archived')
     .sort((a, b) => b.compositeScore - a.compositeScore);
 
-  const activeCharters = charters.filter(
-    (c) => c.status === 'in-progress' || c.status === 'reviewed' || c.status === 'draft'
+  // Active projects: ideas in charter-generated, in-development, or production that have a linked charter
+  const activeProjectIdeas = ideas.filter(
+    (i) =>
+      (i.status === 'charter-generated' || i.status === 'in-development' || i.status === 'production') &&
+      i.linkedCharterId
   );
+
+  const activeProjectCount = activeProjectIdeas.length;
 
   return (
     <div>
@@ -73,7 +98,7 @@ function DashboardPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {[
           { label: 'Ideas', value: ideas.length, icon: Lightbulb },
-          { label: 'Active Charters', value: activeCharters.length, icon: FileText },
+          { label: 'Active Projects', value: activeProjectCount, icon: FileText },
           { label: 'Open Issues', value: issues.filter((i) => i.status === 'open').length, icon: Bug },
           {
             label: 'Avg Score',
@@ -177,7 +202,7 @@ function DashboardPage() {
       </div>
 
       {/* Active Projects */}
-      {activeCharters.length > 0 && (
+      {activeProjectIdeas.length > 0 && (
         <div className="mt-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-light text-foreground">Active Projects</h2>
@@ -189,20 +214,25 @@ function DashboardPage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activeCharters.map((charter) => (
-              <Link
-                key={charter.id}
-                to={`/charters/${charter.id}`}
-                className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-4 hover:border-primary/30 transition-colors"
-              >
-                <h3 className="text-sm text-foreground font-light truncate">{charter.title}</h3>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="outline" className="text-xs">
-                    {charter.status}
-                  </Badge>
-                </div>
-              </Link>
-            ))}
+            {activeProjectIdeas.map((idea) => {
+              const charter = charters.find((c) => c.id === idea.linkedCharterId);
+              return (
+                <Link
+                  key={idea.id}
+                  to={`/ideas/${idea.id}`}
+                  className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-4 hover:border-primary/30 transition-colors"
+                >
+                  <h3 className="text-sm text-foreground font-light truncate">
+                    {charter?.title ?? idea.title}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant="outline" className={`text-xs ${STATUS_BADGE_CLASSES[idea.status]}`}>
+                      {idea.status}
+                    </Badge>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}

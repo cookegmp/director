@@ -135,6 +135,7 @@ function WizardCard() {
         updatedAt: now,
         linkedCharterId: null,
         linkedIssueIds: [],
+        activeSessionId: null,
       });
 
       addActivity({

@@ -2,6 +2,15 @@ import { Link } from 'react-router-dom';
 import { useIdeasStore } from '@/stores/ideas';
 import { Badge } from '@/components/ui/badge';
 import { getScoreTier, getTierBadgeClasses } from '@/types';
+import type { IdeaStatus } from '@/types';
+
+const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
+  scored: 'text-muted-foreground',
+  'charter-generated': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  'in-development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  production: 'bg-green-500/20 text-green-400 border-green-500/30',
+  archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+};
 
 function IdeasListPage() {
   const ideas = useIdeasStore((s) => s.ideas);
@@ -33,7 +42,7 @@ function IdeasListPage() {
                     <Badge variant="outline" className={getTierBadgeClasses(tier)}>
                       {Math.round(idea.compositeScore)}
                     </Badge>
-                    <Badge variant="outline" className="text-muted-foreground">
+                    <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
                       {idea.status}
                     </Badge>
                   </div>

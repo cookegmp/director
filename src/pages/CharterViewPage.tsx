@@ -1,27 +1,24 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Copy, CheckCircle, Lightbulb, ChevronRight } from 'lucide-react';
 import { useChartersStore } from '@/stores/charters';
-import { useActivityStore } from '@/stores/activity';
+import { useIdeasStore } from '@/stores/ideas';
 import { Badge } from '@/components/ui/badge';
-import { generateId } from '@/lib/utils';
 import { useState } from 'react';
-import type { CharterStatus, CharterContent } from '@/types';
+import type { CharterContent, IdeaStatus } from '@/types';
 
-const STATUS_ORDER: CharterStatus[] = ['draft', 'reviewed', 'in-progress', 'complete'];
-
-const STATUS_COLORS: Record<CharterStatus, string> = {
-  draft: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-  reviewed: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  'in-progress': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
-  complete: 'bg-green-500/20 text-green-400 border-green-500/30',
+const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
+  scored: 'text-muted-foreground',
+  'charter-generated': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  'in-development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  production: 'bg-green-500/20 text-green-400 border-green-500/30',
+  archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
 };
 
 function CharterViewPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const charter = useChartersStore((s) => s.getCharter(id ?? ''));
-  const updateCharter = useChartersStore((s) => s.updateCharter);
-  const addActivity = useActivityStore((s) => s.addActivity);
+  const idea = useIdeasStore((s) => s.getIdea(charter?.ideaId ?? ''));
   const [copied, setCopied] = useState(false);
   const [collapsedScaffolding, setCollapsedScaffolding] = useState(true);
 
@@ -37,23 +34,6 @@ function CharterViewPage() {
   }
 
   const { content } = charter;
-  const currentStatusIndex = STATUS_ORDER.indexOf(charter.status);
-
-  const handleAdvanceStatus = () => {
-    const nextIndex = currentStatusIndex + 1;
-    if (nextIndex < STATUS_ORDER.length) {
-      const nextStatus = STATUS_ORDER[nextIndex]!;
-      updateCharter(charter.id, { status: nextStatus });
-      addActivity({
-        id: generateId(),
-        type: 'status-changed',
-        entityId: charter.id,
-        entityType: 'charter',
-        summary: `Charter "${charter.title}" moved to ${nextStatus}`,
-        createdAt: new Date().toISOString(),
-      });
-    }
-  };
 
   const handleCopy = async () => {
     const text = formatCharterAsText(charter.title, content);
@@ -75,15 +55,17 @@ function CharterViewPage() {
         <div className="flex-1">
           <h1 className="text-2xl font-light text-foreground">{charter.title}</h1>
           <div className="flex items-center gap-2 mt-1">
-            <Badge variant="outline" className={STATUS_COLORS[charter.status]}>
-              {charter.status}
-            </Badge>
+            {idea && (
+              <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
+                {idea.status}
+              </Badge>
+            )}
             <Link
               to={`/ideas/${charter.ideaId}`}
               className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
             >
               <Lightbulb className="w-3 h-3" />
-              View Idea
+              View in Idea Detail
             </Link>
           </div>
         </div>
@@ -95,39 +77,10 @@ function CharterViewPage() {
             {copied ? <CheckCircle className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
             {copied ? 'Copied' : 'Copy'}
           </button>
-          {currentStatusIndex < STATUS_ORDER.length - 1 && (
-            <button
-              onClick={handleAdvanceStatus}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full gradient-button text-white text-sm font-medium active:scale-95 transition-transform"
-            >
-              Advance to {STATUS_ORDER[currentStatusIndex + 1]}
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Status tracker */}
-      <div className="flex items-center gap-2 mb-8">
-        {STATUS_ORDER.map((status, i) => (
-          <div key={status} className="flex items-center gap-2">
-            <div
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                i <= currentStatusIndex
-                  ? STATUS_COLORS[status]
-                  : 'bg-muted/50 text-muted-foreground border-border'
-              }`}
-            >
-              {status}
-            </div>
-            {i < STATUS_ORDER.length - 1 && (
-              <div className={`w-8 h-px ${i < currentStatusIndex ? 'bg-primary' : 'bg-border'}`} />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Charter document */}
+      {/* Charter document (read-only) */}
       <div className="space-y-6">
         {/* Overview */}
         <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
