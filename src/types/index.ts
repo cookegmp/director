@@ -70,7 +70,8 @@ export type ClientMessage =
   | { type: 'start-build'; charterId: string; ideaId: string }
   | { type: 'pause-build' }
   | { type: 'resume-build' }
-  | { type: 'stop-build' };
+  | { type: 'stop-build' }
+  | { type: 'send-message'; message: string };
 
 export type ServerMessage =
   | { type: 'status'; status: AgentSessionStatus }

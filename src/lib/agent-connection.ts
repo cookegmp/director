@@ -92,6 +92,10 @@ export class AgentConnection {
     this.send({ type: 'stop-build' });
   }
 
+  sendMessage(message: string): void {
+    this.send({ type: 'send-message', message });
+  }
+
   get isConnected(): boolean {
     return this.ws !== null && this.ws.readyState === WebSocket.OPEN;
   }

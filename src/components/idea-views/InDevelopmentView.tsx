@@ -5,7 +5,7 @@ import { useActivityStore } from '@/stores/activity';
 import { useAgentSessionsStore } from '@/stores/agent-sessions';
 import { useAgentConnection } from '@/hooks/useAgentConnection';
 import AgentControlBar from '@/components/dev-portal/AgentControlBar';
-import TranslatedFeed from '@/components/dev-portal/TranslatedFeed';
+import EntryCard from '@/components/dev-portal/EntryCard';
 import RawOutputPanel from '@/components/dev-portal/RawOutputPanel';
 import CharterReferencePanel from '@/components/dev-portal/CharterReferencePanel';
 import { generateId } from '@/lib/utils';
@@ -29,6 +29,7 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
     pauseBuild,
     resumeBuild,
     stopBuild,
+    sendMessage,
   } = useAgentConnection({
     sessionId: idea.activeSessionId ?? '',
     charterId,
@@ -77,20 +78,16 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
         }}
       />
 
-      {/* Feed + Raw Output */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-4">
-          <h3 className="text-sm font-light text-foreground mb-3">Build Progress</h3>
-          <TranslatedFeed
-            entries={entries}
-            onEntryClick={(idx) => setHighlightLine(idx)}
-          />
-        </div>
-        <div className="space-y-4">
-          <RawOutputPanel lines={rawLines} highlightIndex={highlightLine} />
-          <CharterReferencePanel charterId={charterId} />
-        </div>
-      </div>
+      {/* Entry Card — full width wizard-style */}
+      <EntryCard
+        entries={entries}
+        onEntryClick={(idx) => setHighlightLine(idx)}
+        onSendMessage={sendMessage}
+      />
+
+      {/* Raw Output + Charter Reference — stacked below */}
+      <RawOutputPanel lines={rawLines} highlightIndex={highlightLine} />
+      <CharterReferencePanel charterId={charterId} />
 
       {/* Actions */}
       <div className="flex items-center gap-3">

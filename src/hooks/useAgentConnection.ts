@@ -89,6 +89,10 @@ export function useAgentConnection({ sessionId, charterId, ideaId }: UseAgentCon
     connectionRef.current?.stopBuild();
   }, []);
 
+  const sendMessage = useCallback((message: string) => {
+    connectionRef.current?.sendMessage(message);
+  }, []);
+
   useEffect(() => {
     return () => {
       connectionRef.current?.disconnect();
@@ -103,5 +107,6 @@ export function useAgentConnection({ sessionId, charterId, ideaId }: UseAgentCon
     pauseBuild,
     resumeBuild,
     stopBuild,
+    sendMessage,
   };
 }
