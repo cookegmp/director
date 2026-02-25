@@ -36,7 +36,7 @@ function ProductionView({ idea }: ProductionViewProps) {
       {/* Actions */}
       <div className="flex items-center gap-3">
         <Link
-          to="/issues"
+          to="/report"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full gradient-button text-white text-sm font-medium active:scale-95 transition-transform"
         >
           <Bug className="w-4 h-4" />

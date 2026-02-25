@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Rocket, ArrowLeft as ArrowLeftIcon, Bug } from 'lucide-react';
 import { useIdeasStore } from '@/stores/ideas';
 import { useActivityStore } from '@/stores/activity';
@@ -8,7 +9,6 @@ import AgentControlBar from '@/components/dev-portal/AgentControlBar';
 import EntryCard from '@/components/dev-portal/EntryCard';
 import RawOutputPanel from '@/components/dev-portal/RawOutputPanel';
 import CharterReferencePanel from '@/components/dev-portal/CharterReferencePanel';
-import FileIssueForm from '@/components/shared/FileIssueForm';
 import { generateId } from '@/lib/utils';
 import type { Idea } from '@/types';
 
@@ -21,7 +21,6 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
   const addActivity = useActivityStore((s) => s.addActivity);
   const session = useAgentSessionsStore((s) => s.getSession(idea.activeSessionId ?? ''));
   const [highlightLine, setHighlightLine] = useState<number | undefined>();
-  const [showIssueForm, setShowIssueForm] = useState(false);
 
   const charterId = idea.linkedCharterId ?? '';
 
@@ -92,15 +91,6 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
       <RawOutputPanel lines={rawLines} highlightIndex={highlightLine} />
       <CharterReferencePanel charterId={charterId} entries={entries} />
 
-      {/* File Issue Form (conditional) */}
-      {showIssueForm && (
-        <FileIssueForm
-          projectId={charterId}
-          onSubmitted={() => setShowIssueForm(false)}
-          onCancel={() => setShowIssueForm(false)}
-        />
-      )}
-
       {/* Actions */}
       <div className="flex items-center gap-3">
         {(sessionStatus === 'complete' || sessionStatus === 'stopped') && (
@@ -112,15 +102,13 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
             Move to Production
           </button>
         )}
-        {!showIssueForm && (
-          <button
-            onClick={() => setShowIssueForm(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
-          >
-            <Bug className="w-4 h-4" />
-            File Issue
-          </button>
-        )}
+        <Link
+          to={`/report${charterId ? `?project=${charterId}` : ''}`}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+        >
+          <Bug className="w-4 h-4" />
+          File Issue
+        </Link>
         <button
           onClick={handleBackToCharter}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"

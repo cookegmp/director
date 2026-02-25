@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Plus, Filter, ChevronRight } from 'lucide-react';
 import { useIssuesStore } from '@/stores/issues';
 import { useActivityStore } from '@/stores/activity';
 import { Badge } from '@/components/ui/badge';
 import GradientButton from '@/components/shared/GradientButton';
-import FileIssueForm from '@/components/shared/FileIssueForm';
 import { generateId, formatRelativeTime } from '@/lib/utils';
 import type { IssueType, IssueSeverity, IssueStatus, Issue } from '@/types';
 
@@ -32,7 +32,6 @@ function IssuesPage() {
   const updateIssue = useIssuesStore((s) => s.updateIssue);
   const addActivity = useActivityStore((s) => s.addActivity);
 
-  const [showForm, setShowForm] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [filterType, setFilterType] = useState<IssueType | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<IssueStatus | 'all'>('all');
@@ -61,10 +60,12 @@ function IssuesPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-light text-foreground">Issues</h1>
-        <GradientButton onClick={() => setShowForm(true)}>
-          <Plus className="w-4 h-4" />
-          New Issue
-        </GradientButton>
+        <Link to="/report">
+          <GradientButton>
+            <Plus className="w-4 h-4" />
+            New Issue
+          </GradientButton>
+        </Link>
       </div>
 
       {/* Filters */}
@@ -130,12 +131,7 @@ function IssuesPage() {
 
         {/* Detail panel / Form */}
         <div>
-          {showForm ? (
-            <FileIssueForm
-              onSubmitted={() => setShowForm(false)}
-              onCancel={() => setShowForm(false)}
-            />
-          ) : selectedIssue ? (
+          {selectedIssue ? (
             <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 space-y-4">
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={TYPE_COLORS[selectedIssue.type]}>
