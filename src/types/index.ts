@@ -223,8 +223,10 @@ export interface AISettings {
   scoringEnabled: boolean;
   conversationModel: string;
   conversationEnabled: boolean;
-  issueScoringModel: string;
-  issueScoringEnabled: boolean;
+  bugScoringModel: string;
+  bugScoringEnabled: boolean;
+  featureScoringModel: string;
+  featureScoringEnabled: boolean;
   ideaChatModel: string;
   ideaChatEnabled: boolean;
   abstractionModel: string;

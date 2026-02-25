@@ -21,7 +21,7 @@ const STATIC_MODELS = [
 ];
 
 interface ModelAssignmentProps {
-  functionKey: 'charter' | 'executionPlan' | 'scoring' | 'conversation' | 'issueScoring' | 'ideaChat' | 'abstraction';
+  functionKey: 'charter' | 'executionPlan' | 'scoring' | 'conversation' | 'bugScoring' | 'featureScoring' | 'ideaChat' | 'abstraction';
   label: string;
   description: string;
   whenDisabled: string;

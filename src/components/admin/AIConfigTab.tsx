@@ -46,12 +46,20 @@ const MODEL_FUNCTIONS = [
       'The issue reporter falls back to a fixed-question wizard with pre-defined intake steps instead of a conversational AI flow.',
   },
   {
-    functionKey: 'issueScoring' as const,
-    label: 'Issue Scoring',
+    functionKey: 'bugScoring' as const,
+    label: 'Bug Scoring',
     description:
-      'Scores reported bugs and feature requests for existing applications across multiple dimensions (severity, blast radius, reproducibility, etc.). Can use a lighter model since scoring is analytical.',
+      'Scores reported bugs for existing applications across five dimensions (severity, blast radius, reproducibility, remediation confidence, recurrence). Can use a lighter model since scoring is analytical.',
     whenDisabled:
-      'Issue scoring uses the rules-based heuristic engine only. Scored issues display "Scored using rules engine (AI scoring disabled)."',
+      'Bug scoring uses the rules-based heuristic engine only. Scored bugs display "Scored using rules engine (AI scoring disabled)."',
+  },
+  {
+    functionKey: 'featureScoring' as const,
+    label: 'Feature Request Scoring',
+    description:
+      'Scores feature requests (enhancements to existing applications) across four dimensions (demand, alignment, complexity, impact). Can use a lighter model since scoring is analytical.',
+    whenDisabled:
+      'Feature request scoring uses the rules-based heuristic engine only. Scored requests display "Scored using rules engine (AI scoring disabled)."',
   },
   {
     functionKey: 'abstraction' as const,
@@ -101,7 +109,7 @@ function AIConfigTab() {
         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3">
           Model Assignment
         </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {MODEL_FUNCTIONS.map((fn) => (
             <ModelAssignment key={fn.functionKey} {...fn} />
           ))}

@@ -66,7 +66,7 @@ async function scoreWithAI(
       'HTTP-Referer': window.location.origin,
     },
     body: JSON.stringify({
-      model: aiSettings.issueScoringModel || 'anthropic/claude-haiku',
+      model: aiSettings.bugScoringModel || 'anthropic/claude-haiku',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1024,
       temperature: 0.3,
@@ -188,7 +188,7 @@ export async function scoreBug(
 ): Promise<IssueScore> {
   const aiSettings = useSettingsStore.getState().aiSettings;
   const useAI =
-    aiSettings.issueScoringEnabled &&
+    aiSettings.bugScoringEnabled &&
     aiSettings.openrouterApiKey &&
     aiSettings.keyStatus === 'valid';
 
