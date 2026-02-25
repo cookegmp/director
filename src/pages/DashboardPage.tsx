@@ -81,11 +81,11 @@ function DashboardPage() {
           <Link to="/new">
             <GradientButton>
               <Plus className="w-4 h-4" />
-              New Idea
+              New
             </GradientButton>
           </Link>
           <Link
-            to="/issues"
+            to="/report"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-foreground hover:border-primary/30 transition-colors"
           >
             <Bug className="w-4 h-4" />

@@ -4,6 +4,8 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import AppShell from '@/components/layout/AppShell';
 import DashboardPage from '@/pages/DashboardPage';
 import IntakePage from '@/pages/IntakePage';
+import NewPage from '@/pages/NewPage';
+import IssueReportPage from '@/pages/IssueReportPage';
 import IdeasListPage from '@/pages/IdeasListPage';
 import IdeaDetailPage from '@/pages/IdeaDetailPage';
 import ChartersListPage from '@/pages/ChartersListPage';
@@ -32,7 +34,7 @@ import {
 } from '@/lib/sample-data';
 
 // Increment this when the data model changes shape to force a re-seed
-const DATA_VERSION = 4;
+const DATA_VERSION = 5;
 const VERSION_KEY = 'stagemanager-data-version';
 
 function SeedData() {
@@ -50,6 +52,7 @@ function SeedData() {
       localStorage.removeItem('stagemanager-agent-sessions');
       localStorage.removeItem('stagemanager-users');
       localStorage.removeItem('stagemanager-settings');
+      localStorage.removeItem('stagemanager-reported-issues');
 
       useIdeasStore.setState({ ideas: sampleIdeas });
       useChartersStore.setState({ charters: sampleCharters });
@@ -102,7 +105,9 @@ function App() {
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<DashboardPage />} />
-            <Route path="/new" element={<IntakePage />} />
+            <Route path="/new" element={<NewPage />} />
+            <Route path="/new/idea" element={<IntakePage />} />
+            <Route path="/report" element={<IssueReportPage />} />
             <Route path="/ideas" element={<IdeasListPage />} />
             <Route path="/ideas/:id" element={<IdeaDetailPage />} />
             <Route path="/charters" element={<ChartersListPage />} />

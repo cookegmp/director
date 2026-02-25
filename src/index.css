@@ -135,7 +135,9 @@
 
 /* Gradient button */
 .gradient-button {
-  background: linear-gradient(to right, hsl(217, 100%, 60%), hsl(175, 80%, 55%), hsl(263, 80%, 65%));
+  background: linear-gradient(90deg, hsl(217, 100%, 60%), hsl(175, 80%, 55%), hsl(263, 80%, 65%), hsl(217, 100%, 60%));
+  background-size: 200% 100%;
+  animation: gradient-flow 4s ease-in-out infinite;
 }
 
 /* Score bar animation */

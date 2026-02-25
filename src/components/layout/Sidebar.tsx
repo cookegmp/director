@@ -23,7 +23,7 @@ import { canAccessAdmin } from '@/lib/permissions';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/new', icon: Plus, label: 'New Idea' },
+  { to: '/new', icon: Plus, label: 'New' },
   { to: '/ideas', icon: Lightbulb, label: 'Ideas' },
   { to: '/charters', icon: FileText, label: 'Charters' },
   { to: '/issues', icon: Bug, label: 'Issues' },
