@@ -22,6 +22,30 @@ const MODEL_FUNCTIONS = [
       'Scoring uses the rules-based heuristic engine only. A notice appears on scored ideas: "Scored using rules engine (AI scoring disabled)."',
   },
   {
+    functionKey: 'conversation' as const,
+    label: 'Issue Reporter Chat',
+    description:
+      'Powers the conversational wizard for bug and feature reporting. Benefits from a strong reasoning model since it handles multi-turn conversation and JSON output.',
+    whenDisabled:
+      'The issue reporter falls back to a fixed-question wizard with pre-defined intake steps instead of a conversational AI flow.',
+  },
+  {
+    functionKey: 'issueScoring' as const,
+    label: 'Issue Scoring',
+    description:
+      'Scores reported bugs and feature requests across multiple dimensions (severity, blast radius, reproducibility, etc.). Can use a lighter model since scoring is analytical.',
+    whenDisabled:
+      'Issue scoring uses the rules-based heuristic engine only. Scored issues display "Scored using rules engine (AI scoring disabled)."',
+  },
+  {
+    functionKey: 'ideaChat' as const,
+    label: 'Idea Chat',
+    description:
+      'Powers the conversational assistant for idea intake and refinement. Helps users articulate problems, impact, and urgency through guided dialogue.',
+    whenDisabled:
+      'Idea intake falls back to the standard static form wizard with pre-defined questions.',
+  },
+  {
     functionKey: 'abstraction' as const,
     label: 'Build Translation',
     description:

@@ -219,6 +219,12 @@ export interface AISettings {
   charterEnabled: boolean;
   scoringModel: string;
   scoringEnabled: boolean;
+  conversationModel: string;
+  conversationEnabled: boolean;
+  issueScoringModel: string;
+  issueScoringEnabled: boolean;
+  ideaChatModel: string;
+  ideaChatEnabled: boolean;
   abstractionModel: string;
   abstractionEnabled: boolean;
   translationVerbosity: number;

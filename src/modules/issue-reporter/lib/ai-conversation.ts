@@ -132,7 +132,8 @@ export async function sendConversationMessage(
   const useMock =
     import.meta.env.VITE_USE_MOCK_DATA !== 'false' ||
     !aiSettings.openrouterApiKey ||
-    aiSettings.keyStatus !== 'valid';
+    aiSettings.keyStatus !== 'valid' ||
+    !aiSettings.conversationEnabled;
 
   if (useMock) {
     // Simulate response timing
@@ -153,7 +154,7 @@ export async function sendConversationMessage(
       'X-Title': 'StageManager Issue Reporter',
     },
     body: JSON.stringify({
-      model: aiSettings.scoringModel || 'anthropic/claude-sonnet-4',
+      model: aiSettings.conversationModel || 'anthropic/claude-sonnet-4',
       messages,
       max_tokens: 2048,
       temperature: 0.4,
