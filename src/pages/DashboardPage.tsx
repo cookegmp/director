@@ -95,29 +95,23 @@ function DashboardPage() {
       </div>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-3 gap-4 mb-8">
         {[
-          { label: 'Ideas', value: ideas.length, icon: Lightbulb },
-          { label: 'Active Projects', value: activeProjectCount, icon: FileText },
-          { label: 'Open Issues', value: issues.filter((i) => i.status === 'open').length, icon: Bug },
-          {
-            label: 'Avg Score',
-            value: ideas.length > 0
-              ? Math.round(ideas.reduce((sum, i) => sum + i.compositeScore, 0) / ideas.length)
-              : 0,
-            icon: TrendingUp,
-          },
-        ].map(({ label, value, icon: Icon }) => (
-          <div
+          { label: 'Ideas', value: ideas.length, icon: Lightbulb, to: '/ideas' },
+          { label: 'Active Projects', value: activeProjectCount, icon: FileText, to: '/charters' },
+          { label: 'Open Issues', value: issues.filter((i) => i.status === 'open').length, icon: Bug, to: '/issues' },
+        ].map(({ label, value, icon: Icon, to }) => (
+          <Link
             key={label}
-            className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-4"
+            to={to}
+            className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-4 hover:border-primary/30 transition-colors"
           >
             <div className="flex items-center gap-2 mb-1">
               <Icon className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs text-muted-foreground uppercase tracking-wide">{label}</span>
             </div>
             <p className="text-2xl font-light text-foreground tabular-nums">{value}</p>
-          </div>
+          </Link>
         ))}
       </div>
 
