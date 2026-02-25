@@ -184,7 +184,7 @@ function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
           {regenerating ? 'Regenerating...' : 'Regenerate Charter'}
         </button>
         <button
-          onClick={() => navigate('/new')}
+          onClick={() => navigate('/new/idea')}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
         >
           <Pencil className="w-4 h-4" />

@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import AppShell from '@/components/layout/AppShell';
 import DashboardPage from '@/pages/DashboardPage';
 import IntakePage from '@/pages/IntakePage';
-import NewPage from '@/pages/NewPage';
 import IssueReportPage from '@/pages/IssueReportPage';
 import IdeasListPage from '@/pages/IdeasListPage';
 import IdeaDetailPage from '@/pages/IdeaDetailPage';
@@ -116,7 +115,7 @@ function App() {
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<DashboardPage />} />
-            <Route path="/new" element={<NewPage />} />
+            <Route path="/new" element={<Navigate to="/new/idea" replace />} />
             <Route path="/new/idea" element={<IntakePage />} />
             <Route path="/report" element={<IssueReportPage />} />
             <Route path="/ideas" element={<IdeasListPage />} />

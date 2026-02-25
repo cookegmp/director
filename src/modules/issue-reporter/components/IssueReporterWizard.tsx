@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { useState, useCallback, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Bug, Lightbulb } from 'lucide-react';
 import {
   WizardCard,
   WizardStepDots,
@@ -19,6 +19,7 @@ import { sendConversationMessage } from '../lib/ai-conversation';
 import { mapAIResponseToReport } from '../lib/field-mapper';
 import ReviewCard from './ReviewCard';
 import ConfirmationView from './ConfirmationView';
+import type { IssueClassification } from '../types';
 
 interface IssueReporterWizardProps {
   projectId?: string | null;
@@ -39,8 +40,10 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     isLoading,
     error,
     report,
+    issueType,
     setPhase,
     setProjectId,
+    setIssueType,
     addMessage,
     setCurrentQuestion,
     incrementStep,
@@ -50,22 +53,22 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     reset,
   } = useIssueReporterStore();
 
-  // Initialize conversation
+  // Show type selection on mount
   useEffect(() => {
     if (phase === 'idle') {
       setProjectId(projectId ?? null);
-      initConversation();
+      setPhase('type-select');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const initConversation = useCallback(async () => {
+  const initConversation = useCallback(async (selectedType: IssueClassification) => {
     setPhase('initializing');
     setLoading(true);
     setError(null);
 
     try {
-      const response = await sendConversationMessage([], projectId ?? null);
+      const response = await sendConversationMessage([], projectId ?? null, selectedType);
 
       if (!response.done) {
         addMessage({ role: 'assistant', content: response.question });
@@ -79,17 +82,26 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize conversation');
       setPhase('conversing');
-      const fallbackQuestion = 'What would you like to report? Describe the issue or feature request you have in mind.';
+      const fallbackQuestion = selectedType === 'bug'
+        ? 'Tell me about the bug you encountered. What happened?'
+        : 'Tell me about the feature you have in mind. What would it do?';
       addMessage({ role: 'assistant', content: fallbackQuestion });
       setCurrentQuestion(
         fallbackQuestion,
-        ['Something is broken', 'I have a feature idea', 'Something is slow or confusing'],
+        selectedType === 'bug'
+          ? ['Something is broken', 'I see an error', 'Something is slow or confusing']
+          : ['Workflow improvement', 'New capability', 'UI/UX enhancement'],
         null
       );
     } finally {
       setLoading(false);
     }
   }, [projectId, setPhase, setLoading, setError, setCurrentQuestion, addMessage]);
+
+  const handleSelectType = (type: IssueClassification) => {
+    setIssueType(type);
+    initConversation(type);
+  };
 
   const handleSubmitAnswer = useCallback(async () => {
     if (!currentAnswer.trim() || isLoading) return;
@@ -105,8 +117,8 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
 
     try {
       // Read current messages from store to avoid stale closure
-      const currentMessages = useIssueReporterStore.getState().messages;
-      const response = await sendConversationMessage(currentMessages, projectId ?? null);
+      const store = useIssueReporterStore.getState();
+      const response = await sendConversationMessage(store.messages, projectId ?? null, store.issueType);
 
       if (response.done) {
         addMessage({
@@ -153,10 +165,10 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     setCurrentAnswer('');
     setSelectedTag(null);
     setSubmittedIssueId(null);
-    // Re-initialize after reset
+    // Go back to type selection
     setTimeout(() => {
       setProjectId(projectId ?? null);
-      initConversation();
+      setPhase('type-select');
     }, 50);
   };
 
@@ -196,6 +208,49 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
         onCancel={handleCancel}
         onSubmitted={(issueId) => setSubmittedIssueId(issueId)}
       />
+    );
+  }
+
+  // Type selection
+  if (phase === 'idle' || phase === 'type-select') {
+    return (
+      <WizardCard>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-light text-foreground leading-relaxed mb-8 text-center">
+          What would you like to do?
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button
+            onClick={() => handleSelectType('bug')}
+            className="group flex flex-col items-center gap-4 p-8 rounded-xl border border-border hover:border-amber-500/50 hover:bg-amber-500/5 transition-all"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
+              <Bug className="w-7 h-7 text-amber-400" />
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-light text-foreground mb-1">I want to report an issue</p>
+              <p className="text-sm text-muted-foreground">
+                Report a bug or problem with an existing application
+              </p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => handleSelectType('feature')}
+            className="group flex flex-col items-center gap-4 p-8 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <Lightbulb className="w-7 h-7 text-primary" />
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-light text-foreground mb-1">I have an idea</p>
+              <p className="text-sm text-muted-foreground">
+                Request a feature or enhancement for an existing application
+              </p>
+            </div>
+          </button>
+        </div>
+      </WizardCard>
     );
   }
 

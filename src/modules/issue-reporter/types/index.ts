@@ -52,7 +52,7 @@ export interface ConversationMessage {
   content: string;
 }
 
-export type ConversationPhase = 'idle' | 'initializing' | 'conversing' | 'completing' | 'review' | 'submitted';
+export type ConversationPhase = 'idle' | 'type-select' | 'initializing' | 'conversing' | 'completing' | 'review' | 'submitted';
 
 export interface ConversationState {
   phase: ConversationPhase;
@@ -62,6 +62,7 @@ export interface ConversationState {
   currentHelperText: string | null;
   stepCount: number;
   projectId: string | null;
+  issueType: IssueClassification | null;
   report: IssueReport | null;
   screenshot: string | null;
   isLoading: boolean;

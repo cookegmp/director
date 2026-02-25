@@ -10,6 +10,7 @@ import type {
   ConversationState,
   ConversationPhase,
   ConversationMessage,
+  IssueClassification,
   IssueReport,
 } from '../types';
 
@@ -17,6 +18,7 @@ interface IssueReporterState extends ConversationState {
   // Actions
   setPhase: (phase: ConversationPhase) => void;
   setProjectId: (projectId: string | null) => void;
+  setIssueType: (issueType: IssueClassification) => void;
   addMessage: (message: ConversationMessage) => void;
   setCurrentQuestion: (question: string, suggestions?: string[], helperText?: string | null) => void;
   incrementStep: () => void;
@@ -36,6 +38,7 @@ const initialState: ConversationState = {
   currentHelperText: null,
   stepCount: 0,
   projectId: null,
+  issueType: null,
   report: null,
   screenshot: null,
   isLoading: false,
@@ -48,6 +51,8 @@ export const useIssueReporterStore = create<IssueReporterState>()((set) => ({
   setPhase: (phase) => set({ phase }),
 
   setProjectId: (projectId) => set({ projectId }),
+
+  setIssueType: (issueType) => set({ issueType }),
 
   addMessage: (message) =>
     set((state) => ({

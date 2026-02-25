@@ -88,7 +88,7 @@ function DashboardPage() {
 
         {/* Quick actions */}
         <div className="flex items-center gap-3">
-          <Link to="/new">
+          <Link to="/new/idea">
             <GradientButton>
               <Plus className="w-4 h-4" />
               New
@@ -140,7 +140,7 @@ function DashboardPage() {
           {sortedIdeas.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4">
               No ideas scored yet.{' '}
-              <Link to="/new" className="text-primary hover:underline">
+              <Link to="/new/idea" className="text-primary hover:underline">
                 Create your first idea
               </Link>
             </p>

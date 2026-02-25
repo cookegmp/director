@@ -8,7 +8,7 @@
 import { useSettingsStore } from '@/stores/settings';
 import { buildAIContext } from './context-builder';
 import { getMockResponse } from './mock-data';
-import type { AIContext, AIResponse, ConversationMessage } from '../types';
+import type { AIContext, AIResponse, ConversationMessage, IssueClassification } from '../types';
 
 const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
 
@@ -91,7 +91,8 @@ Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`
 function buildMessages(
   systemPrompt: string,
   conversationHistory: ConversationMessage[],
-  projectId: string | null
+  projectId: string | null,
+  issueType: IssueClassification | null
 ): Array<{ role: string; content: string }> {
   const messages: Array<{ role: string; content: string }> = [
     { role: 'system', content: systemPrompt },
@@ -99,9 +100,15 @@ function buildMessages(
 
   if (conversationHistory.length === 0) {
     // Initialization — tell the AI to start
+    const typeHint = issueType === 'bug'
+      ? 'The user wants to report a bug.'
+      : issueType === 'feature'
+        ? 'The user wants to request a feature.'
+        : '';
+
     const initMessage = projectId
-      ? `The user is reporting an issue for project ID: ${projectId}. Start by asking what they're experiencing.`
-      : `The user wants to report an issue but hasn't specified which application. Start by asking which application or project this is about.`;
+      ? `The user is reporting an issue for project ID: ${projectId}. ${typeHint} Start by asking what they're experiencing.`
+      : `${typeHint} The user hasn't specified which application. Start by asking which application or project this is about.`;
     messages.push({ role: 'user', content: initMessage });
   } else {
     for (const msg of conversationHistory) {
@@ -128,7 +135,8 @@ function parseAIResponse(content: string): AIResponse {
 
 export async function sendConversationMessage(
   conversationHistory: ConversationMessage[],
-  projectId: string | null
+  projectId: string | null,
+  issueType: IssueClassification | null = null
 ): Promise<AIResponse> {
   const { aiSettings } = useSettingsStore.getState();
   const useMock =
@@ -145,7 +153,7 @@ export async function sendConversationMessage(
 
   const context = buildAIContext(projectId);
   const systemPrompt = buildSystemPrompt(context);
-  const messages = buildMessages(systemPrompt, conversationHistory, projectId);
+  const messages = buildMessages(systemPrompt, conversationHistory, projectId, issueType);
 
   const response = await fetch(OPENROUTER_API, {
     method: 'POST',
