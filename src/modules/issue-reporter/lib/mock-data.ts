@@ -29,7 +29,7 @@ const BUG_CONVERSATION: AIResponse[] = [
       'I get an error message',
       'It\'s running very slowly',
     ],
-    helper_text: null,
+    helper_text: undefined,
   },
   {
     done: false,
@@ -41,7 +41,7 @@ const BUG_CONVERSATION: AIResponse[] = [
       'It happened once',
       'I\'m not sure',
     ],
-    helper_text: null,
+    helper_text: undefined,
   },
   {
     done: false,
@@ -109,7 +109,7 @@ const FEATURE_CONVERSATION: AIResponse[] = [
       'Automate a manual process',
       'Integrate with another system',
     ],
-    helper_text: null,
+    helper_text: undefined,
   },
   {
     done: false,
@@ -152,7 +152,7 @@ const DUPLICATE_CONVERSATION: AIResponse[] = [
       'Spec Analysis Tool',
       'StageManager itself',
     ],
-    helper_text: null,
+    helper_text: undefined,
   },
   {
     done: false,
@@ -163,7 +163,7 @@ const DUPLICATE_CONVERSATION: AIResponse[] = [
       'Data doesn\'t sync from Epicor',
       'Performance is slow',
     ],
-    helper_text: null,
+    helper_text: undefined,
   },
   {
     done: false,

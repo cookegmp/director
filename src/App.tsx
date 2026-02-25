@@ -21,6 +21,8 @@ import { useScaffoldingStore } from '@/stores/scaffolding';
 import { useAgentSessionsStore } from '@/stores/agent-sessions';
 import { useUsersStore } from '@/stores/users';
 import { useSettingsStore } from '@/stores/settings';
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
+import { useRemediationSessionsStore } from '@/modules/issue-scoring/stores/remediation-sessions';
 import {
   sampleIdeas,
   sampleCharters,
@@ -31,10 +33,12 @@ import {
   sampleUsers,
   sampleServers,
   sampleAISettings,
+  sampleIssueScores,
+  sampleRemediationSessions,
 } from '@/lib/sample-data';
 
 // Increment this when the data model changes shape to force a re-seed
-const DATA_VERSION = 5;
+const DATA_VERSION = 6;
 const VERSION_KEY = 'stagemanager-data-version';
 
 function SeedData() {
@@ -53,6 +57,9 @@ function SeedData() {
       localStorage.removeItem('stagemanager-users');
       localStorage.removeItem('stagemanager-settings');
       localStorage.removeItem('stagemanager-reported-issues');
+      localStorage.removeItem('stagemanager-issue-scores');
+      localStorage.removeItem('stagemanager-remediation-settings');
+      localStorage.removeItem('stagemanager-remediation-sessions');
 
       useIdeasStore.setState({ ideas: sampleIdeas });
       useChartersStore.setState({ charters: sampleCharters });
@@ -62,6 +69,8 @@ function SeedData() {
       useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
       useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' });
       useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings });
+      useIssueScoresStore.setState({ scores: sampleIssueScores });
+      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] });
 
       localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
       return;
@@ -89,6 +98,8 @@ function SeedData() {
       useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
       useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' });
       useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings });
+      useIssueScoresStore.setState({ scores: sampleIssueScores });
+      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] });
 
       localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
     }

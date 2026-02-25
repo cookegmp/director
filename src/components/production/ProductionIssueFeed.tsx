@@ -1,5 +1,7 @@
 import { useIssuesStore } from '@/stores/issues';
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
 import { Badge } from '@/components/ui/badge';
+import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge';
 import { formatRelativeTime } from '@/lib/utils';
 import type { IssueSeverity, IssueStatus, IssueType } from '@/types';
 
@@ -28,6 +30,7 @@ interface ProductionIssueFeedProps {
 
 function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
   const issues = useIssuesStore((s) => s.issues);
+  const scores = useIssueScoresStore((s) => s.scores);
   const projectIssues = issues
     .filter((i) => i.projectId === projectId)
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -60,6 +63,12 @@ function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
               <Badge variant="outline" className={`text-xs rounded-md ${STATUS_COLORS[issue.status]}`}>
                 {issue.status}
               </Badge>
+              {(() => {
+                const issueScore = scores.find((s) => s.issue_id === issue.id);
+                return issueScore ? (
+                  <ScoreBadge score={issueScore.composite_score} type={issueScore.score_type} />
+                ) : null;
+              })()}
             </div>
             <h3 className="text-sm text-foreground font-light">{issue.title}</h3>
             <p className="text-xs text-muted-foreground mt-1">{formatRelativeTime(issue.createdAt)}</p>

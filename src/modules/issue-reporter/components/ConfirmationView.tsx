@@ -4,10 +4,12 @@
 // Post-submission confirmation with link to the new issue.
 // ============================================================================
 
-import { CheckCircle, ArrowRight, Plus } from 'lucide-react';
+import { CheckCircle, ArrowRight, Plus, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { WizardCard } from '@/components/shared/wizard';
 import GradientButton from '@/components/shared/GradientButton';
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
+import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge';
 
 interface ConfirmationViewProps {
   issueId: string;
@@ -16,6 +18,8 @@ interface ConfirmationViewProps {
 }
 
 function ConfirmationView({ issueId, onReportAnother, onClose }: ConfirmationViewProps) {
+  const score = useIssueScoresStore((s) => s.scores.find((sc) => sc.issue_id === issueId));
+
   return (
     <WizardCard>
       <div className="text-center">
@@ -27,9 +31,24 @@ function ConfirmationView({ issueId, onReportAnother, onClose }: ConfirmationVie
         <h2 className="text-xl sm:text-2xl font-light text-foreground mb-2">
           Report Submitted
         </h2>
-        <p className="text-sm text-muted-foreground mb-8">
+        <p className="text-sm text-muted-foreground mb-4">
           Your issue has been filed and the development team will be notified.
         </p>
+
+        {/* Score indicator */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          {score ? (
+            <>
+              <span className="text-xs text-muted-foreground">Score:</span>
+              <ScoreBadge score={score.composite_score} type={score.score_type} />
+            </>
+          ) : (
+            <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              Scoring...
+            </span>
+          )}
+        </div>
 
         {/* Issue link */}
         <Link

@@ -11,6 +11,10 @@ import {
   Square,
   CheckCircle,
   Rocket,
+  Wrench,
+  Zap,
+  Target,
+  XCircle,
 } from 'lucide-react';
 import { useIdeasStore } from '@/stores/ideas';
 import { useChartersStore } from '@/stores/charters';
@@ -27,12 +31,18 @@ const ACTIVITY_ICONS: Record<string, typeof Lightbulb> = {
   'idea-scored': Lightbulb,
   'charter-generated': FileText,
   'issue-filed': Bug,
+  'issue-scored': Target,
   'status-changed': TrendingUp,
   'build-started': Play,
   'build-paused': Pause,
   'build-stopped': Square,
   'build-complete': CheckCircle,
   'moved-to-production': Rocket,
+  'remediation-recommended': Wrench,
+  'remediation-approved': Zap,
+  'remediation-triggered': Zap,
+  'remediation-completed': CheckCircle,
+  'remediation-failed': XCircle,
 };
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {

@@ -6,7 +6,7 @@
 // ============================================================================
 
 import { useState } from 'react';
-import { Bug, Sparkles, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Bug, Sparkles, AlertTriangle, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import GradientButton from '@/components/shared/GradientButton';
 import { useIssueReporterStore } from '../stores/issue-reporter';
@@ -16,6 +16,7 @@ import { useIssuesStore } from '@/stores/issues';
 import { useUsersStore } from '@/stores/users';
 import { generateId } from '@/lib/utils';
 import { mapReportToIssue } from '../lib/field-mapper';
+import { scoreAndEvaluate } from '@/modules/issue-scoring/lib/score-and-evaluate';
 import DuplicateCheck from './DuplicateCheck';
 import ScreenshotSection from './ScreenshotSection';
 import type { IssueSeverity } from '../types';
@@ -90,6 +91,11 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
       summary: `New ${isBug ? 'bug report' : 'feature request'}: "${report.title}"`,
       createdAt: new Date().toISOString(),
     });
+
+    // Score the issue async (non-blocking)
+    scoreAndEvaluate(reportedIssue).catch((err) =>
+      console.warn('Issue scoring failed:', err)
+    );
 
     onSubmitted(reportedIssue.id);
   };

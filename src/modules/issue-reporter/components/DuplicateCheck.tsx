@@ -5,7 +5,7 @@
 // ============================================================================
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertTriangle, ExternalLink, Link2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertTriangle, Link2 } from 'lucide-react';
 import type { PotentialDuplicate } from '../types';
 
 interface DuplicateCheckProps {

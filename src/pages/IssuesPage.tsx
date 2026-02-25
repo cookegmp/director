@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Filter, ChevronRight } from 'lucide-react';
+import { Plus, Filter, ChevronRight, ArrowUpDown } from 'lucide-react';
 import { useIssuesStore } from '@/stores/issues';
 import { useActivityStore } from '@/stores/activity';
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
 import { Badge } from '@/components/ui/badge';
 import GradientButton from '@/components/shared/GradientButton';
+import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge';
+import ScoreDisplay from '@/modules/issue-scoring/components/ScoreDisplay';
+import RemediationBanner from '@/modules/issue-scoring/components/RemediationBanner';
 import { generateId, formatRelativeTime } from '@/lib/utils';
 import type { IssueType, IssueSeverity, IssueStatus, Issue } from '@/types';
 
@@ -32,15 +36,25 @@ function IssuesPage() {
   const updateIssue = useIssuesStore((s) => s.updateIssue);
   const addActivity = useActivityStore((s) => s.addActivity);
 
+  const scores = useIssueScoresStore((s) => s.scores);
+
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [filterType, setFilterType] = useState<IssueType | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<IssueStatus | 'all'>('all');
+  const [sortByScore, setSortByScore] = useState(false);
 
-  const filteredIssues = issues.filter((issue) => {
-    if (filterType !== 'all' && issue.type !== filterType) return false;
-    if (filterStatus !== 'all' && issue.status !== filterStatus) return false;
-    return true;
-  });
+  const filteredIssues = issues
+    .filter((issue) => {
+      if (filterType !== 'all' && issue.type !== filterType) return false;
+      if (filterStatus !== 'all' && issue.status !== filterStatus) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (!sortByScore) return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      const scoreA = scores.find((s) => s.issue_id === a.id)?.composite_score ?? -1;
+      const scoreB = scores.find((s) => s.issue_id === b.id)?.composite_score ?? -1;
+      return scoreB - scoreA;
+    });
 
   const handleStatusChange = (issue: Issue, newStatus: IssueStatus) => {
     updateIssue(issue.id, { status: newStatus });
@@ -91,6 +105,15 @@ function IssuesPage() {
           <option value="resolved">Resolved</option>
           <option value="closed">Closed</option>
         </select>
+        <button
+          onClick={() => setSortByScore(!sortByScore)}
+          className={`flex items-center gap-1 text-sm transition-colors ${
+            sortByScore ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <ArrowUpDown className="w-3.5 h-3.5" />
+          Score
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -119,6 +142,12 @@ function IssuesPage() {
                   <Badge variant="outline" className={`text-xs ${STATUS_COLORS[issue.status]}`}>
                     {issue.status}
                   </Badge>
+                  {(() => {
+                    const issueScore = scores.find((s) => s.issue_id === issue.id);
+                    return issueScore ? (
+                      <ScoreBadge score={issueScore.composite_score} type={issueScore.score_type} />
+                    ) : null;
+                  })()}
                 </div>
                 <h3 className="text-sm text-foreground font-light">{issue.title}</h3>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -166,6 +195,18 @@ function IssuesPage() {
               <p className="text-xs text-muted-foreground">
                 Created {formatRelativeTime(selectedIssue.createdAt)}
               </p>
+
+              {/* Score Display & Remediation */}
+              {(() => {
+                const issueScore = scores.find((s) => s.issue_id === selectedIssue.id);
+                if (!issueScore) return null;
+                return (
+                  <div className="space-y-3 pt-2">
+                    <RemediationBanner score={issueScore} projectId={selectedIssue.projectId} />
+                    <ScoreDisplay score={issueScore} />
+                  </div>
+                );
+              })()}
             </div>
           ) : (
             <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 text-center">

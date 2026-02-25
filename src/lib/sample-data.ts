@@ -9,6 +9,7 @@ import type {
   EnvironmentServer,
   AISettings,
 } from '@/types';
+import type { IssueScore, RemediationSession } from '@/modules/issue-scoring/types';
 
 // ============================================================================
 // AHAUS Tool & Engineering — Sample Data
@@ -639,6 +640,54 @@ export const sampleActivities: Activity[] = [
     summary: 'Feature request: "Add operator shift handoff notes"',
     createdAt: daysAgo(4),
   },
+  {
+    id: 'act-018',
+    type: 'issue-scored',
+    entityId: 'issue-001',
+    entityType: 'issue',
+    summary: 'Bug "Epicor job import shows duplicate operations" scored 85 (Critical)',
+    createdAt: daysAgo(2),
+  },
+  {
+    id: 'act-019',
+    type: 'remediation-triggered',
+    entityId: 'issue-001',
+    entityType: 'issue',
+    summary: 'Auto-remediation triggered for "Epicor job import shows duplicate operations"',
+    createdAt: daysAgo(2),
+  },
+  {
+    id: 'act-020',
+    type: 'remediation-completed',
+    entityId: 'issue-001',
+    entityType: 'issue',
+    summary: 'Auto-remediation completed for "Epicor job import shows duplicate operations"',
+    createdAt: daysAgo(2),
+  },
+  {
+    id: 'act-021',
+    type: 'issue-scored',
+    entityId: 'issue-003',
+    entityType: 'issue',
+    summary: 'Bug "Dashboard load time exceeds 10 seconds" scored 65 (High)',
+    createdAt: daysAgo(1),
+  },
+  {
+    id: 'act-022',
+    type: 'remediation-recommended',
+    entityId: 'issue-003',
+    entityType: 'issue',
+    summary: 'Auto-fix recommended for "Dashboard load time exceeds 10 seconds"',
+    createdAt: daysAgo(1),
+  },
+  {
+    id: 'act-023',
+    type: 'remediation-failed',
+    entityId: 'issue-006',
+    entityType: 'issue',
+    summary: 'Auto-remediation failed for "Operator name not showing on completed operations"',
+    createdAt: daysAgo(5),
+  },
 ];
 
 // --- SCAFFOLDING DOCUMENTS ---
@@ -909,3 +958,145 @@ export const sampleAISettings: AISettings = {
   translationVerbosity: 3,
   zeroDataRetention: false,
 };
+
+// --- ISSUE SCORES (Mock Seed Data) ---
+
+export const sampleIssueScores: IssueScore[] = [
+  // Bug ~85 — auto-trigger tier, completed remediation
+  {
+    issue_id: 'issue-001',
+    score_type: 'bug',
+    composite_score: 85,
+    tier: 'critical',
+    dimensions: [
+      { dimension: 'severity', score: 80, weight: 0.25, weighted_score: 20, explanation: 'High severity — duplicate operations cause operator confusion and potential scrap from running wrong operations.' },
+      { dimension: 'blast_radius', score: 90, weight: 0.25, weighted_score: 22.5, explanation: 'Affects all split jobs across the entire shop floor. Every operator working a split job sees incorrect data.' },
+      { dimension: 'reproducibility', score: 95, weight: 0.20, weighted_score: 19, explanation: '100% reproducible on any split job. Steps: create split job in Epicor, import into tracker, observe duplicate operations.' },
+      { dimension: 'remediation_confidence', score: 75, weight: 0.20, weighted_score: 15, explanation: 'Root cause is clear — SQL join missing AssemblySeq filter. Fix is straightforward in the data access layer.' },
+      { dimension: 'recurrence', score: 85, weight: 0.10, weighted_score: 8.5, explanation: 'Occurs on every import cycle for any split job. Will continue until the query is patched.' },
+    ],
+    remediation_status: 'completed',
+    remediation_session_id: 'rem-session-001',
+    scored_at: daysAgo(2),
+    scored_by: 'rules_fallback',
+  },
+  // Bug ~65 — recommend tier
+  {
+    issue_id: 'issue-003',
+    score_type: 'bug',
+    composite_score: 65,
+    tier: 'high',
+    dimensions: [
+      { dimension: 'severity', score: 70, weight: 0.25, weighted_score: 17.5, explanation: 'High — dashboard is slow but still functional. No data loss or corruption.' },
+      { dimension: 'blast_radius', score: 60, weight: 0.25, weighted_score: 15, explanation: 'Affects production managers viewing the dashboard. Operators are unaffected.' },
+      { dimension: 'reproducibility', score: 80, weight: 0.20, weighted_score: 16, explanation: 'Reproducible when 200+ active jobs exist. Load consistently exceeds 10 seconds.' },
+      { dimension: 'remediation_confidence', score: 50, weight: 0.20, weighted_score: 10, explanation: 'Pagination required — moderate confidence as it involves query restructuring and DataLoader implementation.' },
+      { dimension: 'recurrence', score: 65, weight: 0.10, weighted_score: 6.5, explanation: 'Occurs whenever job count exceeds threshold, which happens during peak production.' },
+    ],
+    remediation_status: 'recommended',
+    remediation_session_id: null,
+    scored_at: daysAgo(1),
+    scored_by: 'rules_fallback',
+  },
+  // Bug ~30 — file-only tier (below threshold)
+  {
+    issue_id: 'issue-005',
+    score_type: 'bug',
+    composite_score: 30,
+    tier: 'low',
+    dimensions: [
+      { dimension: 'severity', score: 60, weight: 0.25, weighted_score: 15, explanation: 'Was critical when active but has since been resolved.' },
+      { dimension: 'blast_radius', score: 20, weight: 0.25, weighted_score: 5, explanation: 'Only affected shop floor tablet devices, not desktop users.' },
+      { dimension: 'reproducibility', score: 30, weight: 0.20, weighted_score: 6, explanation: 'No longer reproducible — fix has been deployed.' },
+      { dimension: 'remediation_confidence', score: 10, weight: 0.20, weighted_score: 2, explanation: 'Already resolved — no remediation needed.' },
+      { dimension: 'recurrence', score: 20, weight: 0.10, weighted_score: 2, explanation: 'Token refresh window extended to 12 hours. Unlikely to recur.' },
+    ],
+    remediation_status: null,
+    remediation_session_id: null,
+    scored_at: daysAgo(3),
+    scored_by: 'rules_fallback',
+  },
+  // Bug — failed remediation (issue-006)
+  {
+    issue_id: 'issue-006',
+    score_type: 'bug',
+    composite_score: 55,
+    tier: 'medium',
+    dimensions: [
+      { dimension: 'severity', score: 50, weight: 0.25, weighted_score: 12.5, explanation: 'Medium — displays "Unknown" for operator name, cosmetic but reduces trust.' },
+      { dimension: 'blast_radius', score: 55, weight: 0.25, weighted_score: 13.75, explanation: 'Affects all completed operations viewed on the dashboard.' },
+      { dimension: 'reproducibility', score: 70, weight: 0.20, weighted_score: 14, explanation: 'Was 100% reproducible before fix. Now resolved.' },
+      { dimension: 'remediation_confidence', score: 40, weight: 0.20, weighted_score: 8, explanation: 'DataLoader fix required understanding the resolver chain.' },
+      { dimension: 'recurrence', score: 35, weight: 0.10, weighted_score: 3.5, explanation: 'Fix deployed. Similar issues could recur with other entity resolvers.' },
+    ],
+    remediation_status: 'failed',
+    remediation_session_id: 'rem-session-002',
+    scored_at: daysAgo(5),
+    scored_by: 'rules_fallback',
+  },
+  // Feature request ~80 — high_value tier
+  {
+    issue_id: 'issue-002',
+    score_type: 'feature',
+    composite_score: 80,
+    tier: 'high_value',
+    dimensions: [
+      { dimension: 'demand', score: 85, weight: 0.30, weighted_score: 25.5, explanation: 'Directly requested by multiple operators across shifts. Addresses a daily workflow gap.' },
+      { dimension: 'alignment', score: 90, weight: 0.30, weighted_score: 27, explanation: 'Strongly aligns with charter objective to eliminate paper-based processes on the shop floor.' },
+      { dimension: 'complexity', score: 60, weight: 0.20, weighted_score: 12, explanation: 'Moderate complexity — requires new data model for notes and UI for input/display.' },
+      { dimension: 'impact', score: 78, weight: 0.20, weighted_score: 15.6, explanation: 'Improves shift continuity and reduces information loss during handoffs.' },
+    ],
+    remediation_status: null,
+    remediation_session_id: null,
+    scored_at: daysAgo(4),
+    scored_by: 'rules_fallback',
+  },
+  // Feature request ~55 — moderate_value tier
+  {
+    issue_id: 'issue-007',
+    score_type: 'feature',
+    composite_score: 55,
+    tier: 'moderate_value',
+    dimensions: [
+      { dimension: 'demand', score: 50, weight: 0.30, weighted_score: 15, explanation: 'Requested by management team. Not yet requested by operators.' },
+      { dimension: 'alignment', score: 70, weight: 0.30, weighted_score: 21, explanation: 'Aligns with reporting views charter objective for throughput metrics.' },
+      { dimension: 'complexity', score: 40, weight: 0.20, weighted_score: 8, explanation: 'Requires aggregation queries and new dashboard components.' },
+      { dimension: 'impact', score: 55, weight: 0.20, weighted_score: 11, explanation: 'Would improve machine scheduling decisions but not an immediate blocker.' },
+    ],
+    remediation_status: null,
+    remediation_session_id: null,
+    scored_at: daysAgo(3),
+    scored_by: 'rules_fallback',
+  },
+];
+
+// --- REMEDIATION SESSIONS (Mock Seed Data) ---
+
+export const sampleRemediationSessions: RemediationSession[] = [
+  // Completed session for issue-001
+  {
+    id: 'rem-session-001',
+    issue_id: 'issue-001',
+    project_id: 'charter-001',
+    status: 'completed',
+    environment: 'dsp',
+    session_id: null,
+    created_at: daysAgo(2),
+    started_at: daysAgo(2),
+    completed_at: daysAgo(2),
+    error_message: null,
+  },
+  // Failed session for issue-006
+  {
+    id: 'rem-session-002',
+    issue_id: 'issue-006',
+    project_id: 'charter-001',
+    status: 'failed',
+    environment: 'dsp',
+    session_id: null,
+    created_at: daysAgo(5),
+    started_at: daysAgo(5),
+    completed_at: daysAgo(5),
+    error_message: 'Agent session timed out after 120 seconds without producing a fix.',
+  },
+];

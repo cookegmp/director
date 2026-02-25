@@ -13,12 +13,18 @@ export type ActivityType =
   | 'idea-scored'
   | 'charter-generated'
   | 'issue-filed'
+  | 'issue-scored'
   | 'status-changed'
   | 'build-started'
   | 'build-paused'
   | 'build-stopped'
   | 'build-complete'
-  | 'moved-to-production';
+  | 'moved-to-production'
+  | 'remediation-recommended'
+  | 'remediation-approved'
+  | 'remediation-triggered'
+  | 'remediation-completed'
+  | 'remediation-failed';
 export type EntityType = 'idea' | 'charter' | 'issue' | 'agent-session';
 export type ScoreTier = 'critical' | 'high' | 'medium' | 'low';
 export type UrgencyLevel = 'Blocking other work' | 'Causing daily friction' | 'Would improve efficiency' | 'Exploring for the future';

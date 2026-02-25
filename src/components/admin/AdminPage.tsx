@@ -1,4 +1,4 @@
-import { Users, Server, Brain, Languages } from 'lucide-react';
+import { Users, Server, Brain, Languages, Target } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useUsersStore } from '@/stores/users';
 import { canAccessAdmin } from '@/lib/permissions';
@@ -6,12 +6,14 @@ import UsersTab from './UsersTab';
 import ServersTab from './ServersTab';
 import AIConfigTab from './AIConfigTab';
 import TranslationTab from './TranslationTab';
+import ScoringAdminTab from './ScoringAdminTab';
 
 const tabs = [
   { id: 'users', label: 'Users & Roles', icon: Users },
   { id: 'servers', label: 'Environment Servers', icon: Server },
   { id: 'ai', label: 'AI Configuration', icon: Brain },
   { id: 'translation', label: 'Build Translation', icon: Languages },
+  { id: 'scoring', label: 'Issue Scoring', icon: Target },
 ];
 
 function AdminPage() {
@@ -59,6 +61,9 @@ function AdminPage() {
         </TabsContent>
         <TabsContent value="translation">
           <TranslationTab />
+        </TabsContent>
+        <TabsContent value="scoring">
+          <ScoringAdminTab />
         </TabsContent>
       </Tabs>
     </div>
