@@ -55,6 +55,13 @@ export interface IssueScore {
   scored_by: ScoredBy;
 }
 
+export interface IdeaWeights {
+  impact: number;
+  urgency: number;
+  feasibility: number;
+  alignment: number;
+}
+
 export interface BugWeights {
   severity: number;
   blast_radius: number;
@@ -79,6 +86,17 @@ export interface RemediationSettings {
   max_concurrent_sessions: number;
   bug_weights: BugWeights;
   feature_weights: FeatureWeights;
+
+  // Idea scoring settings
+  idea_weights: IdeaWeights;
+  idea_review_threshold: number;
+  idea_auto_charter_enabled: boolean;
+  idea_auto_charter_threshold: number;
+
+  // Feature scoring settings
+  feature_high_value_threshold: number;
+  feature_auto_prioritize_enabled: boolean;
+  feature_auto_prioritize_threshold: number;
 }
 
 export interface RemediationSession {
@@ -166,6 +184,13 @@ export function getTierLabel(tier: ScoreTier): string {
 
 // --- Default Weights ---
 
+export const DEFAULT_IDEA_WEIGHTS: IdeaWeights = {
+  impact: 0.30,
+  urgency: 0.25,
+  feasibility: 0.25,
+  alignment: 0.20,
+};
+
 export const DEFAULT_BUG_WEIGHTS: BugWeights = {
   severity: 0.25,
   blast_radius: 0.25,
@@ -190,9 +215,27 @@ export const DEFAULT_REMEDIATION_SETTINGS: RemediationSettings = {
   max_concurrent_sessions: 1,
   bug_weights: { ...DEFAULT_BUG_WEIGHTS },
   feature_weights: { ...DEFAULT_FEATURE_WEIGHTS },
+
+  idea_weights: { ...DEFAULT_IDEA_WEIGHTS },
+  idea_review_threshold: 60,
+  idea_auto_charter_enabled: false,
+  idea_auto_charter_threshold: 80,
+
+  feature_high_value_threshold: 75,
+  feature_auto_prioritize_enabled: false,
+  feature_auto_prioritize_threshold: 85,
 };
 
 // --- Dimension Labels ---
+
+export type IdeaScoreDimension = 'impact' | 'urgency' | 'feasibility' | 'alignment';
+
+export const IDEA_DIMENSION_LABELS: Record<IdeaScoreDimension, string> = {
+  impact: 'Impact',
+  urgency: 'Urgency',
+  feasibility: 'Feasibility',
+  alignment: 'Alignment',
+};
 
 export const BUG_DIMENSION_LABELS: Record<BugScoreDimension, string> = {
   severity: 'Severity',

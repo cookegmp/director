@@ -13,7 +13,7 @@ const tabs = [
   { id: 'servers', label: 'Environment Servers', icon: Server },
   { id: 'ai', label: 'AI Configuration', icon: Brain },
   { id: 'translation', label: 'Build Translation', icon: Languages },
-  { id: 'scoring', label: 'Issue Scoring', icon: Target },
+  { id: 'scoring', label: 'Scoring', icon: Target },
 ];
 
 function AdminPage() {

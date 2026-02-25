@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Check, Mic } from 'lucide-react';
 import GradientButton from '@/components/shared/GradientButton';
 import { useIdeasStore } from '@/stores/ideas';
 import { useActivityStore } from '@/stores/activity';
+import { useRemediationSettingsStore } from '@/modules/issue-scoring/stores/remediation-settings';
 import { generateId } from '@/lib/utils';
 import { scoreIdea } from '@/lib/scoring';
 import type { WizardStep } from '@/types';
@@ -93,6 +94,7 @@ function WizardCard() {
   const navigate = useNavigate();
   const addIdea = useIdeasStore((s) => s.addIdea);
   const addActivity = useActivityStore((s) => s.addActivity);
+  const ideaWeights = useRemediationSettingsStore((s) => s.settings.idea_weights);
 
   const step = STEPS[currentStep];
   const isLastStep = currentStep === STEPS.length - 1;
@@ -116,10 +118,10 @@ function WizardCard() {
 
       const scores = scoreIdea(updatedAnswers);
       const compositeScore =
-        scores.impact * 0.3 +
-        scores.urgency * 0.25 +
-        scores.feasibility * 0.25 +
-        scores.alignment * 0.2;
+        scores.impact * ideaWeights.impact +
+        scores.urgency * ideaWeights.urgency +
+        scores.feasibility * ideaWeights.feasibility +
+        scores.alignment * ideaWeights.alignment;
 
       const ideaId = generateId();
       const now = new Date().toISOString();
@@ -155,7 +157,7 @@ function WizardCard() {
       setCurrentAnswer('');
       setSelectedTag(null);
     }
-  }, [canSubmitStep, step, answers, currentAnswer, isLastStep, addIdea, addActivity, navigate]);
+  }, [canSubmitStep, step, answers, currentAnswer, isLastStep, addIdea, addActivity, navigate, ideaWeights]);
 
   const handleBack = () => {
     if (currentStep > 0) {
