@@ -9,7 +9,7 @@ const MODEL_FUNCTIONS = [
     functionKey: 'charter' as const,
     label: 'Charter Generation',
     description:
-      'Generates project charters from intake data and scaffolding context. Benefits from a high-capability model since charter quality directly impacts build outcomes.',
+      'Generates project charters for new product ideas from intake data and scaffolding context. Benefits from a high-capability model since charter quality directly impacts build outcomes.',
     whenDisabled:
       'Charter generation falls back to mock/template output. A notice appears on the charter generation button: "AI generation disabled — using template output."',
   },
@@ -17,15 +17,23 @@ const MODEL_FUNCTIONS = [
     functionKey: 'scoring' as const,
     label: 'Idea Scoring',
     description:
-      'AI-assisted scoring of ideas across the four dimensions (impact, urgency, feasibility, alignment). Can use a lighter model since scoring is analytical rather than generative.',
+      'Scores new product ideas across four dimensions (impact, urgency, feasibility, alignment). Ideas are proposals for entirely new applications or processes — not enhancements to existing ones.',
     whenDisabled:
       'Scoring uses the rules-based heuristic engine only. A notice appears on scored ideas: "Scored using rules engine (AI scoring disabled)."',
+  },
+  {
+    functionKey: 'ideaChat' as const,
+    label: 'Idea Chat',
+    description:
+      'Powers the conversational assistant for new product idea intake. Helps users articulate the problem, business impact, and urgency for a proposed new application or process.',
+    whenDisabled:
+      'Idea intake falls back to the standard static form wizard with pre-defined questions.',
   },
   {
     functionKey: 'conversation' as const,
     label: 'Issue Reporter Chat',
     description:
-      'Powers the conversational wizard for bug and feature reporting. Benefits from a strong reasoning model since it handles multi-turn conversation and JSON output.',
+      'Powers the conversational wizard for reporting bugs or requesting enhancements to existing applications. Handles multi-turn dialogue and classifies submissions automatically.',
     whenDisabled:
       'The issue reporter falls back to a fixed-question wizard with pre-defined intake steps instead of a conversational AI flow.',
   },
@@ -33,17 +41,9 @@ const MODEL_FUNCTIONS = [
     functionKey: 'issueScoring' as const,
     label: 'Issue Scoring',
     description:
-      'Scores reported bugs and feature requests across multiple dimensions (severity, blast radius, reproducibility, etc.). Can use a lighter model since scoring is analytical.',
+      'Scores reported bugs and feature requests for existing applications across multiple dimensions (severity, blast radius, reproducibility, etc.). Can use a lighter model since scoring is analytical.',
     whenDisabled:
       'Issue scoring uses the rules-based heuristic engine only. Scored issues display "Scored using rules engine (AI scoring disabled)."',
-  },
-  {
-    functionKey: 'ideaChat' as const,
-    label: 'Idea Chat',
-    description:
-      'Powers the conversational assistant for idea intake and refinement. Helps users articulate problems, impact, and urgency through guided dialogue.',
-    whenDisabled:
-      'Idea intake falls back to the standard static form wizard with pre-defined questions.',
   },
   {
     functionKey: 'abstraction' as const,
