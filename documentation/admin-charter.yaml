@@ -1,0 +1,792 @@
+# ============================================================================
+
+# StageManager — Admin Interface Charter
+
+# ============================================================================
+
+# This charter governs the build of the Admin interface for StageManager.
+
+# The admin page is where the client’s technical lead or IT person configures
+
+# StageManager after deployment. It covers user management with role-based
+
+# access control, environment server connections, AI provider configuration
+
+# via OpenRouter, and abstraction layer tuning.
+
+# 
+
+# This is a sub-charter of the main StageManager project charter. It
+
+# inherits the design system, tech stack, and component patterns defined
+
+# in the parent charter and UI reference document.
+
+# ============================================================================
+
+# ============================================================================
+
+# CONTEXT — What this page is and where it fits
+
+# ============================================================================
+
+context:
+application: StageManager
+description: >
+StageManager is a client-facing AI development operations hub. Clients
+use it to capture process improvement ideas, score and prioritize
+application opportunities, generate project charters, initiate and
+monitor agentic coding builds, and manage deployed applications in
+production. The admin interface is the configuration backbone that
+makes all of this work.
+route: /admin
+access: admin-role-only
+navigation: >
+Visible in the sidebar navigation only for users with the admin role.
+Hidden entirely for developer and viewer roles.
+
+# ============================================================================
+
+# TECH STACK — Inherited from parent charter
+
+# ============================================================================
+
+stack:
+framework: react
+bundler: vite
+language: typescript
+css: tailwind-css-v3
+components: shadcn-ui-v2
+icons: lucide-react
+font: inter
+state: zustand
+routing: react-router-dom
+
+shadcn-components-used:
+- card           # Settings panel containers
+- tabs           # Panel navigation
+- button         # Actions, test connection, verify key
+- badge          # Role badges, status indicators
+- select         # Role dropdown, model selection
+- switch         # Enable/disable toggles
+- slider         # Verbosity control
+- dialog         # Confirmation dialogs (remove user, etc.)
+- dropdown-menu  # User action menus
+- tooltip        # Help text on hover
+- progress       # Connection test feedback
+
+# ============================================================================
+
+# DESIGN SYSTEM — Relevant subset from parent charter
+
+# ============================================================================
+
+design:
+palette:
+background: “225 64% 11%”
+foreground: “220 14% 96%”
+card: “225 50% 15%”
+card-foreground: “220 14% 96%”
+primary: “217 100% 61%”
+primary-foreground: “0 0% 100%”
+secondary: “225 30% 25%”
+muted: “225 30% 20%”
+muted-foreground: “220 14% 55%”
+accent: “225 40% 22%”
+destructive: “0 72% 51%”
+border: “225 30% 20%”
+input: “225 30% 20%”
+ring: “217 100% 61%”
+
+semantic-colors:
+active: “175 63% 47%”       # Teal — connected, enabled
+queued: “217 100% 61%”      # Blue — primary actions
+completed: “142 71% 45%”    # Green — valid, success
+error: “0 72% 51%”          # Red — disconnected, invalid, destructive
+idle: “225 30% 20%”         # Muted — disabled, inactive
+
+admin-specific-patterns:
+- “Settings panels use glassmorphism cards (bg-card/50 backdrop-blur-sm)”
+- “Panel navigation via shadcn Tabs component along the top or left side”
+- “Form inputs use bottom-border-only style (bg-transparent, border-b-2)”
+- “Status indicators use small colored dots or badges with semantic colors”
+- “Destructive actions (remove user, etc.) use destructive color with confirmation dialog”
+- “All settings save automatically or via explicit Save button with success feedback”
+- “Warning callouts (DSP environment) use a subtle amber/warning treatment”
+- “font-light on all headings, consistent with the rest of StageManager”
+
+# ============================================================================
+
+# PAGE LAYOUT
+
+# ============================================================================
+
+layout:
+description: >
+The admin page is organized into four settings panels accessible via
+a tabbed interface. Each tab contains a self-contained configuration
+section. All settings persist to the settings store and take effect
+immediately unless otherwise noted.
+
+tabs:
+- id: users
+label: “Users & Roles”
+icon: Users          # Lucide icon
+- id: servers
+label: “Environment Servers”
+icon: Server
+- id: ai
+label: “AI Configuration”
+icon: Brain
+- id: translation
+label: “Build Translation”
+icon: Languages
+
+# ============================================================================
+
+# TAB 1: USERS & ROLES
+
+# ============================================================================
+
+users-and-roles:
+label: “Users & Roles”
+description: >
+Manage users who have access to StageManager and assign their roles.
+The role determines what a user can see and do within the application.
+
+roles:
+admin:
+description: >
+Full access to all features including this admin panel. Can manage
+users, configure servers, modify AI settings, and perform all
+actions available to other roles. At least one admin must exist
+at all times.
+permissions:
+- All developer permissions
+- Access admin settings
+- Manage users and roles
+- Configure environment servers
+- Manage API keys and AI model settings
+- Configure abstraction layer settings
+
+```
+developer:
+  description: >
+    Can create and manage ideas through the full lifecycle, generate
+    charters, initiate and control builds via the development portal,
+    and manage issues. Cannot access admin settings or manage other
+    users.
+  permissions:
+    - Create and edit ideas
+    - Generate and view charters
+    - Initiate, pause, stop, and monitor builds
+    - Advance idea status through all lifecycle states
+    - File and manage issues
+    - View scaffolding documents
+    - Access Technical View (raw agent output)
+
+viewer:
+  description: >
+    Read-only access to the dashboard, ideas, charters, issues, and
+    scaffolding. Can observe build progress in the development portal
+    but cannot initiate, pause, or stop builds. Can file issues and
+    feature requests but cannot change idea status.
+  permissions:
+    - View dashboard, ideas, charters, issues, scaffolding
+    - Observe development portal (read-only, no agent controls)
+    - File issues and feature requests
+    - Cannot create or edit ideas
+    - Cannot generate charters
+    - Cannot control builds
+    - Cannot advance idea status
+```
+
+user-table:
+description: >
+Table of all users. Each row shows user info and provides inline
+actions. An admin cannot remove or demote the last remaining admin.
+The current user’s own row should be visually distinguished.
+columns:
+- field: name
+label: “Name”
+- field: email
+label: “Email”
+- field: role
+label: “Role”
+display: dropdown   # Inline editable — admin, developer, viewer
+badge-colors:
+admin: “primary”
+developer: “active (teal)”
+viewer: “muted”
+- field: status
+label: “Status”
+display: badge       # Active (green) / Inactive (muted)
+- field: last-active
+label: “Last Active”
+display: relative-time  # e.g., “2 hours ago”, “3 days ago”
+
+```
+row-actions:
+  - edit-role:
+      label: "Change Role"
+      type: dropdown
+      options: [admin, developer, viewer]
+      guard: >
+        Cannot demote the last remaining admin. Show a tooltip
+        explaining why if attempted.
+  - deactivate:
+      label: "Deactivate"
+      description: "Disables access without removing the user"
+      confirmation: false
+  - activate:
+      label: "Activate"
+      description: "Re-enables a deactivated user"
+      visible-when: "user.status === inactive"
+  - remove:
+      label: "Remove"
+      description: "Permanently removes the user"
+      confirmation: true
+      confirmation-message: "Remove {name}? This cannot be undone."
+      color: destructive
+      guard: >
+        Cannot remove the last remaining admin. Cannot remove
+        yourself.
+
+add-user:
+  label: "Add User"
+  description: >
+    Button above the table that opens a dialog for adding a new user.
+    Fields: name, email, and role assignment (dropdown). Email is
+    required and must be unique.
+  fields:
+    - name:
+        label: "Name"
+        type: text
+        required: true
+    - email:
+        label: "Email"
+        type: email
+        required: true
+        validation: unique
+    - role:
+        label: "Role"
+        type: select
+        options: [admin, developer, viewer]
+        default: viewer
+```
+
+# ============================================================================
+
+# TAB 2: ENVIRONMENT SERVERS
+
+# ============================================================================
+
+environment-servers:
+label: “Environment Servers”
+description: >
+Configure the three environment servers that StageManager connects to
+for agentic coding sessions. Each environment serves a distinct purpose
+and has its own connection settings. When initiating a build from the
+development portal, the user selects which environment to target.
+
+layout: >
+Three server cards displayed side by side (or stacked on smaller
+screens). Each card is a glassmorphism card with the environment name
+as the heading, a colored status indicator, the configuration fields,
+and a “Test Connection” button.
+
+environments:
+dsp:
+label: “DSP”
+full-name: “Dangerously Skip Permissions”
+description: >
+Permissions-bypassed environment for rapid agentic coding. The
+agent operates without permission gates, allowing uninterrupted
+autonomous builds. Intended for initial development and fast
+iteration where security constraints would slow down the agent.
+warning:
+visible: true
+style: “amber/warning callout — subtle but clear”
+text: >
+This environment bypasses standard permission checks. Only use
+for development builds where speed is prioritized over access
+control. Do not point at production infrastructure.
+
+```
+development:
+  label: "Development"
+  description: >
+    Standard development environment with normal permission structures
+    in place. Used for builds that need to respect access controls
+    and security patterns defined in the scaffolding. Suitable for
+    iterating on applications that interact with real (non-production)
+    data sources.
+  warning:
+    visible: false
+
+production:
+  label: "Production"
+  description: >
+    Production environment. Builds targeting this environment follow
+    all security patterns and permission structures. Typically used
+    for deploying reviewed and tested applications or applying patches
+    and updates to live systems.
+  warning:
+    visible: false
+```
+
+shared-fields:
+description: >
+All three environment cards share identical field structure. Fields
+use the bottom-border-only input style consistent with the rest of
+StageManager.
+fields:
+- host:
+label: “Server Host”
+type: text
+placeholder: “192.168.1.100 or hostname.internal”
+required: true
+- port:
+label: “Port”
+type: number
+default: 8080
+required: true
+- websocket-path:
+label: “WebSocket Path”
+type: text
+default: “/agent”
+required: true
+
+connection-status:
+description: >
+Each card displays a real-time connection status indicator and a
+“Test Connection” button.
+indicator:
+connected:
+color: “semantic: active (teal)”
+label: “Connected”
+dot: solid
+disconnected:
+color: “semantic: idle (muted)”
+label: “Disconnected”
+dot: hollow
+error:
+color: “semantic: error (red)”
+label: “Error”
+dot: solid
+detail: “Shows error message below the indicator”
+test-button:
+label: “Test Connection”
+behavior: >
+Attempts a WebSocket handshake to ws://{host}:{port}{websocket-path}.
+Shows a brief loading state, then updates the status indicator.
+On success: indicator turns teal, label shows “Connected”.
+On failure: indicator turns red, error message displayed.
+
+constructed-url:
+display: true
+description: >
+Below the fields, show the constructed WebSocket URL as read-only
+text so the admin can verify the full connection string:
+ws://{host}:{port}{websocket-path}
+
+# ============================================================================
+
+# TAB 3: AI CONFIGURATION
+
+# ============================================================================
+
+ai-configuration:
+label: “AI Configuration”
+description: >
+Configure the AI provider and model settings for all AI-powered features
+in StageManager. All AI calls route through OpenRouter as the single
+API endpoint. The client selects which models to use from the models
+available through their OpenRouter account.
+
+sections:
+
+```
+api-key:
+  label: "OpenRouter API Key"
+  layout: >
+    Top section of the AI tab. Single row with the key field, status
+    indicator, and verify button.
+  description: >
+    The API key for the client's OpenRouter account. Required for
+    charter generation, scoring, and abstraction layer translation.
+  fields:
+    - key:
+        label: "API Key"
+        type: password
+        placeholder: "sk-or-..."
+        display-after-save: masked  # Show only last 4 characters
+        description: >
+          Stored securely. After saving, the field displays as
+          "••••••••xxxx" showing only the last four characters.
+          Click to edit replaces the mask with an empty field for
+          re-entry.
+    - verify-button:
+        label: "Verify Key"
+        behavior: >
+          Validates the key against the OpenRouter API. Shows a
+          brief loading state, then updates the status indicator.
+    - status:
+        label: "Status"
+        type: display-only
+        states:
+          valid:
+            color: "semantic: completed (green)"
+            label: "Valid"
+          invalid:
+            color: "semantic: error (red)"
+            label: "Invalid"
+          unconfigured:
+            color: "semantic: idle (muted)"
+            label: "Not configured"
+
+model-selection:
+  label: "Model Assignment"
+  layout: >
+    Three cards or rows below the API key section, one per AI function.
+    Each shows the function name, description, model dropdown, and
+    enable/disable toggle. Disabled functions show their fallback
+    behavior.
+  description: >
+    Assign which OpenRouter model handles each AI function within
+    StageManager. Each function can use a different model, allowing
+    the client to balance cost, speed, and quality per task.
+
+  model-dropdown:
+    source: >
+      For the prototype, use a static list of common OpenRouter models.
+      In production, this would be populated dynamically from the
+      client's OpenRouter account after the API key is verified.
+    static-models:
+      - "anthropic/claude-sonnet-4"
+      - "anthropic/claude-haiku"
+      - "anthropic/claude-opus"
+      - "openai/gpt-4o"
+      - "openai/gpt-4o-mini"
+      - "google/gemini-2.0-flash"
+      - "google/gemini-2.5-pro"
+      - "meta/llama-3.1-70b"
+      - "mistral/mistral-large"
+
+  functions:
+    charter-generation:
+      label: "Charter Generation"
+      description: >
+        Generates project charters from intake data and scaffolding
+        context. Benefits from a high-capability model since charter
+        quality directly impacts build outcomes.
+      default-model: "anthropic/claude-sonnet-4"
+      toggle-default: true
+      when-disabled: >
+        Charter generation falls back to mock/template output.
+        A muted notice appears on the charter generation button:
+        "AI generation disabled — using template output."
+
+    scoring:
+      label: "Idea Scoring"
+      description: >
+        AI-assisted scoring of ideas across the four dimensions
+        (impact, urgency, feasibility, alignment). Can use a lighter
+        model since scoring is analytical rather than generative.
+      default-model: "anthropic/claude-haiku"
+      toggle-default: true
+      when-disabled: >
+        Scoring uses the rules-based heuristic engine only. A muted
+        notice appears on scored ideas: "Scored using rules engine
+        (AI scoring disabled)."
+
+    abstraction-layer:
+      label: "Build Translation"
+      description: >
+        Translates raw agent output into plain English during builds.
+        Used as fallback when pattern matching does not cover the
+        output. Also powers phase-mapping intelligence.
+      default-model: "anthropic/claude-haiku"
+      toggle-default: true
+      when-disabled: >
+        The abstraction layer uses pattern matching only. Unmatched
+        agent output is displayed as-is in the translated feed
+        (raw technical text in the plain English feed).
+```
+
+# ============================================================================
+
+# TAB 4: BUILD TRANSLATION SETTINGS
+
+# ============================================================================
+
+build-translation:
+label: “Build Translation Settings”
+description: >
+Fine-tune how the abstraction layer translates agent output into plain
+English for the development portal. These settings affect the verbosity
+and detail level of the translated activity feed.
+
+fields:
+verbosity:
+label: “Translation Verbosity”
+type: slider
+range: [1, 5]
+step: 1
+default: 3
+labels:
+1: “Minimal”
+2: “Brief”
+3: “Standard”
+4: “Detailed”
+5: “Verbose”
+description: >
+Controls how much detail appears in the translated activity feed
+during builds.
+
+```
+  behavior-by-level:
+    1-minimal:
+      summary: "Milestones only"
+      description: >
+        Only major milestones appear: project created, phase complete,
+        errors, build finished. Most individual actions are suppressed.
+        Best for executives who want a high-level pulse without detail.
+      example-output:
+        - "Project foundation created"
+        - "Core interface phase complete"
+        - "Encountered an issue — resolved"
+        - "Build complete"
+
+    2-brief:
+      summary: "Phases and highlights"
+      description: >
+        Phase transitions and notable actions appear. Routine steps
+        (file creation, dependency installation) are batched into
+        single summaries. Errors shown individually.
+      example-output:
+        - "Setting up the project foundation"
+        - "Installing required components"
+        - "Building the core interface — 4 sections created"
+        - "Encountered an issue — working through it"
+        - "Issue resolved, continuing"
+        - "Core interface phase complete"
+
+    3-standard:
+      summary: "Balanced detail"
+      description: >
+        Balanced default. Each logical group of actions gets a
+        translated entry. Individual file creations are shown but
+        grouped when sequential. Errors and recoveries shown in
+        full context.
+      example-output:
+        - "Creating the project foundation"
+        - "Setting up the styling system"
+        - "Installing required components"
+        - "Built the main dashboard view"
+        - "Built the navigation sidebar"
+        - "Setting up page navigation"
+        - "Encountered an issue with a missing component — trying a different approach"
+        - "Issue resolved, continuing"
+        - "All quality checks passed"
+
+    4-detailed:
+      summary: "Most actions visible"
+      description: >
+        Most individual agent actions get their own entry. File names
+        and component names referenced in translations. Phase progress
+        is explicit. Technical context included when relevant to
+        business understanding.
+      example-output:
+        - "Creating the project foundation using React and TypeScript"
+        - "Setting up Tailwind CSS for the styling system"
+        - "Installing 12 required components"
+        - "Built the Dashboard component — priority queue and activity feed"
+        - "Built the Sidebar component — navigation with role-aware menu items"
+        - "Built the ScoreDisplay component — four-dimension breakdown view"
+        - "Connecting page navigation — 6 routes configured"
+        - "Encountered a dependency conflict with the tooltip component — resolving"
+        - "Resolved by updating the component version"
+        - "Running quality checks — 14 of 14 passed"
+
+    5-verbose:
+      summary: "Full visibility"
+      description: >
+        Every agent action translated individually. Maximum detail
+        including specific file paths, dependency names, and
+        configuration details translated into plain language. Useful
+        for technically curious clients who want full visibility
+        without reading raw output.
+      example-output:
+        - "Creating the project at /app/stage-manager using React 18 with TypeScript"
+        - "Configuring Tailwind CSS version 3 with custom color tokens for the design system"
+        - "Installing lucide-react for icons, zustand for state management, react-router-dom for navigation"
+        - "Created Dashboard.tsx (245 lines) — includes priority queue sorted by composite score, active project cards, and a 10-item activity feed"
+        - "Created Sidebar.tsx (89 lines) — navigation menu that hides admin link for non-admin roles"
+        - "Created ScoreDisplay.tsx (156 lines) — horizontal bar chart showing impact, urgency, feasibility, and alignment scores"
+```
+
+preview:
+description: >
+Below the slider, show a live preview panel that demonstrates what
+the translated feed looks like at the current verbosity setting.
+Use a short sample of 4-6 mock translated entries that update
+dynamically as the slider moves. This gives the admin immediate
+feedback on what their users will see during builds.
+style: >
+A compact glassmorphism card showing sample translated entries in
+the same visual style as the real development portal feed. Entries
+fade and regroup as the slider moves.
+
+# ============================================================================
+
+# DATA MODELS
+
+# ============================================================================
+
+data:
+storage: local-storage  # Prototype — no real auth backend
+note: >
+For the prototype, role-based access is simulated locally. A “current
+user” selector or simple login simulation allows switching between
+the three sample users to demonstrate how the interface changes per
+role. No real authentication.
+
+models:
+user:
+fields:
+- id: string
+- name: string
+- email: string
+- role: enum             # admin, developer, viewer
+- status: enum           # active, inactive
+- last-active: datetime | null
+- created-at: datetime
+- updated-at: datetime
+
+```
+environment-server:
+  fields:
+    - id: string
+    - environment: enum      # dsp, development, production
+    - label: string
+    - host: string
+    - port: number
+    - websocket-path: string
+    - connection-status: enum  # connected, disconnected, error
+    - last-tested: datetime | null
+    - error-message: string | null
+
+ai-settings:
+  description: >
+    Singleton configuration object. Stored as a single record.
+  fields:
+    - openrouter-api-key: string
+    - key-status: enum            # valid, invalid, unconfigured
+    - charter-model: string
+    - charter-enabled: boolean
+    - scoring-model: string
+    - scoring-enabled: boolean
+    - abstraction-model: string
+    - abstraction-enabled: boolean
+    - translation-verbosity: number  # 1-5
+```
+
+# ============================================================================
+
+# FILE STRUCTURE
+
+# ============================================================================
+
+structure:
+src/components/admin/:
+AdminPage.tsx: “Root admin component with tab navigation and role guard”
+UsersTab.tsx: “User table, role management, add/remove/deactivate actions”
+UserAddDialog.tsx: “Dialog for adding a new user with name, email, role”
+UserRemoveDialog.tsx: “Confirmation dialog for removing a user”
+ServersTab.tsx: “Three environment server cards with config and test connection”
+ServerCard.tsx: “Reusable card for a single environment server”
+ConnectionStatus.tsx: “Status indicator dot with label and test button”
+AIConfigTab.tsx: “API key section and three model assignment cards”
+APIKeyField.tsx: “Masked password field with verify button and status”
+ModelAssignment.tsx: “Reusable card for a single AI function — dropdown and toggle”
+TranslationTab.tsx: “Verbosity slider with live preview panel”
+VerbosityPreview.tsx: “Dynamic preview of translated feed at current setting”
+
+src/stores/:
+users.ts: “Zustand store for users and current user session simulation”
+settings.ts: “Zustand store for environment servers, AI config, and translation settings”
+
+src/lib/:
+permissions.ts: “Role-based access control helpers and route guards”
+
+# ============================================================================
+
+# PROTOTYPE SCOPE
+
+# ============================================================================
+
+scope:
+included:
+- Tabbed admin layout with four panels
+- User table with inline role editing, add, deactivate, remove
+- Role-based permission definitions (admin, developer, viewer)
+- Three environment server cards (DSP with warning, Development, Production)
+- Connection status indicators with test connection button
+- Constructed WebSocket URL display per server
+- OpenRouter API key field with masked display and verify button
+- Per-function model selection dropdowns (charter, scoring, translation)
+- Per-function enable/disable toggles with fallback behavior notices
+- Static model list for prototype (no live OpenRouter fetching)
+- Translation verbosity slider (5 levels) with live preview panel
+- Role guard preventing non-admin access to /admin route
+- Local storage persistence for all settings
+
+excluded:
+- Real authentication (prototype uses local user session simulation)
+- Live OpenRouter model list fetching
+- Actual WebSocket connection testing (prototype simulates success/failure)
+- Email-based user invitations
+- Audit logging of settings changes
+- Import/export of settings
+
+sample-data:
+users:
+- name: “Alex Chen”
+email: “alex@example.com”
+role: admin
+status: active
+- name: “Jordan Rivera”
+email: “jordan@example.com”
+role: developer
+status: active
+- name: “Sam Patel”
+email: “sam@example.com”
+role: viewer
+status: active
+servers:
+- environment: dsp
+host: “localhost”
+port: 8080
+websocket-path: “/agent”
+status: connected
+- environment: development
+host: “”
+port: 8080
+websocket-path: “/agent”
+status: disconnected
+- environment: production
+host: “”
+port: 8080
+websocket-path: “/agent”
+status: disconnected
+ai-settings:
+openrouter-api-key: “”
+key-status: unconfigured
+charter-model: “anthropic/claude-sonnet-4”
+charter-enabled: true
+scoring-model: “anthropic/claude-haiku”
+scoring-enabled: true
+abstraction-model: “anthropic/claude-haiku”
+abstraction-enabled: true
+translation-verbosity: 3

@@ -5,6 +5,9 @@ import type {
   Activity,
   ScaffoldingDocument,
   AgentSession,
+  User,
+  EnvironmentServer,
+  AISettings,
 } from '@/types';
 
 // ============================================================================
@@ -818,3 +821,90 @@ All web applications use Azure AD (Microsoft Entra ID) via MSAL for single sign-
 - Sustainable cost of goods sold`,
   },
 ];
+
+// --- ADMIN: USERS ---
+
+export const sampleUsers: User[] = [
+  {
+    id: 'user-001',
+    name: 'Alex Chen',
+    email: 'alex@example.com',
+    role: 'admin',
+    status: 'active',
+    lastActive: hoursAgo(1),
+    createdAt: daysAgo(90),
+    updatedAt: daysAgo(1),
+  },
+  {
+    id: 'user-002',
+    name: 'Jordan Rivera',
+    email: 'jordan@example.com',
+    role: 'developer',
+    status: 'active',
+    lastActive: hoursAgo(3),
+    createdAt: daysAgo(60),
+    updatedAt: daysAgo(5),
+  },
+  {
+    id: 'user-003',
+    name: 'Sam Patel',
+    email: 'sam@example.com',
+    role: 'viewer',
+    status: 'active',
+    lastActive: daysAgo(2),
+    createdAt: daysAgo(30),
+    updatedAt: daysAgo(10),
+  },
+];
+
+// --- ADMIN: ENVIRONMENT SERVERS ---
+
+export const sampleServers: EnvironmentServer[] = [
+  {
+    id: 'srv-dsp',
+    environment: 'dsp',
+    label: 'DSP',
+    host: 'localhost',
+    port: 8080,
+    websocketPath: '/agent',
+    connectionStatus: 'connected',
+    lastTested: hoursAgo(2),
+    errorMessage: null,
+  },
+  {
+    id: 'srv-dev',
+    environment: 'development',
+    label: 'Development',
+    host: '',
+    port: 8080,
+    websocketPath: '/agent',
+    connectionStatus: 'disconnected',
+    lastTested: null,
+    errorMessage: null,
+  },
+  {
+    id: 'srv-prod',
+    environment: 'production',
+    label: 'Production',
+    host: '',
+    port: 8080,
+    websocketPath: '/agent',
+    connectionStatus: 'disconnected',
+    lastTested: null,
+    errorMessage: null,
+  },
+];
+
+// --- ADMIN: AI SETTINGS ---
+
+export const sampleAISettings: AISettings = {
+  openrouterApiKey: '',
+  keyStatus: 'unconfigured',
+  charterModel: 'anthropic/claude-sonnet-4',
+  charterEnabled: true,
+  scoringModel: 'anthropic/claude-haiku',
+  scoringEnabled: true,
+  abstractionModel: 'anthropic/claude-haiku',
+  abstractionEnabled: true,
+  translationVerbosity: 3,
+};

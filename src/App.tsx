@@ -10,12 +10,15 @@ import ChartersListPage from '@/pages/ChartersListPage';
 import CharterViewPage from '@/pages/CharterViewPage';
 import IssuesPage from '@/pages/IssuesPage';
 import ScaffoldingPage from '@/pages/ScaffoldingPage';
+import AdminPage from '@/components/admin/AdminPage';
 import { useIdeasStore } from '@/stores/ideas';
 import { useChartersStore } from '@/stores/charters';
 import { useIssuesStore } from '@/stores/issues';
 import { useActivityStore } from '@/stores/activity';
 import { useScaffoldingStore } from '@/stores/scaffolding';
 import { useAgentSessionsStore } from '@/stores/agent-sessions';
+import { useUsersStore } from '@/stores/users';
+import { useSettingsStore } from '@/stores/settings';
 import {
   sampleIdeas,
   sampleCharters,
@@ -23,10 +26,13 @@ import {
   sampleActivities,
   sampleScaffolding,
   sampleAgentSessions,
+  sampleUsers,
+  sampleServers,
+  sampleAISettings,
 } from '@/lib/sample-data';
 
 // Increment this when the data model changes shape to force a re-seed
-const DATA_VERSION = 3;
+const DATA_VERSION = 4;
 const VERSION_KEY = 'stagemanager-data-version';
 
 function SeedData() {
@@ -42,6 +48,8 @@ function SeedData() {
       localStorage.removeItem('stagemanager-activity');
       localStorage.removeItem('stagemanager-scaffolding');
       localStorage.removeItem('stagemanager-agent-sessions');
+      localStorage.removeItem('stagemanager-users');
+      localStorage.removeItem('stagemanager-settings');
 
       useIdeasStore.setState({ ideas: sampleIdeas });
       useChartersStore.setState({ charters: sampleCharters });
@@ -49,6 +57,8 @@ function SeedData() {
       useActivityStore.setState({ activities: sampleActivities });
       useScaffoldingStore.getState().setDocuments(sampleScaffolding);
       useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
+      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' });
+      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings });
 
       localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
       return;
@@ -74,6 +84,8 @@ function SeedData() {
       useActivityStore.setState({ activities: sampleActivities });
       useScaffoldingStore.getState().setDocuments(sampleScaffolding);
       useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
+      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' });
+      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings });
 
       localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
     }
@@ -97,6 +109,7 @@ function App() {
             <Route path="/charters/:id" element={<CharterViewPage />} />
             <Route path="/issues" element={<IssuesPage />} />
             <Route path="/scaffolding" element={<ScaffoldingPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Route>
         </Routes>
       </TooltipProvider>

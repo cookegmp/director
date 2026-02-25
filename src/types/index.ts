@@ -175,6 +175,49 @@ export type ScaffoldingDocType =
   | 'security-patterns'
   | 'quality-standards';
 
+// --- Admin Types ---
+
+export type UserRole = 'admin' | 'developer' | 'viewer';
+export type UserStatus = 'active' | 'inactive';
+export type EnvironmentType = 'dsp' | 'development' | 'production';
+export type ConnectionStatus = 'connected' | 'disconnected' | 'error';
+export type KeyStatus = 'valid' | 'invalid' | 'unconfigured';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
+  lastActive: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EnvironmentServer {
+  id: string;
+  environment: EnvironmentType;
+  label: string;
+  host: string;
+  port: number;
+  websocketPath: string;
+  connectionStatus: ConnectionStatus;
+  lastTested: string | null;
+  errorMessage: string | null;
+}
+
+export interface AISettings {
+  openrouterApiKey: string;
+  keyStatus: KeyStatus;
+  charterModel: string;
+  charterEnabled: boolean;
+  scoringModel: string;
+  scoringEnabled: boolean;
+  abstractionModel: string;
+  abstractionEnabled: boolean;
+  translationVerbosity: number;
+}
+
 // --- Wizard ---
 
 export interface WizardStep {
