@@ -22,20 +22,20 @@ const MODEL_FUNCTIONS = [
       'Execution plans use template-based generation with standard phases. Plans may be less tailored to the specific project context.',
   },
   {
-    functionKey: 'scoring' as const,
-    label: 'Idea Scoring',
-    description:
-      'Scores new product ideas across four dimensions (impact, urgency, feasibility, alignment). Ideas are proposals for entirely new applications or processes — not enhancements to existing ones.',
-    whenDisabled:
-      'Scoring uses the rules-based heuristic engine only. A notice appears on scored ideas: "Scored using rules engine (AI scoring disabled)."',
-  },
-  {
     functionKey: 'ideaChat' as const,
     label: 'Idea Chat',
     description:
       'Powers the conversational assistant for new product idea intake. Helps users articulate the problem, business impact, and urgency for a proposed new application or process.',
     whenDisabled:
       'Idea intake falls back to the standard static form wizard with pre-defined questions.',
+  },
+  {
+    functionKey: 'scoring' as const,
+    label: 'Idea Scoring',
+    description:
+      'Scores new product ideas across four dimensions (impact, urgency, feasibility, alignment). Ideas are proposals for entirely new applications or processes — not enhancements to existing ones.',
+    whenDisabled:
+      'Scoring uses the rules-based heuristic engine only. A notice appears on scored ideas: "Scored using rules engine (AI scoring disabled)."',
   },
   {
     functionKey: 'conversation' as const,
