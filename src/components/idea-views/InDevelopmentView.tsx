@@ -103,7 +103,7 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
           </button>
         )}
         <Link
-          to={`/report${charterId ? `?project=${charterId}` : ''}`}
+          to={`/report${charterId ? `?project=${encodeURIComponent(charterId)}&app=${encodeURIComponent(idea.title)}` : ''}`}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
         >
           <Bug className="w-4 h-4" />

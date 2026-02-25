@@ -23,10 +23,11 @@ import type { IssueClassification } from '../types';
 
 interface IssueReporterWizardProps {
   projectId?: string | null;
+  appName?: string | null;
   onCancel?: () => void;
 }
 
-function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizardProps) {
+function IssueReporterWizard({ projectId = null, appName = null, onCancel }: IssueReporterWizardProps) {
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [submittedIssueId, setSubmittedIssueId] = useState<string | null>(null);
@@ -43,6 +44,7 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     issueType,
     setPhase,
     setProjectId,
+    setAppName,
     setIssueType,
     addMessage,
     setCurrentQuestion,
@@ -57,6 +59,7 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
   useEffect(() => {
     if (phase === 'idle') {
       setProjectId(projectId ?? null);
+      setAppName(appName ?? null);
       setPhase('type-select');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -68,7 +71,7 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     setError(null);
 
     try {
-      const response = await sendConversationMessage([], projectId ?? null, selectedType);
+      const response = await sendConversationMessage([], projectId ?? null, selectedType, appName ?? null);
 
       if (!response.done) {
         addMessage({ role: 'assistant', content: response.question });
@@ -96,7 +99,7 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     } finally {
       setLoading(false);
     }
-  }, [projectId, setPhase, setLoading, setError, setCurrentQuestion, addMessage]);
+  }, [projectId, appName, setPhase, setLoading, setError, setCurrentQuestion, addMessage]);
 
   const handleSelectType = (type: IssueClassification) => {
     setIssueType(type);
@@ -118,7 +121,7 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     try {
       // Read current messages from store to avoid stale closure
       const store = useIssueReporterStore.getState();
-      const response = await sendConversationMessage(store.messages, projectId ?? null, store.issueType);
+      const response = await sendConversationMessage(store.messages, projectId ?? null, store.issueType, store.appName);
 
       if (response.done) {
         addMessage({
@@ -168,6 +171,7 @@ function IssueReporterWizard({ projectId = null, onCancel }: IssueReporterWizard
     // Go back to type selection
     setTimeout(() => {
       setProjectId(projectId ?? null);
+      setAppName(appName ?? null);
       setPhase('type-select');
     }, 50);
   };

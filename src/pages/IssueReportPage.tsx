@@ -5,10 +5,12 @@ function IssueReportPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get('project');
+  const appName = searchParams.get('app');
 
   return (
     <IssueReporterWizard
       projectId={projectId}
+      appName={appName}
       onCancel={() => navigate(-1)}
     />
   );

@@ -18,6 +18,7 @@ interface IssueReporterState extends ConversationState {
   // Actions
   setPhase: (phase: ConversationPhase) => void;
   setProjectId: (projectId: string | null) => void;
+  setAppName: (appName: string | null) => void;
   setIssueType: (issueType: IssueClassification) => void;
   addMessage: (message: ConversationMessage) => void;
   setCurrentQuestion: (question: string, suggestions?: string[], helperText?: string | null) => void;
@@ -38,6 +39,7 @@ const initialState: ConversationState = {
   currentHelperText: null,
   stepCount: 0,
   projectId: null,
+  appName: null,
   issueType: null,
   report: null,
   screenshot: null,
@@ -51,6 +53,8 @@ export const useIssueReporterStore = create<IssueReporterState>()((set) => ({
   setPhase: (phase) => set({ phase }),
 
   setProjectId: (projectId) => set({ projectId }),
+
+  setAppName: (appName) => set({ appName }),
 
   setIssueType: (issueType) => set({ issueType }),
 

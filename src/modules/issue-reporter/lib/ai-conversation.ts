@@ -92,6 +92,7 @@ function buildMessages(
   systemPrompt: string,
   conversationHistory: ConversationMessage[],
   projectId: string | null,
+  appName: string | null,
   issueType: IssueClassification | null
 ): Array<{ role: string; content: string }> {
   const messages: Array<{ role: string; content: string }> = [
@@ -106,9 +107,13 @@ function buildMessages(
         ? 'The user wants to request a feature.'
         : '';
 
-    const initMessage = projectId
-      ? `The user is reporting an issue for project ID: ${projectId}. ${typeHint} Start by asking what they're experiencing.`
-      : `${typeHint} The user hasn't specified which application. Start by asking which application or project this is about.`;
+    let initMessage: string;
+    if (projectId || appName) {
+      const appRef = appName ? `"${appName}"` : `project ID: ${projectId}`;
+      initMessage = `The user is reporting an issue for ${appRef}. ${typeHint} Do NOT ask which application — it's already known. Start by asking what they're experiencing.`;
+    } else {
+      initMessage = `${typeHint} The user hasn't specified which application. Start by asking which application or project this is about.`;
+    }
     messages.push({ role: 'user', content: initMessage });
   } else {
     for (const msg of conversationHistory) {
@@ -136,7 +141,8 @@ function parseAIResponse(content: string): AIResponse {
 export async function sendConversationMessage(
   conversationHistory: ConversationMessage[],
   projectId: string | null,
-  issueType: IssueClassification | null = null
+  issueType: IssueClassification | null = null,
+  appName: string | null = null
 ): Promise<AIResponse> {
   const { aiSettings } = useSettingsStore.getState();
   const useMock =
@@ -153,7 +159,7 @@ export async function sendConversationMessage(
 
   const context = buildAIContext(projectId);
   const systemPrompt = buildSystemPrompt(context);
-  const messages = buildMessages(systemPrompt, conversationHistory, projectId, issueType);
+  const messages = buildMessages(systemPrompt, conversationHistory, projectId, appName, issueType);
 
   const response = await fetch(OPENROUTER_API, {
     method: 'POST',

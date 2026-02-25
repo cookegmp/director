@@ -62,6 +62,7 @@ export interface ConversationState {
   currentHelperText: string | null;
   stepCount: number;
   projectId: string | null;
+  appName: string | null;
   issueType: IssueClassification | null;
   report: IssueReport | null;
   screenshot: string | null;
