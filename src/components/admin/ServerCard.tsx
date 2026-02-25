@@ -42,7 +42,7 @@ function ServerCard({ server }: ServerCardProps) {
   const status = statusConfig[server.connectionStatus];
 
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-5 space-y-4">
+    <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-light text-foreground">{meta.label}</h3>
         <Badge variant="outline" className={status.className}>

@@ -907,4 +907,5 @@ export const sampleAISettings: AISettings = {
   abstractionModel: 'anthropic/claude-haiku',
   abstractionEnabled: true,
   translationVerbosity: 3,
+  zeroDataRetention: false,
 };

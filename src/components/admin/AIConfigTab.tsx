@@ -1,3 +1,6 @@
+import { ShieldCheck } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { useSettingsStore } from '@/stores/settings';
 import APIKeyField from './APIKeyField';
 import ModelAssignment from './ModelAssignment';
 
@@ -29,6 +32,9 @@ const MODEL_FUNCTIONS = [
 ];
 
 function AIConfigTab() {
+  const aiSettings = useSettingsStore((s) => s.aiSettings);
+  const updateAISettings = useSettingsStore((s) => s.updateAISettings);
+
   return (
     <div className="space-y-4">
       <div>
@@ -39,6 +45,25 @@ function AIConfigTab() {
       </div>
 
       <APIKeyField />
+
+      <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+            <div>
+              <h3 className="text-sm font-medium text-foreground">Zero Data Retention</h3>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                When enabled, OpenRouter providers will not store or train on any data sent through the API.
+                Recommended for sensitive project data.
+              </p>
+            </div>
+          </div>
+          <Switch
+            checked={aiSettings.zeroDataRetention}
+            onCheckedChange={(checked) => updateAISettings({ zeroDataRetention: checked })}
+          />
+        </div>
+      </div>
 
       <div>
         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3">

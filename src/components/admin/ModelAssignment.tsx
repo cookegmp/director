@@ -38,7 +38,7 @@ function ModelAssignment({ functionKey, label, description, whenDisabled }: Mode
   const isEnabled = aiSettings[enabledKey] as boolean;
 
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-5 space-y-3">
+    <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex-1 mr-4">
           <h4 className="text-sm font-medium text-foreground">{label}</h4>

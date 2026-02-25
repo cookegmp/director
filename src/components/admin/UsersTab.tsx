@@ -64,7 +64,7 @@ function UsersTab() {
         </Button>
       </div>
 
-      <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border overflow-hidden">
+      <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-border">

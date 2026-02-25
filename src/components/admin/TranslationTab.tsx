@@ -23,7 +23,7 @@ function TranslationTab() {
         </p>
       </div>
 
-      <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-5 space-y-5">
+      <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-5">
         <div>
           <h3 className="text-sm font-medium text-foreground mb-1">Translation Verbosity</h3>
           <p className="text-xs text-muted-foreground">

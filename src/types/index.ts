@@ -216,6 +216,7 @@ export interface AISettings {
   abstractionModel: string;
   abstractionEnabled: boolean;
   translationVerbosity: number;
+  zeroDataRetention: boolean;
 }
 
 // --- Wizard ---

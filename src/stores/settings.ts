@@ -27,6 +27,7 @@ export const useSettingsStore = create<SettingsState>()(
         abstractionModel: 'anthropic/claude-haiku',
         abstractionEnabled: true,
         translationVerbosity: 3,
+        zeroDataRetention: false,
       },
 
       updateServer: (id, updates) =>

@@ -20,7 +20,7 @@ function AdminPage() {
   if (!currentUser || !canAccessAdmin(currentUser.role)) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-8 text-center max-w-md">
+        <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-8 text-center max-w-md">
           <h2 className="text-xl font-light text-foreground mb-2">Access Denied</h2>
           <p className="text-muted-foreground text-sm">
             You need administrator privileges to access this page.

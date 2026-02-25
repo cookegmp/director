@@ -42,7 +42,7 @@ function APIKeyField() {
   const StatusIcon = status.icon;
 
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-5 space-y-4">
+    <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-base font-light text-foreground">OpenRouter API Key</h3>

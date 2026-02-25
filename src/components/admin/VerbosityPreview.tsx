@@ -75,7 +75,7 @@ function VerbosityPreview({ level }: VerbosityPreviewProps) {
   const data = PREVIEW_DATA[level] ?? PREVIEW_DATA[3];
 
   return (
-    <div className="bg-card/50 backdrop-blur-sm rounded-xl border border-border p-5 space-y-3">
+    <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-3">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-medium text-foreground">Preview</h4>
         <Badge variant="outline" className="text-xs">
