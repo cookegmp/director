@@ -14,6 +14,14 @@ const MODEL_FUNCTIONS = [
       'Charter generation falls back to mock/template output. A notice appears on the charter generation button: "AI generation disabled — using template output."',
   },
   {
+    functionKey: 'executionPlan' as const,
+    label: 'Execution Plan',
+    description:
+      'Generates phased execution plans for new product charters — tasks, durations, and dependencies. Benefits from a capable model since plan quality shapes the entire build sequence.',
+    whenDisabled:
+      'Execution plans use template-based generation with standard phases. Plans may be less tailored to the specific project context.',
+  },
+  {
     functionKey: 'scoring' as const,
     label: 'Idea Scoring',
     description:

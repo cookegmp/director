@@ -217,6 +217,8 @@ export interface AISettings {
   keyStatus: KeyStatus;
   charterModel: string;
   charterEnabled: boolean;
+  executionPlanModel: string;
+  executionPlanEnabled: boolean;
   scoringModel: string;
   scoringEnabled: boolean;
   conversationModel: string;

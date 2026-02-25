@@ -951,6 +951,8 @@ export const sampleAISettings: AISettings = {
   keyStatus: 'unconfigured',
   charterModel: 'anthropic/claude-sonnet-4',
   charterEnabled: true,
+  executionPlanModel: 'anthropic/claude-sonnet-4',
+  executionPlanEnabled: true,
   scoringModel: 'anthropic/claude-haiku',
   scoringEnabled: true,
   conversationModel: 'anthropic/claude-sonnet-4',
