@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ArrowLeft, ArrowRight, Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2, Check, Mic, Settings, Server, Code, Globe, Sparkles, Hexagon, Cpu } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2, Check, Settings, Server, Code, Globe, Sparkles, Hexagon, Cpu } from 'lucide-react';
 import GradientButton from '@/components/shared/GradientButton';
+import DictationButton from '@/components/DictationButton';
 import SegmentedToggle from '@/components/shared/SegmentedToggle';
 import { useDevSettingsStore } from '@/stores/dev-settings';
 import type { Environment, Model } from '@/stores/dev-settings';
@@ -79,6 +80,7 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
   const [chatMessage, setChatMessage] = useState('');
   const [selectedChip, setSelectedChip] = useState<string | null>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
+  const dictationBaseRef = useRef('');
   const settingsRef = useRef<HTMLDivElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { environment, model, setEnvironment, setModel } = useDevSettingsStore();
@@ -266,9 +268,22 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
                   ⌘+Enter
                 </kbd>
               </span>
-              <button className="ml-auto relative w-12 h-12 rounded-full flex items-center justify-center bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                <Mic className="w-5 h-5" />
-              </button>
+              <div className="ml-auto">
+                <DictationButton
+                  onResult={(text) => {
+                    const committed = dictationBaseRef.current + text;
+                    dictationBaseRef.current = committed;
+                    setChatMessage(committed);
+                    setSelectedChip(null);
+                  }}
+                  onInterim={(text) => {
+                    if (text) setChatMessage(dictationBaseRef.current + text);
+                  }}
+                  onListeningChange={(listening) => {
+                    if (listening) dictationBaseRef.current = chatMessage;
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -454,9 +469,22 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
                 ⌘+Enter
               </kbd>
             </span>
-            <button className="ml-auto relative w-12 h-12 rounded-full flex items-center justify-center bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-              <Mic className="w-5 h-5" />
-            </button>
+            <div className="ml-auto">
+              <DictationButton
+                onResult={(text) => {
+                  const committed = dictationBaseRef.current + text;
+                  dictationBaseRef.current = committed;
+                  setChatMessage(committed);
+                  setSelectedChip(null);
+                }}
+                onInterim={(text) => {
+                  if (text) setChatMessage(dictationBaseRef.current + text);
+                }}
+                onListeningChange={(listening) => {
+                  if (listening) dictationBaseRef.current = chatMessage;
+                }}
+              />
+            </div>
           </div>
         </div>
       )}
