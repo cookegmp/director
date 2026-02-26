@@ -235,6 +235,38 @@ export interface AISettings {
   zeroDataRetention: boolean;
 }
 
+// --- Agents & Skills ---
+
+export type AgentStatus = 'active' | 'inactive' | 'draft';
+export type SkillStatus = 'active' | 'inactive' | 'draft';
+export type SkillSyncStatus = 'synced' | 'pending' | 'error' | 'not-synced';
+
+export interface AgentDefinition {
+  id: string;
+  name: string;
+  description: string;
+  model: string;
+  systemPrompt: string;
+  tools: string[];
+  maxTurns: number;
+  status: AgentStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SkillDefinition {
+  id: string;
+  name: string;
+  description: string;
+  agentId: string | null;
+  trigger: string;
+  instructions: string;
+  status: SkillStatus;
+  syncTargets: Record<string, SkillSyncStatus>;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // --- Wizard ---
 
 export interface WizardStep {
