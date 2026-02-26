@@ -1,0 +1,120 @@
+# ============================================================================
+# DICTATION FEATURE REFERENCE
+# ============================================================================
+# Drop this file into any project for Claude Code to reference when
+# implementing speech-to-text dictation on input fields.
+# ============================================================================
+
+feature: "Voice Dictation"
+purpose: >
+  Let users speak instead of type when filling in prompt fields, search boxes,
+  notes, and other text inputs. Uses the browser's built-in Web Speech API —
+  no backend, no dependencies, no cloud subscriptions.
+
+# ============================================================================
+# HOW IT WORKS
+# ============================================================================
+technology:
+  api: "Web Speech API (SpeechRecognition interface)"
+  reference: "https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition"
+  browser_support:
+    chrome: true
+    edge: true
+    firefox: false
+    safari: "partial"
+  notes:
+    - "Built into Chromium browsers — zero npm packages required"
+    - "Audio is processed by the browser's speech engine (Chrome uses Google servers)"
+    - "Returns streaming interim results as the user speaks"
+    - "Final result emitted when user pauses or stops"
+    - "Requires user gesture to start (click/tap) — cannot auto-activate"
+    - "Browser prompts for microphone permission on first use"
+
+# ============================================================================
+# IMPLEMENTATION
+# ============================================================================
+implementation:
+  pattern: "Custom React hook + reusable button component"
+
+  hook:
+    name: "useDictation"
+    file: "src/hooks/useDictation.ts"
+    returns:
+      transcript: "string — accumulated transcription text"
+      interimText: "string — in-progress text (updates as user speaks)"
+      isListening: "boolean — true while microphone is active"
+      isSupported: "boolean — false if browser lacks Web Speech API"
+      error: "string | null — error message if something fails"
+      startListening: "() => void — begin recording"
+      stopListening: "() => void — stop recording"
+      resetTranscript: "() => void — clear accumulated text"
+    config:
+      language: "en-US"
+      continuous: false
+      interimResults: true
+
+  component:
+    name: "DictationButton"
+    file: "src/components/DictationButton.tsx"
+    behavior:
+      - "Renders a microphone icon button"
+      - "Click toggles listening on/off"
+      - "Pulses with the application's primary accent color while active"
+      - "Accepts an onResult callback — passes final transcript to parent"
+      - "Shows tooltip: 'Dictate' when idle, 'Listening...' when active"
+      - "Hidden automatically when isSupported is false"
+    props:
+      onResult: "(text: string) => void — called with final transcript"
+      className: "string — optional additional styling"
+      disabled: "boolean — optional disable state"
+
+# ============================================================================
+# USAGE PATTERN
+# ============================================================================
+# When integrating into any input field across our apps:
+#
+#   import { useDictation } from '@/hooks/useDictation';
+#   import { DictationButton } from '@/components/DictationButton';
+#
+#   // Inside component:
+#   const [inputValue, setInputValue] = useState('');
+#
+#   <div className="flex items-center gap-2">
+#     <input
+#       value={inputValue}
+#       onChange={(e) => setInputValue(e.target.value)}
+#     />
+#     <DictationButton onResult={(text) => setInputValue(prev => prev + text)} />
+#   </div>
+#
+# That's it. The button handles all speech API logic internally.
+
+# ============================================================================
+# STYLING
+# ============================================================================
+styling:
+  icon: "Microphone (use whichever icon library the application already uses)"
+  active_animation: "pulse"
+  size: "matches adjacent input height"
+  placement: "inline, right side of target input field"
+  colors: "Match the existing application theme — reference the app's Tailwind config or CSS variables for primary, hover, and active states"
+
+# ============================================================================
+# CONSTRAINTS
+# ============================================================================
+do_not:
+  - "Do not install any npm packages for this — Web Speech API is browser-native"
+  - "Do not request microphone on page load — only on user click"
+  - "Do not store or transmit audio — the browser handles everything"
+  - "Do not block UI or show loading spinners — results stream in real-time"
+  - "Do not render DictationButton if isSupported is false"
+
+# ============================================================================
+# FUTURE UPGRADE PATH (NOT IN CURRENT SCOPE)
+# ============================================================================
+# If browser accuracy proves insufficient for manufacturing terms:
+#   - Add a single POST /api/transcribe endpoint to the existing Express backend
+#   - Use faster-whisper (Python) with Systran/faster-whisper-small model, int8 mode
+#   - Requires: Python 3.11+, 4GB RAM, no GPU needed for short clips
+#   - pip install faster-whisper
+#   - This is a fallback option only — do not build unless Web Speech API fails us

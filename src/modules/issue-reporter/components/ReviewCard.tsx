@@ -5,8 +5,9 @@
 // and severity badges, duplicate check, and screenshot attachment.
 // ============================================================================
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Bug, Sparkles, AlertTriangle, ChevronDown } from 'lucide-react';
+import DictationButton from '@/components/DictationButton';
 import { Badge } from '@/components/ui/badge';
 import GradientButton from '@/components/shared/GradientButton';
 import { useIssueReporterStore } from '../stores/issue-reporter';
@@ -308,6 +309,7 @@ function EditableSection({
   onChange: (val: string) => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
+  const baseRef = useRef('');
 
   return (
     <div>
@@ -315,14 +317,31 @@ function EditableSection({
         {label}
       </label>
       {isEditing ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onBlur={() => setIsEditing(false)}
-          rows={4}
-          autoFocus
-          className="w-full text-sm text-foreground bg-muted/30 rounded-lg border border-border focus:border-primary focus:outline-none transition-colors p-3 resize-none"
-        />
+        <div className="relative">
+          <textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onBlur={() => setIsEditing(false)}
+            rows={4}
+            autoFocus
+            className="w-full text-sm text-foreground bg-muted/30 rounded-lg border border-border focus:border-primary focus:outline-none transition-colors p-3 pr-12 resize-none"
+          />
+          <div className="absolute right-2 bottom-2">
+            <DictationButton
+              onResult={(text) => {
+                const committed = baseRef.current + text;
+                baseRef.current = committed;
+                onChange(committed);
+              }}
+              onInterim={(text) => {
+                if (text) onChange(baseRef.current + text);
+              }}
+              onListeningChange={(listening) => {
+                if (listening) baseRef.current = value;
+              }}
+            />
+          </div>
+        </div>
       ) : (
         <p
           onClick={() => setIsEditing(true)}

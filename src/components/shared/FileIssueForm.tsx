@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useIssuesStore } from '@/stores/issues';
 import { useChartersStore } from '@/stores/charters';
 import { useActivityStore } from '@/stores/activity';
 import GradientButton from '@/components/shared/GradientButton';
+import DictationButton from '@/components/DictationButton';
 import { generateId } from '@/lib/utils';
 import type { IssueType, IssueSeverity } from '@/types';
 
@@ -22,6 +23,7 @@ function FileIssueForm({ projectId, onSubmitted, onCancel }: FileIssueFormProps)
   const [formSeverity, setFormSeverity] = useState<IssueSeverity>('medium');
   const [formDescription, setFormDescription] = useState('');
   const [formProjectId, setFormProjectId] = useState('');
+  const descBaseRef = useRef('');
 
   const handleSubmit = () => {
     if (!formTitle.trim()) return;
@@ -97,13 +99,30 @@ function FileIssueForm({ projectId, onSubmitted, onCancel }: FileIssueFormProps)
           ))}
         </select>
       )}
-      <textarea
-        value={formDescription}
-        onChange={(e) => setFormDescription(e.target.value)}
-        placeholder="Describe the issue..."
-        rows={4}
-        className="w-full bg-transparent border-b-2 border-border focus:border-primary text-foreground placeholder:text-muted-foreground/40 focus:outline-none resize-none py-2"
-      />
+      <div className="relative">
+        <textarea
+          value={formDescription}
+          onChange={(e) => setFormDescription(e.target.value)}
+          placeholder="Describe the issue..."
+          rows={4}
+          className="w-full bg-transparent border-b-2 border-border focus:border-primary text-foreground placeholder:text-muted-foreground/40 focus:outline-none resize-none py-2 pr-12"
+        />
+        <div className="absolute right-0 bottom-3">
+          <DictationButton
+            onResult={(text) => {
+              const committed = descBaseRef.current + text;
+              descBaseRef.current = committed;
+              setFormDescription(committed);
+            }}
+            onInterim={(text) => {
+              if (text) setFormDescription(descBaseRef.current + text);
+            }}
+            onListeningChange={(listening) => {
+              if (listening) descBaseRef.current = formDescription;
+            }}
+          />
+        </div>
+      </div>
       <div className="flex items-center gap-3">
         <GradientButton onClick={handleSubmit} disabled={!formTitle.trim()}>
           Submit

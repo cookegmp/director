@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Mic } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import DictationButton from '@/components/DictationButton';
 import GradientButton from '@/components/shared/GradientButton';
 import { useIdeasStore } from '@/stores/ideas';
 import { useActivityStore } from '@/stores/activity';
@@ -90,6 +91,9 @@ function WizardCard() {
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Tracks the text before dictation interim results so we can append cleanly
+  const dictationBaseRef = useRef('');
 
   const navigate = useNavigate();
   const addIdea = useIdeasStore((s) => s.addIdea);
@@ -309,9 +313,28 @@ function WizardCard() {
             </button>
           )}
 
-          <button className="ml-auto relative w-12 h-12 rounded-full flex items-center justify-center bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-            <Mic className="w-5 h-5" />
-          </button>
+          {step.inputType === 'textarea' && (
+            <DictationButton
+              onResult={(text) => {
+                // Final result: commit to base so next interim appends after it
+                const committed = dictationBaseRef.current + text;
+                dictationBaseRef.current = committed;
+                setCurrentAnswer(committed);
+              }}
+              onInterim={(text) => {
+                if (text) {
+                  setCurrentAnswer(dictationBaseRef.current + text);
+                }
+              }}
+              onListeningChange={(listening) => {
+                if (listening) {
+                  // Snapshot whatever is in the field as the base
+                  dictationBaseRef.current = currentAnswer;
+                }
+              }}
+              className="ml-auto"
+            />
+          )}
         </div>
       </div>
     </section>
