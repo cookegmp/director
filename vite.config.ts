@@ -14,6 +14,6 @@ export default defineConfig({
     port: 3940,
     host: true,
     cors: true,
-    allowedHosts: ['lab.ahaus.com'],
+    allowedHosts: ['lab.ahaus.com', 'stagemanager.ahaus.com'],
   },
 })
