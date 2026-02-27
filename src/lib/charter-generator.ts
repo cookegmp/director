@@ -1,4 +1,4 @@
-import type { Idea, CharterContent } from '@/types';
+import type { Idea, CharterContent } from '@/types'
 
 /**
  * Charter generation with mock fallback.
@@ -6,13 +6,14 @@ import type { Idea, CharterContent } from '@/types';
  * Otherwise calls the Anthropic API directly (prototype only — client-side).
  */
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK_DATA !== 'false' || !import.meta.env.VITE_ANTHROPIC_API_KEY;
+const USE_MOCK =
+  import.meta.env.VITE_USE_MOCK_DATA !== 'false' || !import.meta.env.VITE_ANTHROPIC_API_KEY
 
 export async function generateCharter(idea: Idea): Promise<CharterContent> {
   if (USE_MOCK) {
-    return generateMockCharter(idea);
+    return generateMockCharter(idea)
   }
-  return generateLiveCharter(idea);
+  return generateLiveCharter(idea)
 }
 
 function generateMockCharter(idea: Idea): Promise<CharterContent> {
@@ -84,13 +85,13 @@ function generateMockCharter(idea: Idea): Promise<CharterContent> {
             dependencies: ['Integration & Polish'],
           },
         ],
-      });
-    }, 1500);
-  });
+      })
+    }, 1500)
+  })
 }
 
 async function generateLiveCharter(idea: Idea): Promise<CharterContent> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
+  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY as string
 
   const systemPrompt = `You are a technical project charter generator for an AI consulting firm. Generate structured project charters based on intake data. The client is a manufacturing company (Ahaus Tool & Engineering) focused on automation, precision machining, and custom manufacturing.
 
@@ -102,7 +103,7 @@ Respond with valid JSON matching this exact schema:
   "acceptanceCriteria": ["string"],
   "estimatedTimeline": "string",
   "executionPlan": [{ "phase": "string", "tasks": ["string"], "duration": "string", "dependencies": ["string"] }]
-}`;
+}`
 
   const userMessage = `Generate a project charter for this idea:
 
@@ -121,7 +122,7 @@ Score Breakdown:
 - Impact: ${idea.scores.impact}/100
 - Urgency: ${idea.scores.urgency}/100
 - Feasibility: ${idea.scores.feasibility}/100
-- Alignment: ${idea.scores.alignment}/100`;
+- Alignment: ${idea.scores.alignment}/100`
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -137,24 +138,24 @@ Score Breakdown:
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     }),
-  });
+  })
 
   if (!response.ok) {
-    console.error('Anthropic API error:', response.status);
-    return generateMockCharter(idea);
+    console.error('Anthropic API error:', response.status)
+    return generateMockCharter(idea)
   }
 
-  const data = await response.json() as { content: Array<{ text: string }> };
-  const text = data.content[0]?.text ?? '';
+  const data = (await response.json()) as { content: Array<{ text: string }> }
+  const text = data.content[0]?.text ?? ''
 
   try {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]) as CharterContent;
+      return JSON.parse(jsonMatch[0]) as CharterContent
     }
   } catch {
-    console.error('Failed to parse charter response');
+    console.error('Failed to parse charter response')
   }
 
-  return generateMockCharter(idea);
+  return generateMockCharter(idea)
 }

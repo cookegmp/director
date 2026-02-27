@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 import {
   Plus,
   Bug,
@@ -15,16 +15,16 @@ import {
   Zap,
   Target,
   XCircle,
-} from 'lucide-react';
-import { useIdeasStore } from '@/stores/ideas';
-import { useChartersStore } from '@/stores/charters';
-import { useIssuesStore } from '@/stores/issues';
-import { useActivityStore } from '@/stores/activity';
-import { Badge } from '@/components/ui/badge';
-import GradientButton from '@/components/shared/GradientButton';
-import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types';
-import { formatRelativeTime } from '@/lib/utils';
-import type { IdeaStatus } from '@/types';
+} from 'lucide-react'
+import { useIdeasStore } from '@/stores/ideas'
+import { useChartersStore } from '@/stores/charters'
+import { useIssuesStore } from '@/stores/issues'
+import { useActivityStore } from '@/stores/activity'
+import { Badge } from '@/components/ui/badge'
+import GradientButton from '@/components/shared/GradientButton'
+import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types'
+import { formatRelativeTime } from '@/lib/utils'
+import type { IdeaStatus } from '@/types'
 
 const ACTIVITY_ICONS: Record<string, typeof Lightbulb> = {
   'idea-created': Lightbulb,
@@ -43,37 +43,37 @@ const ACTIVITY_ICONS: Record<string, typeof Lightbulb> = {
   'remediation-triggered': Zap,
   'remediation-completed': CheckCircle,
   'remediation-failed': XCircle,
-};
+}
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
   scored: 'text-muted-foreground',
   'on-deck': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  'development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  development: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   production: 'bg-green-500/20 text-green-400 border-green-500/30',
   archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 function DashboardPage() {
-  const ideas = useIdeasStore((s) => s.ideas);
-  const charters = useChartersStore((s) => s.charters);
-  const issues = useIssuesStore((s) => s.issues);
-  const allActivities = useActivityStore((s) => s.activities);
+  const ideas = useIdeasStore((s) => s.ideas)
+  const charters = useChartersStore((s) => s.charters)
+  const issues = useIssuesStore((s) => s.issues)
+  const allActivities = useActivityStore((s) => s.activities)
   const activities = [...allActivities]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 10);
+    .slice(0, 10)
 
   const sortedIdeas = [...ideas]
     .filter((i) => i.status !== 'archived')
-    .sort((a, b) => b.compositeScore - a.compositeScore);
+    .sort((a, b) => b.compositeScore - a.compositeScore)
 
   // Active projects: ideas in on-deck, development, or production that have a linked charter
   const activeProjectIdeas = ideas.filter(
     (i) =>
       (i.status === 'on-deck' || i.status === 'development' || i.status === 'production') &&
-      i.linkedCharterId
-  );
+      i.linkedCharterId,
+  )
 
-  const activeProjectCount = activeProjectIdeas.length;
+  const activeProjectCount = activeProjectIdeas.length
 
   return (
     <div>
@@ -81,9 +81,7 @@ function DashboardPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-light text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Operations overview
-          </p>
+          <p className="text-muted-foreground text-sm mt-1">Operations overview</p>
         </div>
 
         {/* Quick actions */}
@@ -109,7 +107,12 @@ function DashboardPage() {
         {[
           { label: 'Ideas', value: ideas.length, icon: Lightbulb, to: '/ideas' },
           { label: 'Active Projects', value: activeProjectCount, icon: FileText, to: '/charters' },
-          { label: 'Open Issues', value: issues.filter((i) => i.status === 'open').length, icon: Bug, to: '/issues' },
+          {
+            label: 'Open Issues',
+            value: issues.filter((i) => i.status === 'open').length,
+            icon: Bug,
+            to: '/issues',
+          },
         ].map(({ label, value, icon: Icon, to }) => (
           <Link
             key={label}
@@ -147,7 +150,7 @@ function DashboardPage() {
           ) : (
             <div className="space-y-2">
               {sortedIdeas.slice(0, 5).map((idea, index) => {
-                const tier = getScoreTier(idea.compositeScore);
+                const tier = getScoreTier(idea.compositeScore)
                 return (
                   <Link
                     key={idea.id}
@@ -162,14 +165,11 @@ function DashboardPage() {
                         {idea.title}
                       </p>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={`${getTierBadgeClasses(tier)} text-xs`}
-                    >
+                    <Badge variant="outline" className={`${getTierBadgeClasses(tier)} text-xs`}>
                       {Math.round(idea.compositeScore)}
                     </Badge>
                   </Link>
-                );
+                )
               })}
             </div>
           )}
@@ -183,7 +183,7 @@ function DashboardPage() {
           ) : (
             <div className="space-y-3">
               {activities.slice(0, 8).map((activity) => {
-                const Icon = ACTIVITY_ICONS[activity.type] ?? Lightbulb;
+                const Icon = ACTIVITY_ICONS[activity.type] ?? Lightbulb
                 return (
                   <div key={activity.id} className="flex items-start gap-3">
                     <div className="mt-0.5 p-1 rounded-md bg-muted/50">
@@ -198,7 +198,7 @@ function DashboardPage() {
                       </p>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           )}
@@ -219,7 +219,7 @@ function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {activeProjectIdeas.map((idea) => {
-              const charter = charters.find((c) => c.id === idea.linkedCharterId);
+              const charter = charters.find((c) => c.id === idea.linkedCharterId)
               return (
                 <Link
                   key={idea.id}
@@ -230,18 +230,21 @@ function DashboardPage() {
                     {charter?.title ?? idea.title}
                   </h3>
                   <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="outline" className={`text-xs ${STATUS_BADGE_CLASSES[idea.status]}`}>
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${STATUS_BADGE_CLASSES[idea.status]}`}
+                    >
                       {STATUS_LABELS[idea.status]}
                     </Badge>
                   </div>
                 </Link>
-              );
+              )
             })}
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default DashboardPage;
+export default DashboardPage

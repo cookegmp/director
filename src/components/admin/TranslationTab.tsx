@@ -1,6 +1,6 @@
-import { Slider } from '@/components/ui/slider';
-import { useSettingsStore } from '@/stores/settings';
-import VerbosityPreview from './VerbosityPreview';
+import { Slider } from '@/components/ui/slider'
+import { useSettingsStore } from '@/stores/settings'
+import VerbosityPreview from './VerbosityPreview'
 
 const VERBOSITY_LABELS: Record<number, string> = {
   1: 'Minimal',
@@ -8,18 +8,19 @@ const VERBOSITY_LABELS: Record<number, string> = {
   3: 'Standard',
   4: 'Detailed',
   5: 'Verbose',
-};
+}
 
 function TranslationTab() {
-  const verbosity = useSettingsStore((s) => s.aiSettings.translationVerbosity);
-  const setVerbosity = useSettingsStore((s) => s.setVerbosity);
+  const verbosity = useSettingsStore((s) => s.aiSettings.translationVerbosity)
+  const setVerbosity = useSettingsStore((s) => s.setVerbosity)
 
   return (
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-light text-foreground">Build Translation Settings</h2>
         <p className="text-sm text-muted-foreground">
-          Fine-tune how the abstraction layer translates agent output into plain English for the development portal.
+          Fine-tune how the abstraction layer translates agent output into plain English for the
+          development portal.
         </p>
       </div>
 
@@ -45,9 +46,7 @@ function TranslationTab() {
               <span
                 key={level}
                 className={`text-xs transition-colors ${
-                  Number(level) === verbosity
-                    ? 'text-primary font-medium'
-                    : 'text-muted-foreground'
+                  Number(level) === verbosity ? 'text-primary font-medium' : 'text-muted-foreground'
                 }`}
               >
                 {label}
@@ -59,7 +58,7 @@ function TranslationTab() {
 
       <VerbosityPreview level={verbosity} />
     </div>
-  );
+  )
 }
 
-export default TranslationTab;
+export default TranslationTab

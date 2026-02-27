@@ -1,40 +1,40 @@
-import { useState, useRef, useEffect } from 'react';
-import { ChevronRight } from 'lucide-react';
-import type { RawOutputLine } from '@/types';
+import { useState, useRef, useEffect } from 'react'
+import { ChevronRight } from 'lucide-react'
+import type { RawOutputLine } from '@/types'
 
 interface RawOutputPanelProps {
-  lines: RawOutputLine[];
-  highlightIndex?: number;
+  lines: RawOutputLine[]
+  highlightIndex?: number
 }
 
 function colorize(text: string): React.ReactElement {
   // Simple regex-based coloring
   if (/error|fail|ERR!/i.test(text)) {
-    return <span className="text-red-400">{text}</span>;
+    return <span className="text-red-400">{text}</span>
   }
   if (/pass|success|complete|resolved/i.test(text)) {
-    return <span className="text-green-400">{text}</span>;
+    return <span className="text-green-400">{text}</span>
   }
   if (/src\/|\.tsx?|\.jsx?|\/\w+\//i.test(text)) {
-    return <span className="text-blue-400">{text}</span>;
+    return <span className="text-blue-400">{text}</span>
   }
   if (/warn/i.test(text)) {
-    return <span className="text-amber-400">{text}</span>;
+    return <span className="text-amber-400">{text}</span>
   }
-  return <span className="text-foreground/60">{text}</span>;
+  return <span className="text-foreground/60">{text}</span>
 }
 
 function RawOutputPanel({ lines, highlightIndex }: RawOutputPanelProps) {
-  const [collapsed, setCollapsed] = useState(true);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [collapsed, setCollapsed] = useState(true)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   // Scroll to highlighted line
   useEffect(() => {
     if (highlightIndex !== undefined && scrollRef.current && !collapsed) {
-      const lineElement = scrollRef.current.children[highlightIndex] as HTMLElement | undefined;
-      lineElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const lineElement = scrollRef.current.children[highlightIndex] as HTMLElement | undefined
+      lineElement?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
-  }, [highlightIndex, collapsed]);
+  }, [highlightIndex, collapsed])
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border">
@@ -63,9 +63,7 @@ function RawOutputPanel({ lines, highlightIndex }: RawOutputPanelProps) {
               <div
                 key={line.index}
                 className={`raw-output-line px-2 py-0.5 rounded ${
-                  line.index === highlightIndex
-                    ? 'bg-primary/10 border-l-2 border-primary'
-                    : ''
+                  line.index === highlightIndex ? 'bg-primary/10 border-l-2 border-primary' : ''
                 }`}
               >
                 <span className="text-muted-foreground/40 mr-3 select-none inline-block w-6 text-right">
@@ -78,7 +76,7 @@ function RawOutputPanel({ lines, highlightIndex }: RawOutputPanelProps) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default RawOutputPanel;
+export default RawOutputPanel

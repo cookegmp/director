@@ -5,111 +5,118 @@
 // Transitions to annotation canvas after crop.
 // ============================================================================
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { capturePageAsCanvas, cropCanvas, canvasToBase64 } from '../lib/screenshot-utils';
-import AnnotationCanvas from './AnnotationCanvas';
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { X } from 'lucide-react'
+import { capturePageAsCanvas, cropCanvas, canvasToBase64 } from '../lib/screenshot-utils'
+import AnnotationCanvas from './AnnotationCanvas'
 
 interface CaptureOverlayProps {
-  onCapture: (base64: string) => void;
-  onCancel: () => void;
+  onCapture: (base64: string) => void
+  onCancel: () => void
 }
 
 interface SelectionRect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  x: number
+  y: number
+  width: number
+  height: number
 }
 
 function CaptureOverlay({ onCapture, onCancel }: CaptureOverlayProps) {
-  const [stage, setStage] = useState<'capturing' | 'selecting' | 'annotating'>('capturing');
-  const [pageCanvas, setPageCanvas] = useState<HTMLCanvasElement | null>(null);
-  const [croppedBase64, setCroppedBase64] = useState<string | null>(null);
-  const [selection, setSelection] = useState<SelectionRect | null>(null);
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
+  const [stage, setStage] = useState<'capturing' | 'selecting' | 'annotating'>('capturing')
+  const [pageCanvas, setPageCanvas] = useState<HTMLCanvasElement | null>(null)
+  const [croppedBase64, setCroppedBase64] = useState<string | null>(null)
+  const [selection, setSelection] = useState<SelectionRect | null>(null)
+  const [isSelecting, setIsSelecting] = useState(false)
+  const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null)
 
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null)
 
   // Step 1: Capture the page
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false
 
     const capture = async () => {
       try {
-        const canvas = await capturePageAsCanvas();
+        const canvas = await capturePageAsCanvas()
         if (!cancelled) {
-          setPageCanvas(canvas);
-          setStage('selecting');
+          setPageCanvas(canvas)
+          setStage('selecting')
         }
       } catch {
         // Fall back to file upload
-        onCancel();
+        onCancel()
       }
-    };
+    }
 
-    capture();
-    return () => { cancelled = true; };
-  }, [onCancel]);
+    capture()
+    return () => {
+      cancelled = true
+    }
+  }, [onCancel])
 
   // Lock body scroll
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
-  }, []);
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [])
 
   // Escape key
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCancel();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [onCancel]);
+      if (e.key === 'Escape') onCancel()
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onCancel])
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    if (stage !== 'selecting') return;
-    setIsSelecting(true);
-    setStartPoint({ x: e.clientX, y: e.clientY });
-    setSelection(null);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  }, [stage]);
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (stage !== 'selecting') return
+      setIsSelecting(true)
+      setStartPoint({ x: e.clientX, y: e.clientY })
+      setSelection(null)
+      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+    },
+    [stage],
+  )
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (!isSelecting || !startPoint) return;
+      if (!isSelecting || !startPoint) return
 
-      const x = Math.min(startPoint.x, e.clientX);
-      const y = Math.min(startPoint.y, e.clientY);
-      const width = Math.abs(e.clientX - startPoint.x);
-      const height = Math.abs(e.clientY - startPoint.y);
+      const x = Math.min(startPoint.x, e.clientX)
+      const y = Math.min(startPoint.y, e.clientY)
+      const width = Math.abs(e.clientX - startPoint.x)
+      const height = Math.abs(e.clientY - startPoint.y)
 
-      setSelection({ x, y, width, height });
+      setSelection({ x, y, width, height })
     },
-    [isSelecting, startPoint]
-  );
+    [isSelecting, startPoint],
+  )
 
   const handlePointerUp = useCallback(() => {
-    if (!isSelecting || !selection || !pageCanvas) return;
-    setIsSelecting(false);
+    if (!isSelecting || !selection || !pageCanvas) return
+    setIsSelecting(false)
 
     // Minimum selection size
     if (selection.width < 20 || selection.height < 20) {
-      setSelection(null);
-      return;
+      setSelection(null)
+      return
     }
 
-    const cropped = cropCanvas(pageCanvas, selection);
-    const base64 = canvasToBase64(cropped);
-    setCroppedBase64(base64);
-    setStage('annotating');
-  }, [isSelecting, selection, pageCanvas]);
+    const cropped = cropCanvas(pageCanvas, selection)
+    const base64 = canvasToBase64(cropped)
+    setCroppedBase64(base64)
+    setStage('annotating')
+  }, [isSelecting, selection, pageCanvas])
 
   const handleAnnotationComplete = (annotatedBase64: string) => {
-    onCapture(annotatedBase64);
-  };
+    onCapture(annotatedBase64)
+  }
 
   // Stage: Capturing page
   if (stage === 'capturing') {
@@ -120,7 +127,7 @@ function CaptureOverlay({ onCapture, onCancel }: CaptureOverlayProps) {
           <p className="text-sm text-white/80">Capturing page...</p>
         </div>
       </div>
-    );
+    )
   }
 
   // Stage: Annotating
@@ -131,7 +138,7 @@ function CaptureOverlay({ onCapture, onCancel }: CaptureOverlayProps) {
         onComplete={handleAnnotationComplete}
         onCancel={onCancel}
       />
-    );
+    )
   }
 
   // Stage: Selecting region
@@ -200,15 +207,12 @@ function CaptureOverlay({ onCapture, onCancel }: CaptureOverlayProps) {
       {/* Instructions & cancel */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/70 backdrop-blur-sm rounded-full px-5 py-2.5 pointer-events-auto">
         <p className="text-sm text-white/90">Click and drag to select a region</p>
-        <button
-          onClick={onCancel}
-          className="p-1 text-white/60 hover:text-white transition-colors"
-        >
+        <button onClick={onCancel} className="p-1 text-white/60 hover:text-white transition-colors">
           <X className="w-4 h-4" />
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default CaptureOverlay;
+export default CaptureOverlay

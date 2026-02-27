@@ -1,55 +1,50 @@
-import { useState } from 'react';
-import { Plus, MoreHorizontal, Bot, Cpu } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { Plus, MoreHorizontal, Bot, Cpu } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useAgentsSkillsStore } from '@/stores/agents-skills';
-import type { AgentDefinition } from '@/types';
-import AgentDetailPanel from './AgentDetailPanel';
+} from '@/components/ui/dropdown-menu'
+import { useAgentsSkillsStore } from '@/stores/agents-skills'
+import type { AgentDefinition } from '@/types'
+import AgentDetailPanel from './AgentDetailPanel'
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
+  })
 }
 
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   inactive: 'bg-muted text-muted-foreground border-border',
   draft: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-};
+}
 
 const STATUS_DOTS: Record<string, string> = {
   active: 'bg-teal-400',
   inactive: 'bg-muted-foreground',
   draft: 'bg-amber-400',
-};
+}
 
 interface AgentsListProps {
-  onCreateNew: () => void;
+  onCreateNew: () => void
 }
 
 function AgentsList({ onCreateNew }: AgentsListProps) {
-  const agents = useAgentsSkillsStore((s) => s.agents);
-  const setAgentStatus = useAgentsSkillsStore((s) => s.setAgentStatus);
-  const removeAgent = useAgentsSkillsStore((s) => s.removeAgent);
-  const [selectedAgent, setSelectedAgent] = useState<AgentDefinition | null>(null);
+  const agents = useAgentsSkillsStore((s) => s.agents)
+  const setAgentStatus = useAgentsSkillsStore((s) => s.setAgentStatus)
+  const removeAgent = useAgentsSkillsStore((s) => s.removeAgent)
+  const [selectedAgent, setSelectedAgent] = useState<AgentDefinition | null>(null)
 
   if (selectedAgent) {
-    return (
-      <AgentDetailPanel
-        agent={selectedAgent}
-        onBack={() => setSelectedAgent(null)}
-      />
-    );
+    return <AgentDetailPanel agent={selectedAgent} onBack={() => setSelectedAgent(null)} />
   }
 
   return (
@@ -113,7 +108,9 @@ function AgentsList({ onCreateNew }: AgentsListProps) {
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{agent.name}</p>
-                        <p className="text-xs text-muted-foreground truncate max-w-[280px]">{agent.description}</p>
+                        <p className="text-xs text-muted-foreground truncate max-w-[280px]">
+                          {agent.description}
+                        </p>
                       </div>
                     </div>
                   </td>
@@ -126,7 +123,11 @@ function AgentsList({ onCreateNew }: AgentsListProps) {
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1">
                       {agent.tools.slice(0, 2).map((tool) => (
-                        <Badge key={tool} variant="outline" className="text-[10px] px-1.5 py-0 font-mono">
+                        <Badge
+                          key={tool}
+                          variant="outline"
+                          className="text-[10px] px-1.5 py-0 font-mono"
+                        >
                           {tool}
                         </Badge>
                       ))}
@@ -139,7 +140,9 @@ function AgentsList({ onCreateNew }: AgentsListProps) {
                   </td>
                   <td className="px-4 py-3">
                     <Badge variant="outline" className={STATUS_STYLES[agent.status]}>
-                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${STATUS_DOTS[agent.status]}`} />
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full mr-1.5 ${STATUS_DOTS[agent.status]}`}
+                      />
                       {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
                     </Badge>
                   </td>
@@ -181,7 +184,7 @@ function AgentsList({ onCreateNew }: AgentsListProps) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default AgentsList;
+export default AgentsList

@@ -1,7 +1,7 @@
-import WizardCard from '@/components/wizard/WizardCard';
+import WizardCard from '@/components/wizard/WizardCard'
 
 function IntakePage() {
-  return <WizardCard />;
+  return <WizardCard />
 }
 
-export default IntakePage;
+export default IntakePage

@@ -1,51 +1,45 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Rocket, ArrowLeft as ArrowLeftIcon, Bug } from 'lucide-react';
-import { useIdeasStore } from '@/stores/ideas';
-import { useActivityStore } from '@/stores/activity';
-import { useAgentSessionsStore } from '@/stores/agent-sessions';
-import { useAgentConnection } from '@/hooks/useAgentConnection';
-import AgentControlBar from '@/components/dev-portal/AgentControlBar';
-import EntryCard from '@/components/dev-portal/EntryCard';
-import RawOutputPanel from '@/components/dev-portal/RawOutputPanel';
-import CharterReferencePanel from '@/components/dev-portal/CharterReferencePanel';
-import { generateId } from '@/lib/utils';
-import type { Idea } from '@/types';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Rocket, ArrowLeft as ArrowLeftIcon, Bug } from 'lucide-react'
+import { useIdeasStore } from '@/stores/ideas'
+import { useActivityStore } from '@/stores/activity'
+import { useAgentSessionsStore } from '@/stores/agent-sessions'
+import { useAgentConnection } from '@/hooks/useAgentConnection'
+import AgentControlBar from '@/components/dev-portal/AgentControlBar'
+import EntryCard from '@/components/dev-portal/EntryCard'
+import RawOutputPanel from '@/components/dev-portal/RawOutputPanel'
+import CharterReferencePanel from '@/components/dev-portal/CharterReferencePanel'
+import { generateId } from '@/lib/utils'
+import type { Idea } from '@/types'
 
 interface InDevelopmentViewProps {
-  idea: Idea;
+  idea: Idea
 }
 
 function InDevelopmentView({ idea }: InDevelopmentViewProps) {
-  const updateIdea = useIdeasStore((s) => s.updateIdea);
-  const addActivity = useActivityStore((s) => s.addActivity);
-  const session = useAgentSessionsStore((s) => s.getSession(idea.activeSessionId ?? ''));
-  const [highlightLine, setHighlightLine] = useState<number | undefined>();
+  const updateIdea = useIdeasStore((s) => s.updateIdea)
+  const addActivity = useActivityStore((s) => s.addActivity)
+  const session = useAgentSessionsStore((s) => s.getSession(idea.activeSessionId ?? ''))
+  const [highlightLine, setHighlightLine] = useState<number | undefined>()
 
-  const charterId = idea.linkedCharterId ?? '';
+  const charterId = idea.linkedCharterId ?? ''
 
-  const {
-    connect,
-    startBuild,
-    pauseBuild,
-    resumeBuild,
-    stopBuild,
-    sendMessage,
-  } = useAgentConnection({
-    sessionId: idea.activeSessionId ?? '',
-    charterId,
-    ideaId: idea.id,
-  });
+  const { connect, startBuild, pauseBuild, resumeBuild, stopBuild, sendMessage } =
+    useAgentConnection({
+      sessionId: idea.activeSessionId ?? '',
+      charterId,
+      ideaId: idea.id,
+    })
 
   const handleStart = () => {
-    connect();
+    connect()
     // Small delay to let WS connect, then start build
-    setTimeout(() => startBuild(), 500);
-  };
+    setTimeout(() => startBuild(), 500)
+  }
 
   const handleMoveToProduction = () => {
-    const now = new Date().toISOString();
-    updateIdea(idea.id, { status: 'production' });
+    const now = new Date().toISOString()
+    updateIdea(idea.id, { status: 'production' })
     addActivity({
       id: generateId(),
       type: 'moved-to-production',
@@ -53,16 +47,16 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
       entityType: 'idea',
       summary: `"${idea.title}" moved to production`,
       createdAt: now,
-    });
-  };
+    })
+  }
 
   const handleBackToCharter = () => {
-    updateIdea(idea.id, { status: 'on-deck' });
-  };
+    updateIdea(idea.id, { status: 'on-deck' })
+  }
 
-  const sessionStatus = session?.status ?? 'stopped';
-  const entries = session?.translatedEntries ?? [];
-  const rawLines = session?.rawOutput ?? [];
+  const sessionStatus = session?.status ?? 'stopped'
+  const entries = session?.translatedEntries ?? []
+  const rawLines = session?.rawOutput ?? []
 
   return (
     <div className="space-y-4">
@@ -74,8 +68,8 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
         onResume={resumeBuild}
         onStop={stopBuild}
         onConnect={() => {
-          connect();
-          setTimeout(() => startBuild(), 500);
+          connect()
+          setTimeout(() => startBuild(), 500)
         }}
       />
 
@@ -118,7 +112,7 @@ function InDevelopmentView({ idea }: InDevelopmentViewProps) {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default InDevelopmentView;
+export default InDevelopmentView

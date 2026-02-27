@@ -1,52 +1,62 @@
-import { useState } from 'react';
-import { Play, Pause, Square, RotateCw, Wifi, WifiOff } from 'lucide-react';
-import type { AgentSessionStatus } from '@/types';
+import { useState } from 'react'
+import { Play, Pause, Square, RotateCw, Wifi, WifiOff } from 'lucide-react'
+import type { AgentSessionStatus } from '@/types'
 
 interface AgentControlBarProps {
-  status: AgentSessionStatus;
-  onStart: () => void;
-  onPause: () => void;
-  onResume: () => void;
-  onStop: () => void;
-  onConnect: () => void;
+  status: AgentSessionStatus
+  onStart: () => void
+  onPause: () => void
+  onResume: () => void
+  onStop: () => void
+  onConnect: () => void
 }
 
-const STATUS_CONFIG: Record<AgentSessionStatus, { label: string; color: string; pulse: boolean }> = {
-  connecting: { label: 'Connecting', color: 'bg-[hsl(var(--queued))]', pulse: true },
-  connected: { label: 'Connected', color: 'bg-[hsl(var(--queued))]', pulse: false },
-  building: { label: 'Building', color: 'bg-[hsl(var(--active))]', pulse: true },
-  paused: { label: 'Paused', color: 'bg-amber-400', pulse: false },
-  complete: { label: 'Complete', color: 'bg-[hsl(var(--completed))]', pulse: false },
-  error: { label: 'Error', color: 'bg-[hsl(var(--error))]', pulse: false },
-  stopped: { label: 'Stopped', color: 'bg-[hsl(var(--idle))]', pulse: false },
-};
+const STATUS_CONFIG: Record<AgentSessionStatus, { label: string; color: string; pulse: boolean }> =
+  {
+    connecting: { label: 'Connecting', color: 'bg-[hsl(var(--queued))]', pulse: true },
+    connected: { label: 'Connected', color: 'bg-[hsl(var(--queued))]', pulse: false },
+    building: { label: 'Building', color: 'bg-[hsl(var(--active))]', pulse: true },
+    paused: { label: 'Paused', color: 'bg-amber-400', pulse: false },
+    complete: { label: 'Complete', color: 'bg-[hsl(var(--completed))]', pulse: false },
+    error: { label: 'Error', color: 'bg-[hsl(var(--error))]', pulse: false },
+    stopped: { label: 'Stopped', color: 'bg-[hsl(var(--idle))]', pulse: false },
+  }
 
-function AgentControlBar({ status, onStart, onPause, onResume, onStop, onConnect }: AgentControlBarProps) {
-  const [confirmStop, setConfirmStop] = useState(false);
-  const config = STATUS_CONFIG[status];
+function AgentControlBar({
+  status,
+  onStart,
+  onPause,
+  onResume,
+  onStop,
+  onConnect,
+}: AgentControlBarProps) {
+  const [confirmStop, setConfirmStop] = useState(false)
+  const config = STATUS_CONFIG[status]
 
-  const isDisconnected = status === 'stopped' || status === 'error';
-  const canStart = status === 'connected';
-  const canPause = status === 'building';
-  const canResume = status === 'paused';
-  const canStop = status === 'building' || status === 'paused';
+  const isDisconnected = status === 'stopped' || status === 'error'
+  const canStart = status === 'connected'
+  const canPause = status === 'building'
+  const canResume = status === 'paused'
+  const canStop = status === 'building' || status === 'paused'
 
   const handleStop = () => {
     if (confirmStop) {
-      onStop();
-      setConfirmStop(false);
+      onStop()
+      setConfirmStop(false)
     } else {
-      setConfirmStop(true);
-      setTimeout(() => setConfirmStop(false), 3000);
+      setConfirmStop(true)
+      setTimeout(() => setConfirmStop(false), 3000)
     }
-  };
+  }
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border px-5 py-3 flex items-center justify-between">
       {/* Status indicator */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <div className={`w-2.5 h-2.5 rounded-full ${config.color} ${config.pulse ? 'pulse-dot' : ''}`} />
+          <div
+            className={`w-2.5 h-2.5 rounded-full ${config.color} ${config.pulse ? 'pulse-dot' : ''}`}
+          />
           <span className="text-sm text-foreground font-light">{config.label}</span>
         </div>
         {(status === 'building' || status === 'connecting') && (
@@ -122,7 +132,7 @@ function AgentControlBar({ status, onStart, onPause, onResume, onStop, onConnect
         )}
       </div>
     </div>
-  );
+  )
 }
 
-export default AgentControlBar;
+export default AgentControlBar

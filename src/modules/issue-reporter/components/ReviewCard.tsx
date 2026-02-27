@@ -5,27 +5,27 @@
 // and severity badges, duplicate check, and screenshot attachment.
 // ============================================================================
 
-import { useState, useRef } from 'react';
-import { Bug, Sparkles, AlertTriangle, ChevronDown } from 'lucide-react';
-import DictationButton from '@/components/DictationButton';
-import { Badge } from '@/components/ui/badge';
-import GradientButton from '@/components/shared/GradientButton';
-import { useIssueReporterStore } from '../stores/issue-reporter';
-import { useReportedIssuesStore } from '../stores/issues';
-import { useActivityStore } from '@/stores/activity';
-import { useIssuesStore } from '@/stores/issues';
-import { useUsersStore } from '@/stores/users';
-import { generateId } from '@/lib/utils';
-import { mapReportToIssue } from '../lib/field-mapper';
-import { scoreAndEvaluate } from '@/modules/issue-scoring/lib/score-and-evaluate';
-import DuplicateCheck from './DuplicateCheck';
-import ScreenshotSection from './ScreenshotSection';
-import type { IssueSeverity } from '../types';
+import { useState, useRef } from 'react'
+import { Bug, Sparkles, AlertTriangle, ChevronDown } from 'lucide-react'
+import DictationButton from '@/components/DictationButton'
+import { Badge } from '@/components/ui/badge'
+import GradientButton from '@/components/shared/GradientButton'
+import { useIssueReporterStore } from '../stores/issue-reporter'
+import { useReportedIssuesStore } from '../stores/issues'
+import { useActivityStore } from '@/stores/activity'
+import { useIssuesStore } from '@/stores/issues'
+import { useUsersStore } from '@/stores/users'
+import { generateId } from '@/lib/utils'
+import { mapReportToIssue } from '../lib/field-mapper'
+import { scoreAndEvaluate } from '@/modules/issue-scoring/lib/score-and-evaluate'
+import DuplicateCheck from './DuplicateCheck'
+import ScreenshotSection from './ScreenshotSection'
+import type { IssueSeverity } from '../types'
 
 interface ReviewCardProps {
-  onRestart: () => void;
-  onCancel: () => void;
-  onSubmitted: (issueId: string) => void;
+  onRestart: () => void
+  onCancel: () => void
+  onSubmitted: (issueId: string) => void
 }
 
 const SEVERITY_COLORS: Record<IssueSeverity, string> = {
@@ -33,29 +33,29 @@ const SEVERITY_COLORS: Record<IssueSeverity, string> = {
   high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   medium: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   low: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
-const SEVERITY_OPTIONS: IssueSeverity[] = ['critical', 'high', 'medium', 'low'];
+const SEVERITY_OPTIONS: IssueSeverity[] = ['critical', 'high', 'medium', 'low']
 
 function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
-  const { report, updateReport, screenshot, projectId } = useIssueReporterStore();
-  const addReportedIssue = useReportedIssuesStore((s) => s.addIssue);
-  const addLegacyIssue = useIssuesStore((s) => s.addIssue);
-  const addActivity = useActivityStore((s) => s.addActivity);
-  const currentUser = useUsersStore((s) => s.getCurrentUser());
+  const { report, updateReport, screenshot, projectId } = useIssueReporterStore()
+  const addReportedIssue = useReportedIssuesStore((s) => s.addIssue)
+  const addLegacyIssue = useIssuesStore((s) => s.addIssue)
+  const addActivity = useActivityStore((s) => s.addActivity)
+  const currentUser = useUsersStore((s) => s.getCurrentUser())
 
-  const [showSeveritySelect, setShowSeveritySelect] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [linkedDuplicateId, setLinkedDuplicateId] = useState<string | null>(null);
-  const [showRestartConfirm, setShowRestartConfirm] = useState(false);
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showSeveritySelect, setShowSeveritySelect] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [linkedDuplicateId, setLinkedDuplicateId] = useState<string | null>(null)
+  const [showRestartConfirm, setShowRestartConfirm] = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
-  if (!report) return null;
+  if (!report) return null
 
-  const isBug = report.classification === 'bug';
+  const isBug = report.classification === 'bug'
 
   const handleSubmit = () => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     const reportedIssue = mapReportToIssue(report, {
       projectId,
@@ -64,10 +64,10 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
       userName: currentUser?.name ?? null,
       userEmail: currentUser?.email ?? null,
       linkedDuplicateId,
-    });
+    })
 
     // Store in the issue reporter's own store
-    addReportedIssue(reportedIssue);
+    addReportedIssue(reportedIssue)
 
     // Also add to the legacy issues store for compatibility with existing views
     addLegacyIssue({
@@ -81,7 +81,7 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
       createdAt: reportedIssue.created_at,
       updatedAt: reportedIssue.updated_at,
       comments: [],
-    });
+    })
 
     // Log activity
     addActivity({
@@ -91,19 +91,17 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
       entityType: 'issue',
       summary: `New ${isBug ? 'bug report' : 'feature request'}: "${report.title}"`,
       createdAt: new Date().toISOString(),
-    });
+    })
 
     // Score the issue async (non-blocking)
-    scoreAndEvaluate(reportedIssue).catch((err) =>
-      console.warn('Issue scoring failed:', err)
-    );
+    scoreAndEvaluate(reportedIssue).catch((err) => console.warn('Issue scoring failed:', err))
 
-    onSubmitted(reportedIssue.id);
-  };
+    onSubmitted(reportedIssue.id)
+  }
 
   const handleLinkDuplicate = (issueId: string) => {
-    setLinkedDuplicateId(issueId);
-  };
+    setLinkedDuplicateId(issueId)
+  }
 
   return (
     <section className="min-h-[calc(100vh-4rem)] flex flex-col justify-center px-4 sm:px-8 py-8 sm:py-16 max-w-3xl mx-auto w-full -mt-8">
@@ -127,7 +125,10 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
               onClick={() => setShowSeveritySelect(!showSeveritySelect)}
               className="flex items-center gap-1"
             >
-              <Badge variant="outline" className={`${SEVERITY_COLORS[report.severity]} capitalize cursor-pointer`}>
+              <Badge
+                variant="outline"
+                className={`${SEVERITY_COLORS[report.severity]} capitalize cursor-pointer`}
+              >
                 {report.severity}
                 <ChevronDown className="w-3 h-3 ml-1" />
               </Badge>
@@ -138,8 +139,8 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
                   <button
                     key={sev}
                     onClick={() => {
-                      updateReport({ severity: sev });
-                      setShowSeveritySelect(false);
+                      updateReport({ severity: sev })
+                      setShowSeveritySelect(false)
                     }}
                     className={`w-full px-3 py-1.5 text-sm text-left hover:bg-accent transition-colors capitalize ${
                       sev === report.severity ? 'text-primary' : 'text-foreground'
@@ -185,9 +186,9 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
                     <input
                       value={step}
                       onChange={(e) => {
-                        const updated = [...(report.steps_to_reproduce ?? [])];
-                        updated[i] = e.target.value;
-                        updateReport({ steps_to_reproduce: updated });
+                        const updated = [...(report.steps_to_reproduce ?? [])]
+                        updated[i] = e.target.value
+                        updateReport({ steps_to_reproduce: updated })
                       }}
                       className="flex-1 text-sm text-foreground bg-transparent border-b border-transparent hover:border-border focus:border-primary focus:outline-none transition-colors py-1"
                     />
@@ -258,7 +259,8 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
           <div className="mt-4 flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
             <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
             <p className="text-sm text-amber-300">
-              This will be linked to existing issue #{linkedDuplicateId} instead of creating a new issue.
+              This will be linked to existing issue #{linkedDuplicateId} instead of creating a new
+              issue.
             </p>
             <button
               onClick={() => setLinkedDuplicateId(null)}
@@ -294,7 +296,7 @@ function ReviewCard({ onRestart, onCancel, onSubmitted }: ReviewCardProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }
 
 // --- Helper Components ---
@@ -304,12 +306,12 @@ function EditableSection({
   value,
   onChange,
 }: {
-  label: string;
-  value: string;
-  onChange: (val: string) => void;
+  label: string
+  value: string
+  onChange: (val: string) => void
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const baseRef = useRef('');
+  const [isEditing, setIsEditing] = useState(false)
+  const baseRef = useRef('')
 
   return (
     <div>
@@ -329,15 +331,15 @@ function EditableSection({
           <div className="absolute right-2 bottom-2">
             <DictationButton
               onResult={(text) => {
-                const committed = baseRef.current + text;
-                baseRef.current = committed;
-                onChange(committed);
+                const committed = baseRef.current + text
+                baseRef.current = committed
+                onChange(committed)
               }}
               onInterim={(text) => {
-                if (text) onChange(baseRef.current + text);
+                if (text) onChange(baseRef.current + text)
               }}
               onListeningChange={(listening) => {
-                if (listening) baseRef.current = value;
+                if (listening) baseRef.current = value
               }}
             />
           </div>
@@ -351,7 +353,7 @@ function EditableSection({
         </p>
       )}
     </div>
-  );
+  )
 }
 
 function ConfirmButton({
@@ -361,11 +363,11 @@ function ConfirmButton({
   onToggle,
   onConfirm,
 }: {
-  label: string;
-  confirmLabel: string;
-  show: boolean;
-  onToggle: (show: boolean) => void;
-  onConfirm: () => void;
+  label: string
+  confirmLabel: string
+  show: boolean
+  onToggle: (show: boolean) => void
+  onConfirm: () => void
 }) {
   if (show) {
     return (
@@ -373,8 +375,8 @@ function ConfirmButton({
         <span className="text-xs text-muted-foreground">{confirmLabel}</span>
         <button
           onClick={() => {
-            onToggle(false);
-            onConfirm();
+            onToggle(false)
+            onConfirm()
           }}
           className="text-xs text-destructive hover:text-destructive/80 transition-colors"
         >
@@ -387,7 +389,7 @@ function ConfirmButton({
           No
         </button>
       </div>
-    );
+    )
   }
 
   return (
@@ -397,7 +399,7 @@ function ConfirmButton({
     >
       {label}
     </button>
-  );
+  )
 }
 
-export default ReviewCard;
+export default ReviewCard

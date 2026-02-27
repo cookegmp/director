@@ -1,15 +1,15 @@
-import { useParams, Link } from 'react-router-dom';
-import { useIdeasStore } from '@/stores/ideas';
-import IdeaDetailHeader from '@/components/idea-views/IdeaDetailHeader';
-import ScoredView from '@/components/idea-views/ScoredView';
-import CharterGeneratedView from '@/components/idea-views/CharterGeneratedView';
-import InDevelopmentView from '@/components/idea-views/InDevelopmentView';
-import ProductionView from '@/components/idea-views/ProductionView';
-import ArchivedView from '@/components/idea-views/ArchivedView';
+import { useParams, Link } from 'react-router-dom'
+import { useIdeasStore } from '@/stores/ideas'
+import IdeaDetailHeader from '@/components/idea-views/IdeaDetailHeader'
+import ScoredView from '@/components/idea-views/ScoredView'
+import CharterGeneratedView from '@/components/idea-views/CharterGeneratedView'
+import InDevelopmentView from '@/components/idea-views/InDevelopmentView'
+import ProductionView from '@/components/idea-views/ProductionView'
+import ArchivedView from '@/components/idea-views/ArchivedView'
 
 function IdeaDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const idea = useIdeasStore((s) => s.getIdea(id ?? ''));
+  const { id } = useParams<{ id: string }>()
+  const idea = useIdeasStore((s) => s.getIdea(id ?? ''))
 
   if (!idea) {
     return (
@@ -19,7 +19,7 @@ function IdeaDetailPage() {
           Back to Dashboard
         </Link>
       </div>
-    );
+    )
   }
 
   return (
@@ -27,22 +27,22 @@ function IdeaDetailPage() {
       <IdeaDetailHeader idea={idea} />
       {renderView(idea)}
     </div>
-  );
+  )
 }
 
 function renderView(idea: ReturnType<typeof useIdeasStore.getState>['ideas'][number]) {
   switch (idea.status) {
     case 'scored':
-      return <ScoredView idea={idea} />;
+      return <ScoredView idea={idea} />
     case 'on-deck':
-      return <CharterGeneratedView idea={idea} />;
+      return <CharterGeneratedView idea={idea} />
     case 'development':
-      return <InDevelopmentView idea={idea} />;
+      return <InDevelopmentView idea={idea} />
     case 'production':
-      return <ProductionView idea={idea} />;
+      return <ProductionView idea={idea} />
     case 'archived':
-      return <ArchivedView idea={idea} />;
+      return <ArchivedView idea={idea} />
   }
 }
 
-export default IdeaDetailPage;
+export default IdeaDetailPage

@@ -5,32 +5,36 @@
 // what to ask next. Transitions to ReviewCard on completion.
 // ============================================================================
 
-import { useState, useCallback, useEffect } from 'react';
-import { ArrowLeft, Bug, Lightbulb } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react'
+import { ArrowLeft, Bug, Lightbulb } from 'lucide-react'
 import {
   WizardCard,
   WizardStepDots,
   WizardInput,
   WizardSuggestionTags,
   WizardActionBar,
-} from '@/components/shared/wizard';
-import { useIssueReporterStore } from '../stores/issue-reporter';
-import { sendConversationMessage } from '../lib/ai-conversation';
-import { mapAIResponseToReport } from '../lib/field-mapper';
-import ReviewCard from './ReviewCard';
-import ConfirmationView from './ConfirmationView';
-import type { IssueClassification } from '../types';
+} from '@/components/shared/wizard'
+import { useIssueReporterStore } from '../stores/issue-reporter'
+import { sendConversationMessage } from '../lib/ai-conversation'
+import { mapAIResponseToReport } from '../lib/field-mapper'
+import ReviewCard from './ReviewCard'
+import ConfirmationView from './ConfirmationView'
+import type { IssueClassification } from '../types'
 
 interface IssueReporterWizardProps {
-  projectId?: string | null;
-  appName?: string | null;
-  onCancel?: () => void;
+  projectId?: string | null
+  appName?: string | null
+  onCancel?: () => void
 }
 
-function IssueReporterWizard({ projectId = null, appName = null, onCancel }: IssueReporterWizardProps) {
-  const [currentAnswer, setCurrentAnswer] = useState('');
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [submittedIssueId, setSubmittedIssueId] = useState<string | null>(null);
+function IssueReporterWizard({
+  projectId = null,
+  appName = null,
+  onCancel,
+}: IssueReporterWizardProps) {
+  const [currentAnswer, setCurrentAnswer] = useState('')
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [submittedIssueId, setSubmittedIssueId] = useState<string | null>(null)
 
   const {
     phase,
@@ -52,98 +56,104 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
     setLoading,
     setError,
     reset,
-  } = useIssueReporterStore();
+  } = useIssueReporterStore()
 
   // Show type selection on mount
   useEffect(() => {
     if (phase === 'idle') {
-      setProjectId(projectId ?? null);
-      setAppName(appName ?? null);
-      setPhase('type-select');
+      setProjectId(projectId ?? null)
+      setAppName(appName ?? null)
+      setPhase('type-select')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
-  const initConversation = useCallback(async (selectedType: IssueClassification) => {
-    setPhase('initializing');
-    setLoading(true);
-    setError(null);
+  const initConversation = useCallback(
+    async (selectedType: IssueClassification) => {
+      setPhase('initializing')
+      setLoading(true)
+      setError(null)
 
-    try {
-      const response = await sendConversationMessage([], projectId ?? null, selectedType, appName ?? null);
+      try {
+        const response = await sendConversationMessage(
+          [],
+          projectId ?? null,
+          selectedType,
+          appName ?? null,
+        )
 
-      if (!response.done) {
-        addMessage({ role: 'assistant', content: response.question });
+        if (!response.done) {
+          addMessage({ role: 'assistant', content: response.question })
+          setCurrentQuestion(response.question, response.suggestions, response.helper_text)
+          setPhase('conversing')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to initialize conversation')
+        setPhase('conversing')
+        const fallbackQuestion =
+          selectedType === 'bug'
+            ? 'Tell me about the bug you encountered. What happened?'
+            : 'Tell me about the feature you have in mind. What would it do?'
+        addMessage({ role: 'assistant', content: fallbackQuestion })
         setCurrentQuestion(
-          response.question,
-          response.suggestions,
-          response.helper_text
-        );
-        setPhase('conversing');
+          fallbackQuestion,
+          selectedType === 'bug'
+            ? ['Something is broken', 'I see an error', 'Something is slow or confusing']
+            : ['Workflow improvement', 'New capability', 'UI/UX enhancement'],
+          null,
+        )
+      } finally {
+        setLoading(false)
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to initialize conversation');
-      setPhase('conversing');
-      const fallbackQuestion = selectedType === 'bug'
-        ? 'Tell me about the bug you encountered. What happened?'
-        : 'Tell me about the feature you have in mind. What would it do?';
-      addMessage({ role: 'assistant', content: fallbackQuestion });
-      setCurrentQuestion(
-        fallbackQuestion,
-        selectedType === 'bug'
-          ? ['Something is broken', 'I see an error', 'Something is slow or confusing']
-          : ['Workflow improvement', 'New capability', 'UI/UX enhancement'],
-        null
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId, appName, setPhase, setLoading, setError, setCurrentQuestion, addMessage]);
+    },
+    [projectId, appName, setPhase, setLoading, setError, setCurrentQuestion, addMessage],
+  )
 
   const handleSelectType = (type: IssueClassification) => {
-    setIssueType(type);
-    initConversation(type);
-  };
+    setIssueType(type)
+    initConversation(type)
+  }
 
   const handleSubmitAnswer = useCallback(async () => {
-    if (!currentAnswer.trim() || isLoading) return;
+    if (!currentAnswer.trim() || isLoading) return
 
-    const userMessage = currentAnswer.trim();
-    setCurrentAnswer('');
-    setSelectedTag(null);
+    const userMessage = currentAnswer.trim()
+    setCurrentAnswer('')
+    setSelectedTag(null)
 
-    addMessage({ role: 'user', content: userMessage });
-    incrementStep();
-    setLoading(true);
-    setError(null);
+    addMessage({ role: 'user', content: userMessage })
+    incrementStep()
+    setLoading(true)
+    setError(null)
 
     try {
       // Read current messages from store to avoid stale closure
-      const store = useIssueReporterStore.getState();
-      const response = await sendConversationMessage(store.messages, projectId ?? null, store.issueType, store.appName);
+      const store = useIssueReporterStore.getState()
+      const response = await sendConversationMessage(
+        store.messages,
+        projectId ?? null,
+        store.issueType,
+        store.appName,
+      )
 
       if (response.done) {
         addMessage({
           role: 'assistant',
           content: JSON.stringify(response),
-        });
-        const issueReport = mapAIResponseToReport(response);
-        setReport(issueReport);
+        })
+        const issueReport = mapAIResponseToReport(response)
+        setReport(issueReport)
       } else {
         addMessage({
           role: 'assistant',
           content: response.question,
-        });
-        setCurrentQuestion(
-          response.question,
-          response.suggestions,
-          response.helper_text
-        );
+        })
+        setCurrentQuestion(response.question, response.suggestions, response.helper_text)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get AI response');
+      setError(err instanceof Error ? err.message : 'Failed to get AI response')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }, [
     currentAnswer,
@@ -155,42 +165,42 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
     setError,
     setCurrentQuestion,
     setReport,
-  ]);
+  ])
 
   const handleTagClick = (tag: string) => {
-    setCurrentAnswer(tag);
-    setSelectedTag(tag);
-  };
+    setCurrentAnswer(tag)
+    setSelectedTag(tag)
+  }
 
   const handleRestart = () => {
-    reset();
-    setCurrentAnswer('');
-    setSelectedTag(null);
-    setSubmittedIssueId(null);
+    reset()
+    setCurrentAnswer('')
+    setSelectedTag(null)
+    setSubmittedIssueId(null)
     // Go back to type selection
     setTimeout(() => {
-      setProjectId(projectId ?? null);
-      setAppName(appName ?? null);
-      setPhase('type-select');
-    }, 50);
-  };
+      setProjectId(projectId ?? null)
+      setAppName(appName ?? null)
+      setPhase('type-select')
+    }, 50)
+  }
 
   const handleCancel = () => {
-    reset();
-    onCancel?.();
-  };
+    reset()
+    onCancel?.()
+  }
 
   // Keyboard shortcut
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && e.metaKey && phase === 'conversing') {
-        e.preventDefault();
-        handleSubmitAnswer();
+        e.preventDefault()
+        handleSubmitAnswer()
       }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSubmitAnswer, phase]);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleSubmitAnswer, phase])
 
   // Confirmation view after submission
   if (submittedIssueId) {
@@ -200,7 +210,7 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
         onReportAnother={handleRestart}
         onClose={handleCancel}
       />
-    );
+    )
   }
 
   // Review card after AI completion
@@ -211,7 +221,7 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
         onCancel={handleCancel}
         onSubmitted={(issueId) => setSubmittedIssueId(issueId)}
       />
-    );
+    )
   }
 
   // Type selection
@@ -254,7 +264,7 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
           </button>
         </div>
       </WizardCard>
-    );
+    )
   }
 
   // Conversation wizard
@@ -282,7 +292,7 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
             <span className="text-muted-foreground">Preparing your first question...</span>
           </span>
         ) : (
-          currentQuestion ?? 'What would you like to report?'
+          (currentQuestion ?? 'What would you like to report?')
         )}
       </h2>
 
@@ -295,8 +305,8 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
       <WizardInput
         value={currentAnswer}
         onChange={(val) => {
-          setCurrentAnswer(val);
-          setSelectedTag(null);
+          setCurrentAnswer(val)
+          setSelectedTag(null)
         }}
         placeholder="Type your response..."
         onSubmit={handleSubmitAnswer}
@@ -311,9 +321,7 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
       />
 
       {/* Error message */}
-      {error && (
-        <p className="text-sm text-destructive mt-3">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive mt-3">{error}</p>}
 
       {/* Action bar */}
       <WizardActionBar
@@ -323,7 +331,7 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
         submitLabel="Send"
       />
     </WizardCard>
-  );
+  )
 }
 
-export default IssueReporterWizard;
+export default IssueReporterWizard

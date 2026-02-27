@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import { ArchiveRestore } from 'lucide-react';
-import { useIdeasStore } from '@/stores/ideas';
-import type { Idea } from '@/types';
+import { useNavigate } from 'react-router-dom'
+import { ArchiveRestore } from 'lucide-react'
+import { useIdeasStore } from '@/stores/ideas'
+import type { Idea } from '@/types'
 
 const STEP_LABELS: Record<string, string> = {
   problem: 'Problem / Opportunity',
@@ -10,21 +10,21 @@ const STEP_LABELS: Record<string, string> = {
   'desired-outcome': 'Desired Outcome',
   constraints: 'Constraints',
   urgency: 'Urgency',
-};
+}
 
 interface ArchivedViewProps {
-  idea: Idea;
+  idea: Idea
 }
 
 function ArchivedView({ idea }: ArchivedViewProps) {
-  const navigate = useNavigate();
-  const updateIdea = useIdeasStore((s) => s.updateIdea);
+  const navigate = useNavigate()
+  const updateIdea = useIdeasStore((s) => s.updateIdea)
 
   const handleUnarchive = () => {
     // Restore to scored (safest fallback)
-    updateIdea(idea.id, { status: 'scored' });
-    navigate(`/ideas/${idea.id}`);
-  };
+    updateIdea(idea.id, { status: 'scored' })
+    navigate(`/ideas/${idea.id}`)
+  }
 
   return (
     <div className="space-y-6">
@@ -36,7 +36,7 @@ function ArchivedView({ idea }: ArchivedViewProps) {
         <h2 className="text-lg font-light text-foreground mb-4">Intake Summary</h2>
         <div className="space-y-4">
           {Object.entries(idea.intakeAnswers).map(([stepId, answer]) => {
-            if (!answer) return null;
+            if (!answer) return null
             return (
               <div key={stepId}>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">
@@ -44,7 +44,7 @@ function ArchivedView({ idea }: ArchivedViewProps) {
                 </h3>
                 <p className="text-foreground/70 font-light">{answer}</p>
               </div>
-            );
+            )
           })}
         </div>
       </div>
@@ -59,7 +59,7 @@ function ArchivedView({ idea }: ArchivedViewProps) {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default ArchivedView;
+export default ArchivedView

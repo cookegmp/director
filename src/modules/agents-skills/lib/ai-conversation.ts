@@ -5,55 +5,57 @@
 // Falls back to mock conversations when API key is not configured.
 // ============================================================================
 
-import { useSettingsStore } from '@/stores/settings';
-import { useAgentsSkillsStore } from '@/stores/agents-skills';
+import { useSettingsStore } from '@/stores/settings'
+import { useAgentsSkillsStore } from '@/stores/agents-skills'
 
-export type CreationType = 'agent' | 'skill';
+export type CreationType = 'agent' | 'skill'
 
 export interface ConversationMessage {
-  role: 'user' | 'assistant';
-  content: string;
+  role: 'user' | 'assistant'
+  content: string
 }
 
 export type AIResponse =
   | {
-      done: false;
-      question: string;
-      suggestions: string[];
-      helper_text: string | null;
+      done: false
+      question: string
+      suggestions: string[]
+      helper_text: string | null
     }
   | AgentCompletionResponse
-  | SkillCompletionResponse;
+  | SkillCompletionResponse
 
 export interface AgentCompletionResponse {
-  done: true;
-  type: 'agent';
-  name: string;
-  description: string;
-  model: string;
-  systemPrompt: string;
-  tools: string[];
-  maxTurns: number;
+  done: true
+  type: 'agent'
+  name: string
+  description: string
+  model: string
+  systemPrompt: string
+  tools: string[]
+  maxTurns: number
 }
 
 export interface SkillCompletionResponse {
-  done: true;
-  type: 'skill';
-  name: string;
-  description: string;
-  trigger: string;
-  instructions: string;
-  agentId: string | null;
+  done: true
+  type: 'skill'
+  name: string
+  description: string
+  trigger: string
+  instructions: string
+  agentId: string | null
 }
 
-const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions'
 
 function buildSystemPrompt(creationType: CreationType): string {
-  const agents = useAgentsSkillsStore.getState().agents;
-  const skills = useAgentsSkillsStore.getState().skills;
+  const agents = useAgentsSkillsStore.getState().agents
+  const skills = useAgentsSkillsStore.getState().skills
 
-  const agentsList = agents.map((a) => `- ${a.name} (${a.status}): ${a.description}`).join('\n');
-  const skillsList = skills.map((s) => `- ${s.name} → trigger: ${s.trigger}, agent: ${s.agentId || 'none'}`).join('\n');
+  const agentsList = agents.map((a) => `- ${a.name} (${a.status}): ${a.description}`).join('\n')
+  const skillsList = skills
+    .map((s) => `- ${s.name} → trigger: ${s.trigger}, agent: ${s.agentId || 'none'}`)
+    .join('\n')
 
   if (creationType === 'agent') {
     return `You are an AI configuration specialist helping a user define a new agent for their development operations platform (StageManager). An agent is an AI-powered worker that performs specific tasks — like generating charters, scoring issues, or translating build output.
@@ -120,7 +122,7 @@ When you have enough information:
   "maxTurns": 10
 }
 
-Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`;
+Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`
   }
 
   return `You are an AI configuration specialist helping a user define a new skill for their development operations platform (StageManager). A skill is a triggered capability that can be invoked by users or the system — like generating a charter, scoring an issue, or checking for duplicates. Skills are optionally linked to agents.
@@ -169,42 +171,42 @@ When you have enough information:
   "agentId": "agent-id or null"
 }
 
-Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`;
+Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`
 }
 
 function buildMessages(
   systemPrompt: string,
   conversationHistory: ConversationMessage[],
-  creationType: CreationType
+  creationType: CreationType,
 ): Array<{ role: string; content: string }> {
   const messages: Array<{ role: string; content: string }> = [
     { role: 'system', content: systemPrompt },
-  ];
+  ]
 
   if (conversationHistory.length === 0) {
     const initMessage =
       creationType === 'agent'
         ? 'The user wants to create a new agent. Start by asking what task or capability the agent should handle.'
-        : 'The user wants to create a new skill. Start by asking what the skill should do.';
-    messages.push({ role: 'user', content: initMessage });
+        : 'The user wants to create a new skill. Start by asking what the skill should do.'
+    messages.push({ role: 'user', content: initMessage })
   } else {
     for (const msg of conversationHistory) {
-      messages.push({ role: msg.role, content: msg.content });
+      messages.push({ role: msg.role, content: msg.content })
     }
   }
 
-  return messages;
+  return messages
 }
 
 function parseAIResponse(content: string): AIResponse {
   try {
-    return JSON.parse(content) as AIResponse;
+    return JSON.parse(content) as AIResponse
   } catch {
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]) as AIResponse;
+      return JSON.parse(jsonMatch[0]) as AIResponse
     }
-    throw new Error('Failed to parse AI response as JSON');
+    throw new Error('Failed to parse AI response as JSON')
   }
 }
 
@@ -213,12 +215,18 @@ const MOCK_AGENT_FLOW: AIResponse[] = [
   {
     done: false,
     question: 'What task or capability should this new agent handle?',
-    suggestions: ['Code review', 'Documentation generation', 'Test writing', 'Deployment verification'],
+    suggestions: [
+      'Code review',
+      'Documentation generation',
+      'Test writing',
+      'Deployment verification',
+    ],
     helper_text: 'Think about a specific responsibility you want to automate.',
   },
   {
     done: false,
-    question: 'How complex are the tasks this agent will perform? This helps determine the right model.',
+    question:
+      'How complex are the tasks this agent will perform? This helps determine the right model.',
     suggestions: ['Complex reasoning needed', 'Straightforward analysis', 'Pattern matching'],
     helper_text: 'Complex tasks benefit from Sonnet; simpler tasks can use the faster Haiku model.',
   },
@@ -232,73 +240,83 @@ const MOCK_AGENT_FLOW: AIResponse[] = [
     done: true,
     type: 'agent',
     name: 'Code Reviewer',
-    description: 'Performs automated code review on new changes, checking for quality, patterns, and potential issues.',
+    description:
+      'Performs automated code review on new changes, checking for quality, patterns, and potential issues.',
     model: 'anthropic/claude-sonnet-4',
-    systemPrompt: 'You are a code review specialist. Analyze code changes for quality, adherence to patterns, potential bugs, and suggest improvements.',
+    systemPrompt:
+      'You are a code review specialist. Analyze code changes for quality, adherence to patterns, potential bugs, and suggest improvements.',
     tools: ['code-analyzer', 'context-assembler', 'pattern-matcher'],
     maxTurns: 8,
   },
-];
+]
 
 const MOCK_SKILL_FLOW: AIResponse[] = [
   {
     done: false,
     question: 'What should this skill do when triggered?',
-    suggestions: ['Run a health check', 'Generate a report', 'Analyze code quality', 'Create documentation'],
+    suggestions: [
+      'Run a health check',
+      'Generate a report',
+      'Analyze code quality',
+      'Create documentation',
+    ],
     helper_text: 'Skills are triggered actions that perform a specific task.',
   },
   {
     done: false,
     question: 'What slash command should trigger this skill?',
     suggestions: ['/health-check', '/report', '/analyze', '/docs'],
-    helper_text: 'Choose a short, memorable command. It will be available to users in the interface.',
+    helper_text:
+      'Choose a short, memorable command. It will be available to users in the interface.',
   },
   {
     done: false,
     question: 'Should this skill be linked to an existing agent, or run independently?',
     suggestions: ['Link to Charter Architect', 'Link to Issue Scorer', 'Run independently'],
-    helper_text: 'Linking to an agent gives the skill access to that agent\'s capabilities.',
+    helper_text: "Linking to an agent gives the skill access to that agent's capabilities.",
   },
   {
     done: true,
     type: 'skill',
     name: 'Health Check',
-    description: 'Runs a health check across all configured environment servers and reports their status.',
+    description:
+      'Runs a health check across all configured environment servers and reports their status.',
     trigger: '/health-check',
-    instructions: 'Connect to each configured environment server. Test connectivity, check agent availability, and report back with a summary of each server\'s health status.',
+    instructions:
+      "Connect to each configured environment server. Test connectivity, check agent availability, and report back with a summary of each server's health status.",
     agentId: null,
   },
-];
+]
 
 function getMockResponse(
   conversationHistory: ConversationMessage[],
-  creationType: CreationType
+  creationType: CreationType,
 ): AIResponse {
-  const flow = creationType === 'agent' ? MOCK_AGENT_FLOW : MOCK_SKILL_FLOW;
+  const flow = creationType === 'agent' ? MOCK_AGENT_FLOW : MOCK_SKILL_FLOW
   // Step = number of user messages
-  const userMessages = conversationHistory.filter((m) => m.role === 'user').length;
-  const idx = Math.min(userMessages, flow.length - 1);
-  return flow[idx];
+  const userMessages = conversationHistory.filter((m) => m.role === 'user').length
+  const idx = Math.min(userMessages, flow.length - 1)
+  return flow[idx]
 }
 
 export async function sendConversationMessage(
   conversationHistory: ConversationMessage[],
-  creationType: CreationType
+  creationType: CreationType,
 ): Promise<AIResponse> {
-  const { aiSettings } = useSettingsStore.getState();
+  const { aiSettings } = useSettingsStore.getState()
   const useMock =
     import.meta.env.VITE_USE_MOCK_DATA !== 'false' ||
     !aiSettings.openrouterApiKey ||
     aiSettings.keyStatus !== 'valid' ||
-    !aiSettings.conversationEnabled;
+    !aiSettings.conversationEnabled
 
   if (useMock) {
-    await new Promise((r) => setTimeout(r, 600 + Math.random() * 600));
-    return getMockResponse(conversationHistory, creationType);
+    await new Promise((r) => setTimeout(r, 600 + Math.random() * 600))
+    return getMockResponse(conversationHistory, creationType)
   }
 
-  const systemPrompt = buildSystemPrompt(creationType);
-  const messages = buildMessages(systemPrompt, conversationHistory, creationType);
+  const systemPrompt = buildSystemPrompt(creationType)
+  const messages = buildMessages(systemPrompt, conversationHistory, creationType)
 
   const response = await fetch(OPENROUTER_API, {
     method: 'POST',
@@ -314,18 +332,18 @@ export async function sendConversationMessage(
       max_tokens: 2048,
       temperature: 0.4,
     }),
-  });
+  })
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`OpenRouter error ${response.status}: ${errorText}`);
+    const errorText = await response.text()
+    throw new Error(`OpenRouter error ${response.status}: ${errorText}`)
   }
 
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  const data = await response.json()
+  const content = data.choices?.[0]?.message?.content
   if (!content) {
-    throw new Error('Empty response from AI');
+    throw new Error('Empty response from AI')
   }
 
-  return parseAIResponse(content);
+  return parseAIResponse(content)
 }

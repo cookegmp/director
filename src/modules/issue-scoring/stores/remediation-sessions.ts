@@ -4,23 +4,23 @@
 // Tracks active and queued auto-remediation sessions.
 // ============================================================================
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { RemediationSession, RemediationStatus } from '../types';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { RemediationSession, RemediationStatus } from '../types'
 
 interface RemediationSessionsState {
-  sessions: RemediationSession[];
-  queue: string[];
-  addSession: (session: RemediationSession) => void;
-  updateSession: (id: string, updates: Partial<RemediationSession>) => void;
-  getActiveSessionsCount: () => number;
-  getSessionForIssue: (issueId: string) => RemediationSession | undefined;
-  getQueuedIssues: () => string[];
-  addToQueue: (issueId: string) => void;
-  removeFromQueue: (issueId: string) => void;
+  sessions: RemediationSession[]
+  queue: string[]
+  addSession: (session: RemediationSession) => void
+  updateSession: (id: string, updates: Partial<RemediationSession>) => void
+  getActiveSessionsCount: () => number
+  getSessionForIssue: (issueId: string) => RemediationSession | undefined
+  getQueuedIssues: () => string[]
+  addToQueue: (issueId: string) => void
+  removeFromQueue: (issueId: string) => void
 }
 
-const ACTIVE_STATUSES: RemediationStatus[] = ['approved', 'triggered', 'in_progress'];
+const ACTIVE_STATUSES: RemediationStatus[] = ['approved', 'triggered', 'in_progress']
 
 export const useRemediationSessionsStore = create<RemediationSessionsState>()(
   persist(
@@ -28,21 +28,17 @@ export const useRemediationSessionsStore = create<RemediationSessionsState>()(
       sessions: [],
       queue: [],
 
-      addSession: (session) =>
-        set((state) => ({ sessions: [...state.sessions, session] })),
+      addSession: (session) => set((state) => ({ sessions: [...state.sessions, session] })),
 
       updateSession: (id, updates) =>
         set((state) => ({
-          sessions: state.sessions.map((s) =>
-            s.id === id ? { ...s, ...updates } : s
-          ),
+          sessions: state.sessions.map((s) => (s.id === id ? { ...s, ...updates } : s)),
         })),
 
       getActiveSessionsCount: () =>
         get().sessions.filter((s) => ACTIVE_STATUSES.includes(s.status)).length,
 
-      getSessionForIssue: (issueId) =>
-        get().sessions.find((s) => s.issue_id === issueId),
+      getSessionForIssue: (issueId) => get().sessions.find((s) => s.issue_id === issueId),
 
       getQueuedIssues: () => get().queue,
 
@@ -56,6 +52,6 @@ export const useRemediationSessionsStore = create<RemediationSessionsState>()(
           queue: state.queue.filter((id) => id !== issueId),
         })),
     }),
-    { name: 'stagemanager-remediation-sessions' }
-  )
-);
+    { name: 'stagemanager-remediation-sessions' },
+  ),
+)

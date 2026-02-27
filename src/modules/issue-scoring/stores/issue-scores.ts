@@ -4,18 +4,22 @@
 // Stores computed scores for each issue.
 // ============================================================================
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { IssueScore, RemediationStatus } from '../types';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { IssueScore, RemediationStatus } from '../types'
 
 interface IssueScoresState {
-  scores: IssueScore[];
-  addScore: (score: IssueScore) => void;
-  updateScore: (issueId: string, updates: Partial<IssueScore>) => void;
-  getScore: (issueId: string) => IssueScore | undefined;
-  getScoresByProject: (projectId: string, issueIds: string[]) => IssueScore[];
-  removeScore: (issueId: string) => void;
-  setRemediationStatus: (issueId: string, status: RemediationStatus | null, sessionId?: string | null) => void;
+  scores: IssueScore[]
+  addScore: (score: IssueScore) => void
+  updateScore: (issueId: string, updates: Partial<IssueScore>) => void
+  getScore: (issueId: string) => IssueScore | undefined
+  getScoresByProject: (projectId: string, issueIds: string[]) => IssueScore[]
+  removeScore: (issueId: string) => void
+  setRemediationStatus: (
+    issueId: string,
+    status: RemediationStatus | null,
+    sessionId?: string | null,
+  ) => void
 }
 
 export const useIssueScoresStore = create<IssueScoresState>()(
@@ -26,15 +30,13 @@ export const useIssueScoresStore = create<IssueScoresState>()(
       addScore: (score) =>
         set((state) => {
           // Replace existing score for the same issue
-          const filtered = state.scores.filter((s) => s.issue_id !== score.issue_id);
-          return { scores: [...filtered, score] };
+          const filtered = state.scores.filter((s) => s.issue_id !== score.issue_id)
+          return { scores: [...filtered, score] }
         }),
 
       updateScore: (issueId, updates) =>
         set((state) => ({
-          scores: state.scores.map((s) =>
-            s.issue_id === issueId ? { ...s, ...updates } : s
-          ),
+          scores: state.scores.map((s) => (s.issue_id === issueId ? { ...s, ...updates } : s)),
         })),
 
       getScore: (issueId) => get().scores.find((s) => s.issue_id === issueId),
@@ -56,10 +58,10 @@ export const useIssueScoresStore = create<IssueScoresState>()(
                   remediation_status: status,
                   ...(sessionId !== undefined ? { remediation_session_id: sessionId } : {}),
                 }
-              : s
+              : s,
           ),
         })),
     }),
-    { name: 'stagemanager-issue-scores' }
-  )
-);
+    { name: 'stagemanager-issue-scores' },
+  ),
+)

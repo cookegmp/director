@@ -4,21 +4,21 @@
 // Post-submission confirmation with link to the new issue.
 // ============================================================================
 
-import { CheckCircle, ArrowRight, Plus, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { WizardCard } from '@/components/shared/wizard';
-import GradientButton from '@/components/shared/GradientButton';
-import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
-import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge';
+import { CheckCircle, ArrowRight, Plus, Loader2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { WizardCard } from '@/components/shared/wizard'
+import GradientButton from '@/components/shared/GradientButton'
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores'
+import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge'
 
 interface ConfirmationViewProps {
-  issueId: string;
-  onReportAnother: () => void;
-  onClose?: () => void;
+  issueId: string
+  onReportAnother: () => void
+  onClose?: () => void
 }
 
 function ConfirmationView({ issueId, onReportAnother, onClose }: ConfirmationViewProps) {
-  const score = useIssueScoresStore((s) => s.scores.find((sc) => sc.issue_id === issueId));
+  const score = useIssueScoresStore((s) => s.scores.find((sc) => sc.issue_id === issueId))
 
   return (
     <WizardCard>
@@ -28,9 +28,7 @@ function ConfirmationView({ issueId, onReportAnother, onClose }: ConfirmationVie
           <CheckCircle className="w-8 h-8 text-emerald-400" />
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-light text-foreground mb-2">
-          Report Submitted
-        </h2>
+        <h2 className="text-xl sm:text-2xl font-light text-foreground mb-2">Report Submitted</h2>
         <p className="text-sm text-muted-foreground mb-4">
           Your issue has been filed and the development team will be notified.
         </p>
@@ -76,7 +74,7 @@ function ConfirmationView({ issueId, onReportAnother, onClose }: ConfirmationVie
         </div>
       </div>
     </WizardCard>
-  );
+  )
 }
 
-export default ConfirmationView;
+export default ConfirmationView

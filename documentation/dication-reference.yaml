@@ -5,7 +5,7 @@
 # implementing speech-to-text dictation on input fields.
 # ============================================================================
 
-feature: "Voice Dictation"
+feature: 'Voice Dictation'
 purpose: >
   Let users speak instead of type when filling in prompt fields, search boxes,
   notes, and other text inputs. Uses the browser's built-in Web Speech API —
@@ -15,58 +15,58 @@ purpose: >
 # HOW IT WORKS
 # ============================================================================
 technology:
-  api: "Web Speech API (SpeechRecognition interface)"
-  reference: "https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition"
+  api: 'Web Speech API (SpeechRecognition interface)'
+  reference: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition'
   browser_support:
     chrome: true
     edge: true
     firefox: false
-    safari: "partial"
+    safari: 'partial'
   notes:
-    - "Built into Chromium browsers — zero npm packages required"
+    - 'Built into Chromium browsers — zero npm packages required'
     - "Audio is processed by the browser's speech engine (Chrome uses Google servers)"
-    - "Returns streaming interim results as the user speaks"
-    - "Final result emitted when user pauses or stops"
-    - "Requires user gesture to start (click/tap) — cannot auto-activate"
-    - "Browser prompts for microphone permission on first use"
+    - 'Returns streaming interim results as the user speaks'
+    - 'Final result emitted when user pauses or stops'
+    - 'Requires user gesture to start (click/tap) — cannot auto-activate'
+    - 'Browser prompts for microphone permission on first use'
 
 # ============================================================================
 # IMPLEMENTATION
 # ============================================================================
 implementation:
-  pattern: "Custom React hook + reusable button component"
+  pattern: 'Custom React hook + reusable button component'
 
   hook:
-    name: "useDictation"
-    file: "src/hooks/useDictation.ts"
+    name: 'useDictation'
+    file: 'src/hooks/useDictation.ts'
     returns:
-      transcript: "string — accumulated transcription text"
-      interimText: "string — in-progress text (updates as user speaks)"
-      isListening: "boolean — true while microphone is active"
-      isSupported: "boolean — false if browser lacks Web Speech API"
-      error: "string | null — error message if something fails"
-      startListening: "() => void — begin recording"
-      stopListening: "() => void — stop recording"
-      resetTranscript: "() => void — clear accumulated text"
+      transcript: 'string — accumulated transcription text'
+      interimText: 'string — in-progress text (updates as user speaks)'
+      isListening: 'boolean — true while microphone is active'
+      isSupported: 'boolean — false if browser lacks Web Speech API'
+      error: 'string | null — error message if something fails'
+      startListening: '() => void — begin recording'
+      stopListening: '() => void — stop recording'
+      resetTranscript: '() => void — clear accumulated text'
     config:
-      language: "en-US"
+      language: 'en-US'
       continuous: false
       interimResults: true
 
   component:
-    name: "DictationButton"
-    file: "src/components/DictationButton.tsx"
+    name: 'DictationButton'
+    file: 'src/components/DictationButton.tsx'
     behavior:
-      - "Renders a microphone icon button"
-      - "Click toggles listening on/off"
+      - 'Renders a microphone icon button'
+      - 'Click toggles listening on/off'
       - "Pulses with the application's primary accent color while active"
-      - "Accepts an onResult callback — passes final transcript to parent"
+      - 'Accepts an onResult callback — passes final transcript to parent'
       - "Shows tooltip: 'Dictate' when idle, 'Listening...' when active"
-      - "Hidden automatically when isSupported is false"
+      - 'Hidden automatically when isSupported is false'
     props:
-      onResult: "(text: string) => void — called with final transcript"
-      className: "string — optional additional styling"
-      disabled: "boolean — optional disable state"
+      onResult: '(text: string) => void — called with final transcript'
+      className: 'string — optional additional styling'
+      disabled: 'boolean — optional disable state'
 
 # ============================================================================
 # USAGE PATTERN
@@ -93,21 +93,21 @@ implementation:
 # STYLING
 # ============================================================================
 styling:
-  icon: "Microphone (use whichever icon library the application already uses)"
-  active_animation: "pulse"
-  size: "matches adjacent input height"
-  placement: "inline, right side of target input field"
+  icon: 'Microphone (use whichever icon library the application already uses)'
+  active_animation: 'pulse'
+  size: 'matches adjacent input height'
+  placement: 'inline, right side of target input field'
   colors: "Match the existing application theme — reference the app's Tailwind config or CSS variables for primary, hover, and active states"
 
 # ============================================================================
 # CONSTRAINTS
 # ============================================================================
 do_not:
-  - "Do not install any npm packages for this — Web Speech API is browser-native"
-  - "Do not request microphone on page load — only on user click"
-  - "Do not store or transmit audio — the browser handles everything"
-  - "Do not block UI or show loading spinners — results stream in real-time"
-  - "Do not render DictationButton if isSupported is false"
+  - 'Do not install any npm packages for this — Web Speech API is browser-native'
+  - 'Do not request microphone on page load — only on user click'
+  - 'Do not store or transmit audio — the browser handles everything'
+  - 'Do not block UI or show loading spinners — results stream in real-time'
+  - 'Do not render DictationButton if isSupported is false'
 
 # ============================================================================
 # FUTURE UPGRADE PATH (NOT IN CURRENT SCOPE)

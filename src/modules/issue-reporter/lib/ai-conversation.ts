@@ -5,15 +5,15 @@
 // Falls back to mock conversations when API key is not configured.
 // ============================================================================
 
-import { useSettingsStore } from '@/stores/settings';
-import { buildAIContext } from './context-builder';
-import { getMockResponse } from './mock-data';
-import type { AIContext, AIResponse, ConversationMessage, IssueClassification } from '../types';
+import { useSettingsStore } from '@/stores/settings'
+import { buildAIContext } from './context-builder'
+import { getMockResponse } from './mock-data'
+import type { AIContext, AIResponse, ConversationMessage, IssueClassification } from '../types'
 
-const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_API = 'https://openrouter.ai/api/v1/chat/completions'
 
 function buildSystemPrompt(context: AIContext): string {
-  const parts: string[] = [];
+  const parts: string[] = []
 
   parts.push(`You are an issue intake specialist for a software development team at a custom manufacturing company. Your job is to guide the user through reporting a problem or requesting an enhancement for one of their existing internal applications.
 
@@ -65,27 +65,29 @@ When you have enough information to complete the report:
   "conversation_summary": "Brief summary of the conversation"
 }
 
-Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`);
+Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`)
 
   if (context.scaffolding) {
-    parts.push(`\n## Project Context (Scaffolding)\n${context.scaffolding}`);
+    parts.push(`\n## Project Context (Scaffolding)\n${context.scaffolding}`)
   }
 
   if (context.charterExecutionPlan) {
-    parts.push(`\n## Charter & Execution Plan\n${context.charterExecutionPlan}`);
+    parts.push(`\n## Charter & Execution Plan\n${context.charterExecutionPlan}`)
   }
 
   if (context.existingIssues.length > 0) {
     const issuesList = context.existingIssues
       .map(
         (i) =>
-          `- [${i.id}] (${i.type}, ${i.status}, ${i.severity}) ${i.title}: ${i.description.slice(0, 150)}...`
+          `- [${i.id}] (${i.type}, ${i.status}, ${i.severity}) ${i.title}: ${i.description.slice(0, 150)}...`,
       )
-      .join('\n');
-    parts.push(`\n## Existing Issues\nCheck if the user's report matches any of these:\n${issuesList}`);
+      .join('\n')
+    parts.push(
+      `\n## Existing Issues\nCheck if the user's report matches any of these:\n${issuesList}`,
+    )
   }
 
-  return parts.join('\n');
+  return parts.join('\n')
 }
 
 function buildMessages(
@@ -93,48 +95,49 @@ function buildMessages(
   conversationHistory: ConversationMessage[],
   projectId: string | null,
   appName: string | null,
-  issueType: IssueClassification | null
+  issueType: IssueClassification | null,
 ): Array<{ role: string; content: string }> {
   const messages: Array<{ role: string; content: string }> = [
     { role: 'system', content: systemPrompt },
-  ];
+  ]
 
   if (conversationHistory.length === 0) {
     // Initialization — tell the AI to start
-    const typeHint = issueType === 'bug'
-      ? 'The user wants to report a bug.'
-      : issueType === 'feature'
-        ? 'The user wants to request a feature.'
-        : '';
+    const typeHint =
+      issueType === 'bug'
+        ? 'The user wants to report a bug.'
+        : issueType === 'feature'
+          ? 'The user wants to request a feature.'
+          : ''
 
-    let initMessage: string;
+    let initMessage: string
     if (projectId || appName) {
-      const appRef = appName ? `"${appName}"` : `project ID: ${projectId}`;
-      initMessage = `The user is reporting an issue for ${appRef}. ${typeHint} Do NOT ask which application — it's already known. Start by asking what they're experiencing.`;
+      const appRef = appName ? `"${appName}"` : `project ID: ${projectId}`
+      initMessage = `The user is reporting an issue for ${appRef}. ${typeHint} Do NOT ask which application — it's already known. Start by asking what they're experiencing.`
     } else {
-      initMessage = `${typeHint} The user hasn't specified which application. Start by asking which application or project this is about.`;
+      initMessage = `${typeHint} The user hasn't specified which application. Start by asking which application or project this is about.`
     }
-    messages.push({ role: 'user', content: initMessage });
+    messages.push({ role: 'user', content: initMessage })
   } else {
     for (const msg of conversationHistory) {
-      messages.push({ role: msg.role, content: msg.content });
+      messages.push({ role: msg.role, content: msg.content })
     }
   }
 
-  return messages;
+  return messages
 }
 
 function parseAIResponse(content: string): AIResponse {
   // Try direct parse
   try {
-    return JSON.parse(content) as AIResponse;
+    return JSON.parse(content) as AIResponse
   } catch {
     // Try to extract JSON from the response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]) as AIResponse;
+      return JSON.parse(jsonMatch[0]) as AIResponse
     }
-    throw new Error('Failed to parse AI response as JSON');
+    throw new Error('Failed to parse AI response as JSON')
   }
 }
 
@@ -142,24 +145,24 @@ export async function sendConversationMessage(
   conversationHistory: ConversationMessage[],
   projectId: string | null,
   issueType: IssueClassification | null = null,
-  appName: string | null = null
+  appName: string | null = null,
 ): Promise<AIResponse> {
-  const { aiSettings } = useSettingsStore.getState();
+  const { aiSettings } = useSettingsStore.getState()
   const useMock =
     import.meta.env.VITE_USE_MOCK_DATA !== 'false' ||
     !aiSettings.openrouterApiKey ||
     aiSettings.keyStatus !== 'valid' ||
-    !aiSettings.conversationEnabled;
+    !aiSettings.conversationEnabled
 
   if (useMock) {
     // Simulate response timing
-    await new Promise((r) => setTimeout(r, 800 + Math.random() * 700));
-    return getMockResponse(conversationHistory, projectId);
+    await new Promise((r) => setTimeout(r, 800 + Math.random() * 700))
+    return getMockResponse(conversationHistory, projectId)
   }
 
-  const context = buildAIContext(projectId);
-  const systemPrompt = buildSystemPrompt(context);
-  const messages = buildMessages(systemPrompt, conversationHistory, projectId, appName, issueType);
+  const context = buildAIContext(projectId)
+  const systemPrompt = buildSystemPrompt(context)
+  const messages = buildMessages(systemPrompt, conversationHistory, projectId, appName, issueType)
 
   const response = await fetch(OPENROUTER_API, {
     method: 'POST',
@@ -175,18 +178,18 @@ export async function sendConversationMessage(
       max_tokens: 2048,
       temperature: 0.4,
     }),
-  });
+  })
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`OpenRouter error ${response.status}: ${errorText}`);
+    const errorText = await response.text()
+    throw new Error(`OpenRouter error ${response.status}: ${errorText}`)
   }
 
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  const data = await response.json()
+  const content = data.choices?.[0]?.message?.content
   if (!content) {
-    throw new Error('Empty response from AI');
+    throw new Error('Empty response from AI')
   }
 
-  return parseAIResponse(content);
+  return parseAIResponse(content)
 }

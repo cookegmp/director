@@ -1,34 +1,34 @@
-import { useState, useRef } from 'react';
-import { useIssuesStore } from '@/stores/issues';
-import { useChartersStore } from '@/stores/charters';
-import { useActivityStore } from '@/stores/activity';
-import GradientButton from '@/components/shared/GradientButton';
-import DictationButton from '@/components/DictationButton';
-import { generateId } from '@/lib/utils';
-import type { IssueType, IssueSeverity } from '@/types';
+import { useState, useRef } from 'react'
+import { useIssuesStore } from '@/stores/issues'
+import { useChartersStore } from '@/stores/charters'
+import { useActivityStore } from '@/stores/activity'
+import GradientButton from '@/components/shared/GradientButton'
+import DictationButton from '@/components/DictationButton'
+import { generateId } from '@/lib/utils'
+import type { IssueType, IssueSeverity } from '@/types'
 
 interface FileIssueFormProps {
-  projectId?: string;
-  onSubmitted?: () => void;
-  onCancel?: () => void;
+  projectId?: string
+  onSubmitted?: () => void
+  onCancel?: () => void
 }
 
 function FileIssueForm({ projectId, onSubmitted, onCancel }: FileIssueFormProps) {
-  const addIssue = useIssuesStore((s) => s.addIssue);
-  const charters = useChartersStore((s) => s.charters);
-  const addActivity = useActivityStore((s) => s.addActivity);
+  const addIssue = useIssuesStore((s) => s.addIssue)
+  const charters = useChartersStore((s) => s.charters)
+  const addActivity = useActivityStore((s) => s.addActivity)
 
-  const [formTitle, setFormTitle] = useState('');
-  const [formType, setFormType] = useState<IssueType>('bug');
-  const [formSeverity, setFormSeverity] = useState<IssueSeverity>('medium');
-  const [formDescription, setFormDescription] = useState('');
-  const [formProjectId, setFormProjectId] = useState('');
-  const descBaseRef = useRef('');
+  const [formTitle, setFormTitle] = useState('')
+  const [formType, setFormType] = useState<IssueType>('bug')
+  const [formSeverity, setFormSeverity] = useState<IssueSeverity>('medium')
+  const [formDescription, setFormDescription] = useState('')
+  const [formProjectId, setFormProjectId] = useState('')
+  const descBaseRef = useRef('')
 
   const handleSubmit = () => {
-    if (!formTitle.trim()) return;
-    const now = new Date().toISOString();
-    const issueId = generateId();
+    if (!formTitle.trim()) return
+    const now = new Date().toISOString()
+    const issueId = generateId()
     addIssue({
       id: issueId,
       type: formType,
@@ -40,7 +40,7 @@ function FileIssueForm({ projectId, onSubmitted, onCancel }: FileIssueFormProps)
       createdAt: now,
       updatedAt: now,
       comments: [],
-    });
+    })
     addActivity({
       id: generateId(),
       type: 'issue-filed',
@@ -48,12 +48,12 @@ function FileIssueForm({ projectId, onSubmitted, onCancel }: FileIssueFormProps)
       entityType: 'issue',
       summary: `New ${formType === 'bug' ? 'bug report' : 'feature request'}: "${formTitle}"`,
       createdAt: now,
-    });
-    setFormTitle('');
-    setFormDescription('');
-    setFormProjectId('');
-    onSubmitted?.();
-  };
+    })
+    setFormTitle('')
+    setFormDescription('')
+    setFormProjectId('')
+    onSubmitted?.()
+  }
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 space-y-4">
@@ -110,15 +110,15 @@ function FileIssueForm({ projectId, onSubmitted, onCancel }: FileIssueFormProps)
         <div className="absolute right-0 bottom-3">
           <DictationButton
             onResult={(text) => {
-              const committed = descBaseRef.current + text;
-              descBaseRef.current = committed;
-              setFormDescription(committed);
+              const committed = descBaseRef.current + text
+              descBaseRef.current = committed
+              setFormDescription(committed)
             }}
             onInterim={(text) => {
-              if (text) setFormDescription(descBaseRef.current + text);
+              if (text) setFormDescription(descBaseRef.current + text)
             }}
             onListeningChange={(listening) => {
-              if (listening) descBaseRef.current = formDescription;
+              if (listening) descBaseRef.current = formDescription
             }}
           />
         </div>
@@ -137,7 +137,7 @@ function FileIssueForm({ projectId, onSubmitted, onCancel }: FileIssueFormProps)
         )}
       </div>
     </div>
-  );
+  )
 }
 
-export default FileIssueForm;
+export default FileIssueForm

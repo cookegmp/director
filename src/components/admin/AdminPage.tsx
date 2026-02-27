@@ -1,13 +1,13 @@
-import { Users, Server, Brain, Languages, Target, Bot } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useUsersStore } from '@/stores/users';
-import { canAccessAdmin } from '@/lib/permissions';
-import UsersTab from './UsersTab';
-import ServersTab from './ServersTab';
-import AIConfigTab from './AIConfigTab';
-import TranslationTab from './TranslationTab';
-import ScoringAdminTab from './ScoringAdminTab';
-import AgentsSkillsTab from './AgentsSkillsTab';
+import { Users, Server, Brain, Languages, Target, Bot } from 'lucide-react'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { useUsersStore } from '@/stores/users'
+import { canAccessAdmin } from '@/lib/permissions'
+import UsersTab from './UsersTab'
+import ServersTab from './ServersTab'
+import AIConfigTab from './AIConfigTab'
+import TranslationTab from './TranslationTab'
+import ScoringAdminTab from './ScoringAdminTab'
+import AgentsSkillsTab from './AgentsSkillsTab'
 
 const tabs = [
   { id: 'users', label: 'Users & Roles', icon: Users },
@@ -16,10 +16,10 @@ const tabs = [
   { id: 'agents', label: 'Agents & Skills', icon: Bot },
   { id: 'translation', label: 'Build Translation', icon: Languages },
   { id: 'scoring', label: 'Scoring', icon: Target },
-];
+]
 
 function AdminPage() {
-  const currentUser = useUsersStore((s) => s.getCurrentUser());
+  const currentUser = useUsersStore((s) => s.getCurrentUser())
 
   if (!currentUser || !canAccessAdmin(currentUser.role)) {
     return (
@@ -31,7 +31,7 @@ function AdminPage() {
           </p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -72,7 +72,7 @@ function AdminPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }
 
-export default AdminPage;
+export default AdminPage

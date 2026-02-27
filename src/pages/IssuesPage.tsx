@@ -1,63 +1,63 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Filter, ChevronRight, ArrowUpDown } from 'lucide-react';
-import { useIssuesStore } from '@/stores/issues';
-import { useActivityStore } from '@/stores/activity';
-import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
-import { Badge } from '@/components/ui/badge';
-import GradientButton from '@/components/shared/GradientButton';
-import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge';
-import ScoreDisplay from '@/modules/issue-scoring/components/ScoreDisplay';
-import RemediationBanner from '@/modules/issue-scoring/components/RemediationBanner';
-import { generateId, formatRelativeTime } from '@/lib/utils';
-import type { IssueType, IssueSeverity, IssueStatus, Issue } from '@/types';
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Plus, Filter, ChevronRight, ArrowUpDown } from 'lucide-react'
+import { useIssuesStore } from '@/stores/issues'
+import { useActivityStore } from '@/stores/activity'
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores'
+import { Badge } from '@/components/ui/badge'
+import GradientButton from '@/components/shared/GradientButton'
+import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge'
+import ScoreDisplay from '@/modules/issue-scoring/components/ScoreDisplay'
+import RemediationBanner from '@/modules/issue-scoring/components/RemediationBanner'
+import { generateId, formatRelativeTime } from '@/lib/utils'
+import type { IssueType, IssueSeverity, IssueStatus, Issue } from '@/types'
 
 const SEVERITY_COLORS: Record<IssueSeverity, string> = {
   critical: 'bg-red-500/20 text-red-400 border-red-500/30',
   high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   medium: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   low: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 const STATUS_COLORS: Record<IssueStatus, string> = {
   open: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   'in-progress': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   resolved: 'bg-green-500/20 text-green-400 border-green-500/30',
   closed: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 const TYPE_COLORS: Record<IssueType, string> = {
   bug: 'bg-red-500/20 text-red-400 border-red-500/30',
   'feature-request': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-};
+}
 
 function IssuesPage() {
-  const issues = useIssuesStore((s) => s.issues);
-  const updateIssue = useIssuesStore((s) => s.updateIssue);
-  const addActivity = useActivityStore((s) => s.addActivity);
+  const issues = useIssuesStore((s) => s.issues)
+  const updateIssue = useIssuesStore((s) => s.updateIssue)
+  const addActivity = useActivityStore((s) => s.addActivity)
 
-  const scores = useIssueScoresStore((s) => s.scores);
+  const scores = useIssueScoresStore((s) => s.scores)
 
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
-  const [filterType, setFilterType] = useState<IssueType | 'all'>('all');
-  const [filterStatus, setFilterStatus] = useState<IssueStatus | 'all'>('all');
-  const [sortByScore, setSortByScore] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
+  const [filterType, setFilterType] = useState<IssueType | 'all'>('all')
+  const [filterStatus, setFilterStatus] = useState<IssueStatus | 'all'>('all')
+  const [sortByScore, setSortByScore] = useState(false)
 
   const filteredIssues = issues
     .filter((issue) => {
-      if (filterType !== 'all' && issue.type !== filterType) return false;
-      if (filterStatus !== 'all' && issue.status !== filterStatus) return false;
-      return true;
+      if (filterType !== 'all' && issue.type !== filterType) return false
+      if (filterStatus !== 'all' && issue.status !== filterStatus) return false
+      return true
     })
     .sort((a, b) => {
-      if (!sortByScore) return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      const scoreA = scores.find((s) => s.issue_id === a.id)?.composite_score ?? -1;
-      const scoreB = scores.find((s) => s.issue_id === b.id)?.composite_score ?? -1;
-      return scoreB - scoreA;
-    });
+      if (!sortByScore) return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      const scoreA = scores.find((s) => s.issue_id === a.id)?.composite_score ?? -1
+      const scoreB = scores.find((s) => s.issue_id === b.id)?.composite_score ?? -1
+      return scoreB - scoreA
+    })
 
   const handleStatusChange = (issue: Issue, newStatus: IssueStatus) => {
-    updateIssue(issue.id, { status: newStatus });
+    updateIssue(issue.id, { status: newStatus })
     addActivity({
       id: generateId(),
       type: 'status-changed',
@@ -65,9 +65,9 @@ function IssuesPage() {
       entityType: 'issue',
       summary: `Issue "${issue.title}" moved to ${newStatus}`,
       createdAt: new Date().toISOString(),
-    });
-    setSelectedIssue({ ...issue, status: newStatus });
-  };
+    })
+    setSelectedIssue({ ...issue, status: newStatus })
+  }
 
   return (
     <div>
@@ -120,7 +120,9 @@ function IssuesPage() {
         {/* Issue list */}
         <div className="lg:col-span-2 space-y-2">
           {filteredIssues.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4">No issues match the current filters.</p>
+            <p className="text-sm text-muted-foreground py-4">
+              No issues match the current filters.
+            </p>
           ) : (
             filteredIssues.map((issue) => (
               <button
@@ -143,10 +145,10 @@ function IssuesPage() {
                     {issue.status}
                   </Badge>
                   {(() => {
-                    const issueScore = scores.find((s) => s.issue_id === issue.id);
+                    const issueScore = scores.find((s) => s.issue_id === issue.id)
                     return issueScore ? (
                       <ScoreBadge score={issueScore.composite_score} type={issueScore.score_type} />
-                    ) : null;
+                    ) : null
                   })()}
                 </div>
                 <h3 className="text-sm text-foreground font-light">{issue.title}</h3>
@@ -177,19 +179,21 @@ function IssuesPage() {
               <div>
                 <h3 className="text-sm text-muted-foreground mb-2">Status</h3>
                 <div className="flex flex-wrap gap-2">
-                  {(['open', 'in-progress', 'resolved', 'closed'] as IssueStatus[]).map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => handleStatusChange(selectedIssue, status)}
-                      className={`px-3 py-1 rounded-full text-xs border transition-colors ${
-                        selectedIssue.status === status
-                          ? STATUS_COLORS[status]
-                          : 'border-border text-muted-foreground hover:border-foreground/30'
-                      }`}
-                    >
-                      {status}
-                    </button>
-                  ))}
+                  {(['open', 'in-progress', 'resolved', 'closed'] as IssueStatus[]).map(
+                    (status) => (
+                      <button
+                        key={status}
+                        onClick={() => handleStatusChange(selectedIssue, status)}
+                        className={`px-3 py-1 rounded-full text-xs border transition-colors ${
+                          selectedIssue.status === status
+                            ? STATUS_COLORS[status]
+                            : 'border-border text-muted-foreground hover:border-foreground/30'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -198,14 +202,14 @@ function IssuesPage() {
 
               {/* Score Display & Remediation */}
               {(() => {
-                const issueScore = scores.find((s) => s.issue_id === selectedIssue.id);
-                if (!issueScore) return null;
+                const issueScore = scores.find((s) => s.issue_id === selectedIssue.id)
+                if (!issueScore) return null
                 return (
                   <div className="space-y-3 pt-2">
                     <RemediationBanner score={issueScore} projectId={selectedIssue.projectId} />
                     <ScoreDisplay score={issueScore} />
                   </div>
-                );
+                )
               })()}
             </div>
           ) : (
@@ -217,7 +221,7 @@ function IssuesPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default IssuesPage;
+export default IssuesPage

@@ -5,30 +5,30 @@
 // Independent from the idea intake stores.
 // ============================================================================
 
-import { create } from 'zustand';
+import { create } from 'zustand'
 import type {
   ConversationState,
   ConversationPhase,
   ConversationMessage,
   IssueClassification,
   IssueReport,
-} from '../types';
+} from '../types'
 
 interface IssueReporterState extends ConversationState {
   // Actions
-  setPhase: (phase: ConversationPhase) => void;
-  setProjectId: (projectId: string | null) => void;
-  setAppName: (appName: string | null) => void;
-  setIssueType: (issueType: IssueClassification) => void;
-  addMessage: (message: ConversationMessage) => void;
-  setCurrentQuestion: (question: string, suggestions?: string[], helperText?: string | null) => void;
-  incrementStep: () => void;
-  setReport: (report: IssueReport) => void;
-  updateReport: (updates: Partial<IssueReport>) => void;
-  setScreenshot: (screenshot: string | null) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  reset: () => void;
+  setPhase: (phase: ConversationPhase) => void
+  setProjectId: (projectId: string | null) => void
+  setAppName: (appName: string | null) => void
+  setIssueType: (issueType: IssueClassification) => void
+  addMessage: (message: ConversationMessage) => void
+  setCurrentQuestion: (question: string, suggestions?: string[], helperText?: string | null) => void
+  incrementStep: () => void
+  setReport: (report: IssueReport) => void
+  updateReport: (updates: Partial<IssueReport>) => void
+  setScreenshot: (screenshot: string | null) => void
+  setLoading: (loading: boolean) => void
+  setError: (error: string | null) => void
+  reset: () => void
 }
 
 const initialState: ConversationState = {
@@ -45,7 +45,7 @@ const initialState: ConversationState = {
   screenshot: null,
   isLoading: false,
   error: null,
-};
+}
 
 export const useIssueReporterStore = create<IssueReporterState>()((set) => ({
   ...initialState,
@@ -70,8 +70,7 @@ export const useIssueReporterStore = create<IssueReporterState>()((set) => ({
       currentHelperText: helperText,
     }),
 
-  incrementStep: () =>
-    set((state) => ({ stepCount: state.stepCount + 1 })),
+  incrementStep: () => set((state) => ({ stepCount: state.stepCount + 1 })),
 
   setReport: (report) => set({ report, phase: 'review' }),
 
@@ -87,4 +86,4 @@ export const useIssueReporterStore = create<IssueReporterState>()((set) => ({
   setError: (error) => set({ error }),
 
   reset: () => set(initialState),
-}));
+}))

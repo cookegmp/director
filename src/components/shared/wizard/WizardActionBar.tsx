@@ -1,14 +1,14 @@
-import { Check, ArrowRight, Mic } from 'lucide-react';
-import GradientButton from '@/components/shared/GradientButton';
+import { Check, ArrowRight, Mic } from 'lucide-react'
+import GradientButton from '@/components/shared/GradientButton'
 
 interface WizardActionBarProps {
-  onSubmit: () => void;
-  onSkip?: () => void;
-  submitLabel?: string;
-  isSkippable?: boolean;
-  disabled?: boolean;
-  loading?: boolean;
-  keyboardHint?: string;
+  onSubmit: () => void
+  onSkip?: () => void
+  submitLabel?: string
+  isSkippable?: boolean
+  disabled?: boolean
+  loading?: boolean
+  keyboardHint?: string
 }
 
 function WizardActionBar({
@@ -37,8 +37,7 @@ function WizardActionBar({
       </GradientButton>
 
       <span className="text-sm text-muted-foreground">
-        press{' '}
-        <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">{keyboardHint}</kbd>
+        press <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">{keyboardHint}</kbd>
       </span>
 
       {isSkippable && onSkip && (
@@ -54,7 +53,7 @@ function WizardActionBar({
         <Mic className="w-5 h-5" />
       </button>
     </div>
-  );
+  )
 }
 
-export default WizardActionBar;
+export default WizardActionBar

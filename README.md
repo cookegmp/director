@@ -38,23 +38,28 @@ All data persists to browser `localStorage` — there is no backend or database.
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone <repo-url>
    cd stagemanager
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Copy the environment file and configure it:
+
    ```bash
    cp .env .env.local
    ```
+
    Edit `.env.local` with your values (see Environment Variables below).
 
 4. Run the development server:
+
    ```bash
    npm run dev
    ```
@@ -67,11 +72,11 @@ The app auto-seeds realistic demo data on first load. No database setup is requi
 
 Create a `.env.local` file (or edit `.env`) in the project root. All variables are optional — the app runs fully on mock data with no API keys.
 
-| Variable | Description | Default / Example |
-|----------|-------------|-------------------|
-| `VITE_USE_MOCK_DATA` | When `true`, charter generation uses simulated output instead of the Anthropic API | `true` |
+| Variable                 | Description                                                                                                                                        | Default / Example     |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `VITE_USE_MOCK_DATA`     | When `true`, charter generation uses simulated output instead of the Anthropic API                                                                 | `true`                |
 | `VITE_ANTHROPIC_API_KEY` | Anthropic API key for live charter generation. When set and `VITE_USE_MOCK_DATA` is `false`, charters are generated via `claude-sonnet-4-20250514` | _(empty — mock mode)_ |
-| `VITE_AGENT_WS_URL` | WebSocket URL for the live agent build server. In development, points to the local mock server | `ws://localhost:4100` |
+| `VITE_AGENT_WS_URL`      | WebSocket URL for the live agent build server. In development, points to the local mock server                                                     | `ws://localhost:4100` |
 
 **Note:** The OpenRouter API key for AI scoring features (issue scoring, agent management, idea chat) is configured at runtime through the Admin panel, not through environment variables. It is stored in `localStorage`.
 
@@ -197,18 +202,18 @@ stagemanager/
 
 ## Application Routes
 
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | Dashboard | Priority queue, active projects, activity feed, quick actions |
-| `/new/idea` | Intake Wizard | Six-step wizard to capture a new process improvement idea |
-| `/report` | Issue Reporter | AI-driven conversational wizard to file a bug or feature request |
-| `/ideas` | Ideas List | All ideas, filterable by status and score tier |
-| `/ideas/:id` | Idea Detail | Full intake summary, score breakdown, charter generation action |
-| `/charters` | Charters List | All generated project charters |
-| `/charters/:id` | Charter View | Charter document, execution plan, live build monitor |
-| `/issues` | Issues | Bug and feature request list with inline detail panel |
-| `/scaffolding` | Scaffolding | Read-only viewer for organizational scaffolding documents |
-| `/admin` | Admin | Users, servers, AI config, translation, agents and skills |
+| Route           | Page           | Description                                                      |
+| --------------- | -------------- | ---------------------------------------------------------------- |
+| `/`             | Dashboard      | Priority queue, active projects, activity feed, quick actions    |
+| `/new/idea`     | Intake Wizard  | Six-step wizard to capture a new process improvement idea        |
+| `/report`       | Issue Reporter | AI-driven conversational wizard to file a bug or feature request |
+| `/ideas`        | Ideas List     | All ideas, filterable by status and score tier                   |
+| `/ideas/:id`    | Idea Detail    | Full intake summary, score breakdown, charter generation action  |
+| `/charters`     | Charters List  | All generated project charters                                   |
+| `/charters/:id` | Charter View   | Charter document, execution plan, live build monitor             |
+| `/issues`       | Issues         | Bug and feature request list with inline detail panel            |
+| `/scaffolding`  | Scaffolding    | Read-only viewer for organizational scaffolding documents        |
+| `/admin`        | Admin          | Users, servers, AI config, translation, agents and skills        |
 
 ## Key Features
 
@@ -222,12 +227,12 @@ On completion, the scoring engine evaluates the answers across four weighted dim
 
 Located at `src/lib/scoring.ts`. Uses a rules-based keyword and heuristic approach — no AI call required. Dimension weights:
 
-| Dimension | Weight | Key Factors |
-|-----------|--------|-------------|
-| Impact | 30% | People affected, frequency, severity keywords |
-| Urgency | 25% | Urgency selector value, blocking signals |
-| Feasibility | 25% | Inverse complexity — fewer constraints = higher score |
-| Alignment | 20% | Match with modernization, automation, efficiency keywords |
+| Dimension   | Weight | Key Factors                                               |
+| ----------- | ------ | --------------------------------------------------------- |
+| Impact      | 30%    | People affected, frequency, severity keywords             |
+| Urgency     | 25%    | Urgency selector value, blocking signals                  |
+| Feasibility | 25%    | Inverse complexity — fewer constraints = higher score     |
+| Alignment   | 20%    | Match with modernization, automation, efficiency keywords |
 
 ### Charter Generation
 
@@ -269,17 +274,17 @@ Accessible at `/admin` by users with the `admin` role. Contains:
 
 ### Role-Based Permissions
 
-| Permission | Admin | Developer | Viewer |
-|------------|-------|-----------|--------|
-| View dashboard | Yes | Yes | Yes |
-| Create / edit ideas | Yes | Yes | No |
-| Generate charters | Yes | Yes | No |
-| Control builds | Yes | Yes | No |
-| File issues | Yes | Yes | Yes |
-| Manage issues | Yes | Yes | No |
-| View scaffolding | Yes | Yes | Yes |
-| Access admin panel | Yes | No | No |
-| Manage users / servers / AI | Yes | No | No |
+| Permission                  | Admin | Developer | Viewer |
+| --------------------------- | ----- | --------- | ------ |
+| View dashboard              | Yes   | Yes       | Yes    |
+| Create / edit ideas         | Yes   | Yes       | No     |
+| Generate charters           | Yes   | Yes       | No     |
+| Control builds              | Yes   | Yes       | No     |
+| File issues                 | Yes   | Yes       | Yes    |
+| Manage issues               | Yes   | Yes       | No     |
+| View scaffolding            | Yes   | Yes       | Yes    |
+| Access admin panel          | Yes   | No        | No     |
+| Manage users / servers / AI | Yes   | No        | No     |
 
 ### Voice Dictation
 
@@ -301,21 +306,21 @@ StageManager uses a dark glassmorphism aesthetic defined through CSS custom prop
 
 All data lives in `localStorage`. Each Zustand store writes to a dedicated key:
 
-| Store | localStorage Key |
-|-------|-----------------|
-| Ideas | `stagemanager-ideas` |
-| Charters | `stagemanager-charters` |
-| Issues | `stagemanager-issues` |
-| Activity | `stagemanager-activity` |
-| Agent Sessions | `stagemanager-agent-sessions` |
-| Agents & Skills | `stagemanager-agents-skills` |
-| Scaffolding | `stagemanager-scaffolding` |
-| Settings (servers, AI) | `stagemanager-settings` |
-| Users | `stagemanager-users` |
-| Dev Settings | `stagemanager-dev-settings` |
-| Reported Issues | `stagemanager-reported-issues` |
-| Issue Scores | `stagemanager-issue-scores` |
-| Remediation Sessions | `stagemanager-remediation-sessions` |
+| Store                  | localStorage Key                    |
+| ---------------------- | ----------------------------------- |
+| Ideas                  | `stagemanager-ideas`                |
+| Charters               | `stagemanager-charters`             |
+| Issues                 | `stagemanager-issues`               |
+| Activity               | `stagemanager-activity`             |
+| Agent Sessions         | `stagemanager-agent-sessions`       |
+| Agents & Skills        | `stagemanager-agents-skills`        |
+| Scaffolding            | `stagemanager-scaffolding`          |
+| Settings (servers, AI) | `stagemanager-settings`             |
+| Users                  | `stagemanager-users`                |
+| Dev Settings           | `stagemanager-dev-settings`         |
+| Reported Issues        | `stagemanager-reported-issues`      |
+| Issue Scores           | `stagemanager-issue-scores`         |
+| Remediation Sessions   | `stagemanager-remediation-sessions` |
 
 Data version is tracked under `stagemanager-data-version`. Incrementing `DATA_VERSION` in `src/App.tsx` forces a full re-seed on next load.
 
@@ -334,6 +339,7 @@ Output goes to `dist/`. Serve it from any static file host or NGINX.
 The development server runs on port 3940 and is accessible at `stagemanager.ahaus.com`. NGINX handles SSL termination externally. The app does not manage SSL or proxying.
 
 Allowed hosts configured in `vite.config.ts`:
+
 - `lab.ahaus.com`
 - `stagemanager.ahaus.com`
 

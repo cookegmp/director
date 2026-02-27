@@ -1,51 +1,51 @@
-import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
-import { useIssuesStore } from '@/stores/issues';
-import { useActivityStore } from '@/stores/activity';
-import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
-import { Badge } from '@/components/ui/badge';
-import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge';
-import ScoreDisplay from '@/modules/issue-scoring/components/ScoreDisplay';
-import RemediationBanner from '@/modules/issue-scoring/components/RemediationBanner';
-import { generateId, formatRelativeTime } from '@/lib/utils';
-import type { IssueSeverity, IssueStatus, IssueType, Issue } from '@/types';
+import { useState } from 'react'
+import { ChevronRight } from 'lucide-react'
+import { useIssuesStore } from '@/stores/issues'
+import { useActivityStore } from '@/stores/activity'
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores'
+import { Badge } from '@/components/ui/badge'
+import ScoreBadge from '@/modules/issue-scoring/components/ScoreBadge'
+import ScoreDisplay from '@/modules/issue-scoring/components/ScoreDisplay'
+import RemediationBanner from '@/modules/issue-scoring/components/RemediationBanner'
+import { generateId, formatRelativeTime } from '@/lib/utils'
+import type { IssueSeverity, IssueStatus, IssueType, Issue } from '@/types'
 
 const SEVERITY_COLORS: Record<IssueSeverity, string> = {
   critical: 'bg-red-500/20 text-red-400 border-red-500/30',
   high: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
   medium: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   low: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 const STATUS_COLORS: Record<IssueStatus, string> = {
   open: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   'in-progress': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   resolved: 'bg-green-500/20 text-green-400 border-green-500/30',
   closed: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 const TYPE_COLORS: Record<IssueType, string> = {
   bug: 'bg-red-500/20 text-red-400 border-red-500/30',
   'feature-request': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-};
+}
 
 interface ProductionIssueFeedProps {
-  projectId: string;
+  projectId: string
 }
 
 function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
-  const issues = useIssuesStore((s) => s.issues);
-  const updateIssue = useIssuesStore((s) => s.updateIssue);
-  const addActivity = useActivityStore((s) => s.addActivity);
-  const scores = useIssueScoresStore((s) => s.scores);
-  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const issues = useIssuesStore((s) => s.issues)
+  const updateIssue = useIssuesStore((s) => s.updateIssue)
+  const addActivity = useActivityStore((s) => s.addActivity)
+  const scores = useIssueScoresStore((s) => s.scores)
+  const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null)
 
   const projectIssues = issues
     .filter((i) => i.projectId === projectId)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const handleStatusChange = (issue: Issue, newStatus: IssueStatus) => {
-    updateIssue(issue.id, { status: newStatus });
+    updateIssue(issue.id, { status: newStatus })
     addActivity({
       id: generateId(),
       type: 'status-changed',
@@ -53,9 +53,9 @@ function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
       entityType: 'issue',
       summary: `Issue "${issue.title}" moved to ${newStatus}`,
       createdAt: new Date().toISOString(),
-    });
-    setSelectedIssue({ ...issue, status: newStatus });
-  };
+    })
+    setSelectedIssue({ ...issue, status: newStatus })
+  }
 
   if (projectIssues.length === 0) {
     return (
@@ -63,7 +63,7 @@ function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
         <h2 className="text-lg font-light text-foreground mb-3">Issues</h2>
         <p className="text-sm text-muted-foreground">No issues filed for this project yet.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -82,24 +82,35 @@ function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
               }`}
             >
               <div className="flex items-center gap-2 mb-1">
-                <Badge variant="outline" className={`text-xs rounded-md ${TYPE_COLORS[issue.type]}`}>
+                <Badge
+                  variant="outline"
+                  className={`text-xs rounded-md ${TYPE_COLORS[issue.type]}`}
+                >
                   {issue.type === 'bug' ? 'Bug' : 'Feature'}
                 </Badge>
-                <Badge variant="outline" className={`text-xs rounded-md ${SEVERITY_COLORS[issue.severity]}`}>
+                <Badge
+                  variant="outline"
+                  className={`text-xs rounded-md ${SEVERITY_COLORS[issue.severity]}`}
+                >
                   {issue.severity}
                 </Badge>
-                <Badge variant="outline" className={`text-xs rounded-md ${STATUS_COLORS[issue.status]}`}>
+                <Badge
+                  variant="outline"
+                  className={`text-xs rounded-md ${STATUS_COLORS[issue.status]}`}
+                >
                   {issue.status}
                 </Badge>
                 {(() => {
-                  const issueScore = scores.find((s) => s.issue_id === issue.id);
+                  const issueScore = scores.find((s) => s.issue_id === issue.id)
                   return issueScore ? (
                     <ScoreBadge score={issueScore.composite_score} type={issueScore.score_type} />
-                  ) : null;
+                  ) : null
                 })()}
               </div>
               <h3 className="text-sm text-foreground font-light">{issue.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{formatRelativeTime(issue.createdAt)}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {formatRelativeTime(issue.createdAt)}
+              </p>
             </button>
           ))}
         </div>
@@ -144,14 +155,14 @@ function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
 
           {/* Score Display & Remediation */}
           {(() => {
-            const issueScore = scores.find((s) => s.issue_id === selectedIssue.id);
-            if (!issueScore) return null;
+            const issueScore = scores.find((s) => s.issue_id === selectedIssue.id)
+            if (!issueScore) return null
             return (
               <div className="space-y-3 pt-2">
                 <RemediationBanner score={issueScore} projectId={selectedIssue.projectId} />
                 <ScoreDisplay score={issueScore} />
               </div>
-            );
+            )
           })()}
         </div>
       ) : (
@@ -161,7 +172,7 @@ function ProductionIssueFeed({ projectId }: ProductionIssueFeedProps) {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default ProductionIssueFeed;
+export default ProductionIssueFeed

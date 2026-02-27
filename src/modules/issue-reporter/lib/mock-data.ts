@@ -4,7 +4,7 @@
 // Pre-recorded AI conversations for demo mode without an API key.
 // ============================================================================
 
-import type { AIResponse, ConversationMessage } from '../types';
+import type { AIResponse, ConversationMessage } from '../types'
 
 // --- Mock Bug Conversation ---
 const BUG_CONVERSATION: AIResponse[] = [
@@ -17,35 +17,38 @@ const BUG_CONVERSATION: AIResponse[] = [
       'Spec Analysis Tool',
       'StageManager itself',
     ],
-    helper_text: 'Select the application you\'re experiencing an issue with.',
+    helper_text: "Select the application you're experiencing an issue with.",
   },
   {
     done: false,
-    question: 'Can you describe what\'s happening? What did you expect to see versus what actually occurred?',
+    question:
+      "Can you describe what's happening? What did you expect to see versus what actually occurred?",
     suggestions: [
       'The page crashes or freezes',
-      'Data isn\'t saving correctly',
+      "Data isn't saving correctly",
       'Something displays incorrectly',
       'I get an error message',
-      'It\'s running very slowly',
+      "It's running very slowly",
     ],
     helper_text: undefined,
   },
   {
     done: false,
-    question: 'How often does this happen? Is it every time you perform this action, or only sometimes?',
+    question:
+      'How often does this happen? Is it every time you perform this action, or only sometimes?',
     suggestions: [
       'Every time',
       'Most of the time',
       'Occasionally',
       'It happened once',
-      'I\'m not sure',
+      "I'm not sure",
     ],
     helper_text: undefined,
   },
   {
     done: false,
-    question: 'Can you walk me through the steps that lead to this problem? What were you doing right before it happened?',
+    question:
+      'Can you walk me through the steps that lead to this problem? What were you doing right before it happened?',
     suggestions: [
       'I was navigating between pages',
       'I was submitting a form',
@@ -85,7 +88,7 @@ const BUG_CONVERSATION: AIResponse[] = [
     conversation_summary:
       'User reported the production dashboard crashes when applying date range filters spanning 30+ days. The issue is reproducible every time. Classified as a high-severity bug due to complete loss of dashboard functionality. Potential duplicate with existing performance issue #issue-003.',
   },
-];
+]
 
 // --- Mock Feature Conversation ---
 const FEATURE_CONVERSATION: AIResponse[] = [
@@ -98,11 +101,11 @@ const FEATURE_CONVERSATION: AIResponse[] = [
       'Spec Analysis Tool',
       'StageManager itself',
     ],
-    helper_text: 'Select the application you\'d like to see improved.',
+    helper_text: "Select the application you'd like to see improved.",
   },
   {
     done: false,
-    question: 'What would you like to be able to do that you can\'t do today?',
+    question: "What would you like to be able to do that you can't do today?",
     suggestions: [
       'Export data in a new format',
       'Add a new view or dashboard',
@@ -137,9 +140,9 @@ const FEATURE_CONVERSATION: AIResponse[] = [
     affected_area: 'Job Operations History View',
     potential_duplicates: [],
     conversation_summary:
-      'User requested CSV export capability for job operation history data. The whole production management team would use this weekly for reporting. Classified as a medium-severity feature request — the team has a workaround (manual data entry) but it\'s time-consuming.',
+      "User requested CSV export capability for job operation history data. The whole production management team would use this weekly for reporting. Classified as a medium-severity feature request — the team has a workaround (manual data entry) but it's time-consuming.",
   },
-];
+]
 
 // --- Mock Duplicate-Detected Conversation ---
 const DUPLICATE_CONVERSATION: AIResponse[] = [
@@ -156,11 +159,12 @@ const DUPLICATE_CONVERSATION: AIResponse[] = [
   },
   {
     done: false,
-    question: 'I see this is about the Shop Floor Tracker. What specific issue are you experiencing?',
+    question:
+      'I see this is about the Shop Floor Tracker. What specific issue are you experiencing?',
     suggestions: [
       'Jobs display incorrectly',
       'Operations are duplicated',
-      'Data doesn\'t sync from Epicor',
+      "Data doesn't sync from Epicor",
       'Performance is slow',
     ],
     helper_text: undefined,
@@ -168,21 +172,20 @@ const DUPLICATE_CONVERSATION: AIResponse[] = [
   {
     done: false,
     question:
-      'That sounds like it could be related to an existing issue we\'re tracking about duplicate operations for split jobs. Can you tell me more about what you\'re seeing? Are there extra operations showing up that don\'t belong to your job split?',
+      "That sounds like it could be related to an existing issue we're tracking about duplicate operations for split jobs. Can you tell me more about what you're seeing? Are there extra operations showing up that don't belong to your job split?",
     suggestions: [
       'Yes, exactly — duplicate operations',
-      'No, it\'s different from that',
-      'I\'m not sure what split jobs means',
+      "No, it's different from that",
+      "I'm not sure what split jobs means",
     ],
-    helper_text:
-      'We have an existing bug report about split job operations showing duplicates.',
+    helper_text: 'We have an existing bug report about split job operations showing duplicates.',
   },
   {
     done: true,
     classification: 'bug',
     title: 'Split job operations appearing in wrong job view',
     description:
-      'When jobs are split in Epicor (e.g., 12345.1 and 12345.2), operations from sibling splits appear under the wrong job in the Shop Floor Tracker operator view. This causes operators to see operations that aren\'t assigned to their specific job split.',
+      "When jobs are split in Epicor (e.g., 12345.1 and 12345.2), operations from sibling splits appear under the wrong job in the Shop Floor Tracker operator view. This causes operators to see operations that aren't assigned to their specific job split.",
     severity: 'high',
     steps_to_reproduce: [
       'Look up a job that has been split in Epicor (any .1 / .2 split)',
@@ -206,45 +209,48 @@ const DUPLICATE_CONVERSATION: AIResponse[] = [
     conversation_summary:
       'User reported duplicate operations in the Shop Floor Tracker operator view for split jobs. This is very likely the same issue as existing bug #issue-001 about Epicor job import. The AI surfaced the potential duplicate during conversation and the user confirmed it sounds like the same problem.',
   },
-];
+]
 
-const CONVERSATIONS = [BUG_CONVERSATION, FEATURE_CONVERSATION, DUPLICATE_CONVERSATION];
+const CONVERSATIONS = [BUG_CONVERSATION, FEATURE_CONVERSATION, DUPLICATE_CONVERSATION]
 
 export function getMockResponse(
   history: ConversationMessage[],
-  _projectId: string | null
+  _projectId: string | null,
 ): AIResponse {
   // Count user messages to determine which step we're on
-  const userMessageCount = history.filter((m) => m.role === 'user').length;
+  const userMessageCount = history.filter((m) => m.role === 'user').length
 
   // Pick conversation based on content hints
-  let conversationIndex = 0;
+  let conversationIndex = 0
   if (history.length > 0) {
-    const fullText = history.map((m) => m.content).join(' ').toLowerCase();
+    const fullText = history
+      .map((m) => m.content)
+      .join(' ')
+      .toLowerCase()
     if (
       fullText.includes('feature') ||
       fullText.includes('export') ||
       fullText.includes('would like') ||
       fullText.includes('add')
     ) {
-      conversationIndex = 1;
+      conversationIndex = 1
     } else if (
       fullText.includes('duplicate') ||
       fullText.includes('split') ||
       fullText.includes('shop floor')
     ) {
-      conversationIndex = 2;
+      conversationIndex = 2
     }
   }
 
-  const conversation = CONVERSATIONS[conversationIndex]!;
+  const conversation = CONVERSATIONS[conversationIndex]!
 
   // Return the response for this step (user messages map to AI responses)
-  const stepIndex = userMessageCount;
+  const stepIndex = userMessageCount
   if (stepIndex >= conversation.length) {
-    return conversation[conversation.length - 1]!;
+    return conversation[conversation.length - 1]!
   }
-  return conversation[stepIndex]!;
+  return conversation[stepIndex]!
 }
 
 // --- Sample Existing Issues for Seeding ---
@@ -253,4 +259,4 @@ export const sampleReportedIssues = [
   // These are seeded separately in the reported-issues store for demo
   // The main issues store (src/stores/issues.ts) already has sample issues
   // that the AI uses for duplicate detection
-];
+]

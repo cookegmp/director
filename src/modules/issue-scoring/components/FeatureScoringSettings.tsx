@@ -4,11 +4,11 @@
 // Admin component for feature request scoring thresholds and auto-prioritize.
 // ============================================================================
 
-import { useRemediationSettingsStore } from '../stores/remediation-settings';
+import { useRemediationSettingsStore } from '../stores/remediation-settings'
 
 function FeatureScoringSettingsPanel() {
-  const settings = useRemediationSettingsStore((s) => s.settings);
-  const updateSettings = useRemediationSettingsStore((s) => s.updateSettings);
+  const settings = useRemediationSettingsStore((s) => s.settings)
+  const updateSettings = useRemediationSettingsStore((s) => s.updateSettings)
 
   return (
     <div className="space-y-6">
@@ -17,11 +17,16 @@ function FeatureScoringSettingsPanel() {
         <div>
           <h3 className="text-sm font-medium text-foreground">Auto-Prioritize</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            When enabled, high-scoring feature requests are automatically flagged for prioritization.
+            When enabled, high-scoring feature requests are automatically flagged for
+            prioritization.
           </p>
         </div>
         <button
-          onClick={() => updateSettings({ feature_auto_prioritize_enabled: !settings.feature_auto_prioritize_enabled })}
+          onClick={() =>
+            updateSettings({
+              feature_auto_prioritize_enabled: !settings.feature_auto_prioritize_enabled,
+            })
+          }
           className={`relative w-10 h-5 rounded-full transition-colors ${
             settings.feature_auto_prioritize_enabled ? 'bg-primary' : 'bg-muted'
           }`}
@@ -34,7 +39,9 @@ function FeatureScoringSettingsPanel() {
         </button>
       </div>
 
-      <div className={settings.feature_auto_prioritize_enabled ? '' : 'opacity-50 pointer-events-none'}>
+      <div
+        className={settings.feature_auto_prioritize_enabled ? '' : 'opacity-50 pointer-events-none'}
+      >
         {/* High-Value Threshold */}
         <SettingSlider
           label="High-Value Threshold"
@@ -45,8 +52,11 @@ function FeatureScoringSettingsPanel() {
           onChange={(v) => {
             updateSettings({
               feature_high_value_threshold: v,
-              feature_auto_prioritize_threshold: Math.max(settings.feature_auto_prioritize_threshold, v + 1),
-            });
+              feature_auto_prioritize_threshold: Math.max(
+                settings.feature_auto_prioritize_threshold,
+                v + 1,
+              ),
+            })
           }}
         />
 
@@ -63,19 +73,17 @@ function FeatureScoringSettingsPanel() {
 
       {/* Scoring Method Info */}
       <div className="py-4 border-b border-border">
-        <label className="block text-sm font-medium text-foreground mb-1">
-          Scoring Method
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-1">Scoring Method</label>
         <p className="text-xs text-muted-foreground mb-3">
-          Feature request scoring uses AI analysis with a rules-based fallback. The AI model
-          and enable/disable toggle are configured in the AI Configuration tab.
+          Feature request scoring uses AI analysis with a rules-based fallback. The AI model and
+          enable/disable toggle are configured in the AI Configuration tab.
         </p>
         <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
           AI + Rules Fallback
         </span>
       </div>
     </div>
-  );
+  )
 }
 
 function SettingSlider({
@@ -86,12 +94,12 @@ function SettingSlider({
   max,
   onChange,
 }: {
-  label: string;
-  description: string;
-  value: number;
-  min: number;
-  max: number;
-  onChange: (v: number) => void;
+  label: string
+  description: string
+  value: number
+  min: number
+  max: number
+  onChange: (v: number) => void
 }) {
   return (
     <div className="py-4 border-b border-border">
@@ -110,7 +118,7 @@ function SettingSlider({
         className="w-full h-1.5 bg-muted/50 rounded-full appearance-none cursor-pointer accent-primary"
       />
     </div>
-  );
+  )
 }
 
-export default FeatureScoringSettingsPanel;
+export default FeatureScoringSettingsPanel

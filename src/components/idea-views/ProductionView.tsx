@@ -1,24 +1,24 @@
-import { Link } from 'react-router-dom';
-import { Bug, Wrench } from 'lucide-react';
-import { useIdeasStore } from '@/stores/ideas';
-import { useActivityStore } from '@/stores/activity';
-import ProductionDashboard from '@/components/production/ProductionDashboard';
-import { generateId } from '@/lib/utils';
-import type { Idea } from '@/types';
+import { Link } from 'react-router-dom'
+import { Bug, Wrench } from 'lucide-react'
+import { useIdeasStore } from '@/stores/ideas'
+import { useActivityStore } from '@/stores/activity'
+import ProductionDashboard from '@/components/production/ProductionDashboard'
+import { generateId } from '@/lib/utils'
+import type { Idea } from '@/types'
 
 interface ProductionViewProps {
-  idea: Idea;
+  idea: Idea
 }
 
 function ProductionView({ idea }: ProductionViewProps) {
-  const updateIdea = useIdeasStore((s) => s.updateIdea);
-  const addActivity = useActivityStore((s) => s.addActivity);
+  const updateIdea = useIdeasStore((s) => s.updateIdea)
+  const addActivity = useActivityStore((s) => s.addActivity)
 
-  const charterId = idea.linkedCharterId ?? '';
+  const charterId = idea.linkedCharterId ?? ''
 
   const handleReturnToDevelopment = () => {
-    const now = new Date().toISOString();
-    updateIdea(idea.id, { status: 'development' });
+    const now = new Date().toISOString()
+    updateIdea(idea.id, { status: 'development' })
     addActivity({
       id: generateId(),
       type: 'build-started',
@@ -26,8 +26,8 @@ function ProductionView({ idea }: ProductionViewProps) {
       entityType: 'idea',
       summary: `"${idea.title}" returned to development`,
       createdAt: now,
-    });
-  };
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -51,7 +51,7 @@ function ProductionView({ idea }: ProductionViewProps) {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default ProductionView;
+export default ProductionView

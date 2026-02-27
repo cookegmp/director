@@ -4,29 +4,29 @@
 // Approval prompt with environment selector for recommended fixes.
 // ============================================================================
 
-import { useState } from 'react';
-import { Shield, X } from 'lucide-react';
-import { approveRemediation } from '../remediation/remediation-trigger';
-import { monitorSession } from '../remediation/remediation-monitor';
+import { useState } from 'react'
+import { Shield, X } from 'lucide-react'
+import { approveRemediation } from '../remediation/remediation-trigger'
+import { monitorSession } from '../remediation/remediation-monitor'
 
 interface RemediationApprovalProps {
-  issueId: string;
-  projectId: string;
-  onClose: () => void;
+  issueId: string
+  projectId: string
+  onClose: () => void
 }
 
 function RemediationApproval({ issueId, projectId, onClose }: RemediationApprovalProps) {
-  const [environment, setEnvironment] = useState<'dsp' | 'development'>('dsp');
-  const [isApproving, setIsApproving] = useState(false);
+  const [environment, setEnvironment] = useState<'dsp' | 'development'>('dsp')
+  const [isApproving, setIsApproving] = useState(false)
 
   const handleApprove = () => {
-    setIsApproving(true);
-    const session = approveRemediation(issueId, projectId, environment);
+    setIsApproving(true)
+    const session = approveRemediation(issueId, projectId, environment)
     if (session) {
-      monitorSession(session.id);
+      monitorSession(session.id)
     }
-    onClose();
-  };
+    onClose()
+  }
 
   return (
     <div className="mt-3 bg-card/80 backdrop-blur-sm rounded-xl border border-border p-5 space-y-4">
@@ -44,9 +44,9 @@ function RemediationApproval({ issueId, projectId, onClose }: RemediationApprova
       </div>
 
       <p className="text-xs text-muted-foreground leading-relaxed">
-        This will initiate an agentic coding session that reads the bug report, locates
-        the affected component, and attempts an automated fix. The fix will be staged for
-        review — it will not auto-deploy.
+        This will initiate an agentic coding session that reads the bug report, locates the affected
+        component, and attempts an automated fix. The fix will be staged for review — it will not
+        auto-deploy.
       </p>
 
       <div>
@@ -79,7 +79,7 @@ function RemediationApproval({ issueId, projectId, onClose }: RemediationApprova
         {isApproving ? 'Initiating...' : 'Approve Auto-Fix'}
       </button>
     </div>
-  );
+  )
 }
 
-export default RemediationApproval;
+export default RemediationApproval

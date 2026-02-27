@@ -1,20 +1,20 @@
-import { Link } from 'react-router-dom';
-import { useIdeasStore } from '@/stores/ideas';
-import { Badge } from '@/components/ui/badge';
-import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types';
-import type { IdeaStatus } from '@/types';
+import { Link } from 'react-router-dom'
+import { useIdeasStore } from '@/stores/ideas'
+import { Badge } from '@/components/ui/badge'
+import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types'
+import type { IdeaStatus } from '@/types'
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
   scored: 'text-muted-foreground',
   'on-deck': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  'development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  development: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   production: 'bg-green-500/20 text-green-400 border-green-500/30',
   archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 function IdeasListPage() {
-  const ideas = useIdeasStore((s) => s.ideas);
-  const sorted = [...ideas].sort((a, b) => b.compositeScore - a.compositeScore);
+  const ideas = useIdeasStore((s) => s.ideas)
+  const sorted = [...ideas].sort((a, b) => b.compositeScore - a.compositeScore)
 
   return (
     <div>
@@ -24,7 +24,7 @@ function IdeasListPage() {
       ) : (
         <div className="space-y-3">
           {sorted.map((idea) => {
-            const tier = getScoreTier(idea.compositeScore);
+            const tier = getScoreTier(idea.compositeScore)
             return (
               <Link
                 key={idea.id}
@@ -48,12 +48,12 @@ function IdeasListPage() {
                   </div>
                 </div>
               </Link>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default IdeasListPage;
+export default IdeasListPage

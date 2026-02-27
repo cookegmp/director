@@ -1,13 +1,7 @@
-import { useState } from 'react';
-import {
-  Building2,
-  Cpu,
-  Palette,
-  Shield,
-  ClipboardCheck,
-} from 'lucide-react';
-import { useScaffoldingStore } from '@/stores/scaffolding';
-import type { ScaffoldingDocType } from '@/types';
+import { useState } from 'react'
+import { Building2, Cpu, Palette, Shield, ClipboardCheck } from 'lucide-react'
+import { useScaffoldingStore } from '@/stores/scaffolding'
+import type { ScaffoldingDocType } from '@/types'
 
 const DOC_TYPES: { type: ScaffoldingDocType; label: string; icon: typeof Building2 }[] = [
   { type: 'company-context', label: 'Company Context', icon: Building2 },
@@ -15,19 +9,20 @@ const DOC_TYPES: { type: ScaffoldingDocType; label: string; icon: typeof Buildin
   { type: 'brand-standards', label: 'Brand Standards', icon: Palette },
   { type: 'security-patterns', label: 'Security Patterns', icon: Shield },
   { type: 'quality-standards', label: 'Quality Standards', icon: ClipboardCheck },
-];
+]
 
 function ScaffoldingPage() {
-  const documents = useScaffoldingStore((s) => s.documents);
-  const [selectedType, setSelectedType] = useState<ScaffoldingDocType>('company-context');
+  const documents = useScaffoldingStore((s) => s.documents)
+  const [selectedType, setSelectedType] = useState<ScaffoldingDocType>('company-context')
 
-  const selectedDoc = documents.find((d) => d.type === selectedType);
+  const selectedDoc = documents.find((d) => d.type === selectedType)
 
   return (
     <div>
       <h1 className="text-2xl font-light text-foreground mb-2">Scaffolding</h1>
       <p className="text-sm text-muted-foreground mb-6">
-        Foundation documents from the consulting discovery process. These govern charter generation output.
+        Foundation documents from the consulting discovery process. These govern charter generation
+        output.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -66,25 +61,28 @@ function ScaffoldingPage() {
                       <h3 key={i} className="text-foreground font-medium mt-6 mb-2 text-base">
                         {paragraph.replace('## ', '')}
                       </h3>
-                    );
+                    )
                   }
                   if (paragraph.startsWith('- ')) {
                     return (
                       <ul key={i} className="space-y-1 my-2">
                         {paragraph.split('\n').map((line, j) => (
-                          <li key={j} className="text-foreground/80 font-light text-sm flex items-start gap-2">
+                          <li
+                            key={j}
+                            className="text-foreground/80 font-light text-sm flex items-start gap-2"
+                          >
                             <span className="text-primary mt-1">-</span>
                             {line.replace('- ', '')}
                           </li>
                         ))}
                       </ul>
-                    );
+                    )
                   }
                   return (
                     <p key={i} className="text-foreground/80 font-light leading-relaxed mb-3">
                       {paragraph}
                     </p>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -101,7 +99,7 @@ function ScaffoldingPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default ScaffoldingPage;
+export default ScaffoldingPage

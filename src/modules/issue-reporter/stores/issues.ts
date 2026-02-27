@@ -6,17 +6,17 @@
 // When BackStage is implemented, only the data-fetching functions change.
 // ============================================================================
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { ReportedIssue, IssueComment } from '../types';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { ReportedIssue, IssueComment } from '../types'
 
 interface ReportedIssuesState {
-  issues: ReportedIssue[];
-  addIssue: (issue: ReportedIssue) => void;
-  updateIssue: (id: string, updates: Partial<ReportedIssue>) => void;
-  getIssue: (id: string) => ReportedIssue | undefined;
-  addComment: (issueId: string, comment: IssueComment) => void;
-  getIssuesByProject: (projectId: string) => ReportedIssue[];
+  issues: ReportedIssue[]
+  addIssue: (issue: ReportedIssue) => void
+  updateIssue: (id: string, updates: Partial<ReportedIssue>) => void
+  getIssue: (id: string) => ReportedIssue | undefined
+  addComment: (issueId: string, comment: IssueComment) => void
+  getIssuesByProject: (projectId: string) => ReportedIssue[]
 }
 
 export const useReportedIssuesStore = create<ReportedIssuesState>()(
@@ -24,13 +24,12 @@ export const useReportedIssuesStore = create<ReportedIssuesState>()(
     (set, get) => ({
       issues: [],
 
-      addIssue: (issue) =>
-        set((state) => ({ issues: [...state.issues, issue] })),
+      addIssue: (issue) => set((state) => ({ issues: [...state.issues, issue] })),
 
       updateIssue: (id, updates) =>
         set((state) => ({
           issues: state.issues.map((i) =>
-            i.id === id ? { ...i, ...updates, updated_at: new Date().toISOString() } : i
+            i.id === id ? { ...i, ...updates, updated_at: new Date().toISOString() } : i,
           ),
         })),
 
@@ -41,9 +40,8 @@ export const useReportedIssuesStore = create<ReportedIssuesState>()(
         // For now, this is a no-op placeholder
       },
 
-      getIssuesByProject: (projectId) =>
-        get().issues.filter((i) => i.project_id === projectId),
+      getIssuesByProject: (projectId) => get().issues.filter((i) => i.project_id === projectId),
     }),
-    { name: 'stagemanager-reported-issues' }
-  )
-);
+    { name: 'stagemanager-reported-issues' },
+  ),
+)

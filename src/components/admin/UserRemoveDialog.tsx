@@ -5,25 +5,25 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { useUsersStore } from '@/stores/users';
-import type { User } from '@/types';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { useUsersStore } from '@/stores/users'
+import type { User } from '@/types'
 
 interface UserRemoveDialogProps {
-  user: User | null;
-  onClose: () => void;
+  user: User | null
+  onClose: () => void
 }
 
 function UserRemoveDialog({ user, onClose }: UserRemoveDialogProps) {
-  const removeUser = useUsersStore((s) => s.removeUser);
+  const removeUser = useUsersStore((s) => s.removeUser)
 
   const handleRemove = () => {
     if (user) {
-      removeUser(user.id);
-      onClose();
+      removeUser(user.id)
+      onClose()
     }
-  };
+  }
 
   return (
     <Dialog open={!!user} onOpenChange={() => onClose()}>
@@ -44,7 +44,7 @@ function UserRemoveDialog({ user, onClose }: UserRemoveDialogProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
-export default UserRemoveDialog;
+export default UserRemoveDialog

@@ -1,21 +1,27 @@
-import { useEffect, useLayoutEffect, useCallback, useRef } from 'react';
-import { Mic } from 'lucide-react';
-import useDictation from '@/hooks/useDictation';
+import { useEffect, useLayoutEffect, useCallback, useRef } from 'react'
+import { Mic } from 'lucide-react'
+import useDictation from '@/hooks/useDictation'
 
 interface DictationButtonProps {
   /** Called with final transcript text to append */
-  onResult: (text: string) => void;
+  onResult: (text: string) => void
   /** Called with in-progress text as the user speaks (for live preview in the input) */
-  onInterim?: (text: string) => void;
+  onInterim?: (text: string) => void
   /** Called when listening state changes — use to snapshot base text */
-  onListeningChange?: (isListening: boolean) => void;
-  className?: string;
-  disabled?: boolean;
+  onListeningChange?: (isListening: boolean) => void
+  className?: string
+  disabled?: boolean
 }
 
-const HOTKEY_LABEL = navigator.platform.includes('Mac') ? '⌃⇧D' : 'Ctrl+Shift+D';
+const HOTKEY_LABEL = navigator.platform.includes('Mac') ? '⌃⇧D' : 'Ctrl+Shift+D'
 
-function DictationButton({ onResult, onInterim, onListeningChange, className = '', disabled = false }: DictationButtonProps) {
+function DictationButton({
+  onResult,
+  onInterim,
+  onListeningChange,
+  className = '',
+  disabled = false,
+}: DictationButtonProps) {
   const {
     transcript,
     interimText,
@@ -24,59 +30,59 @@ function DictationButton({ onResult, onInterim, onListeningChange, className = '
     startListening,
     stopListening,
     resetTranscript,
-  } = useDictation();
+  } = useDictation()
 
   // Store callbacks in refs so effects don't depend on callback identity.
   // This prevents infinite re-render loops from inline arrow function props.
-  const onResultRef = useRef(onResult);
-  const onInterimRef = useRef(onInterim);
-  const onListeningChangeRef = useRef(onListeningChange);
+  const onResultRef = useRef(onResult)
+  const onInterimRef = useRef(onInterim)
+  const onListeningChangeRef = useRef(onListeningChange)
   useLayoutEffect(() => {
-    onResultRef.current = onResult;
-    onInterimRef.current = onInterim;
-    onListeningChangeRef.current = onListeningChange;
-  });
+    onResultRef.current = onResult
+    onInterimRef.current = onInterim
+    onListeningChangeRef.current = onListeningChange
+  })
 
   const toggle = useCallback(() => {
-    if (disabled) return;
+    if (disabled) return
     if (isListening) {
-      stopListening();
+      stopListening()
     } else {
-      startListening();
+      startListening()
     }
-  }, [disabled, isListening, startListening, stopListening]);
+  }, [disabled, isListening, startListening, stopListening])
 
   // Notify parent of listening state changes
   useEffect(() => {
-    onListeningChangeRef.current?.(isListening);
-  }, [isListening]);
+    onListeningChangeRef.current?.(isListening)
+  }, [isListening])
 
   // Stream interim text to parent so it shows live in the input field
   useEffect(() => {
-    onInterimRef.current?.(interimText);
-  }, [interimText]);
+    onInterimRef.current?.(interimText)
+  }, [interimText])
 
   // Deliver final transcript to parent
   useEffect(() => {
     if (transcript) {
-      onResultRef.current(transcript);
-      resetTranscript();
+      onResultRef.current(transcript)
+      resetTranscript()
     }
-  }, [transcript, resetTranscript]);
+  }, [transcript, resetTranscript])
 
   // Global hotkey: Ctrl+Shift+D
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
-        e.preventDefault();
-        toggle();
+        e.preventDefault()
+        toggle()
       }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggle]);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [toggle])
 
-  if (!isSupported) return null;
+  if (!isSupported) return null
 
   return (
     <div className="flex items-center gap-2">
@@ -84,7 +90,11 @@ function DictationButton({ onResult, onInterim, onListeningChange, className = '
         type="button"
         onClick={toggle}
         disabled={disabled}
-        title={isListening ? 'Listening... (click or ' + HOTKEY_LABEL + ' to stop)' : 'Dictate (' + HOTKEY_LABEL + ')'}
+        title={
+          isListening
+            ? 'Listening... (click or ' + HOTKEY_LABEL + ' to stop)'
+            : 'Dictate (' + HOTKEY_LABEL + ')'
+        }
         className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
           isListening
             ? 'bg-primary/20 text-primary dictation-pulse'
@@ -101,7 +111,7 @@ function DictationButton({ onResult, onInterim, onListeningChange, className = '
         </kbd>
       )}
     </div>
-  );
+  )
 }
 
-export default DictationButton;
+export default DictationButton

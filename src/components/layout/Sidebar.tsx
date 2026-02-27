@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
   Lightbulb,
@@ -11,15 +11,15 @@ import {
   Shield,
   Code2,
   Eye,
-} from 'lucide-react';
+} from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useUsersStore } from '@/stores/users';
-import { canAccessAdmin } from '@/lib/permissions';
+} from '@/components/ui/dropdown-menu'
+import { useUsersStore } from '@/stores/users'
+import { canAccessAdmin } from '@/lib/permissions'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -28,19 +28,19 @@ const navItems = [
   { to: '/charters', icon: FileText, label: 'Charters' },
   { to: '/issues', icon: Bug, label: 'Issues' },
   { to: '/scaffolding', icon: FolderOpen, label: 'Scaffolding' },
-];
+]
 
 const ROLE_ICON = {
   admin: Shield,
   developer: Code2,
   viewer: Eye,
-};
+}
 
 function Sidebar() {
-  const currentUser = useUsersStore((s) => s.getCurrentUser());
-  const users = useUsersStore((s) => s.users);
-  const setCurrentUser = useUsersStore((s) => s.setCurrentUser);
-  const showAdmin = currentUser && canAccessAdmin(currentUser.role);
+  const currentUser = useUsersStore((s) => s.getCurrentUser())
+  const users = useUsersStore((s) => s.users)
+  const setCurrentUser = useUsersStore((s) => s.setCurrentUser)
+  const showAdmin = currentUser && canAccessAdmin(currentUser.role)
 
   return (
     <aside className="w-64 bg-sidebar-background border-r border-sidebar-border flex flex-col h-screen sticky top-0 shrink-0">
@@ -97,7 +97,10 @@ function Sidebar() {
             <DropdownMenuTrigger asChild>
               <button className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left hover:bg-sidebar-accent/50 transition-colors">
                 <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-medium text-primary shrink-0">
-                  {currentUser.name.split(' ').map((n) => n[0]).join('')}
+                  {currentUser.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-foreground truncate">{currentUser.name}</p>
@@ -111,7 +114,7 @@ function Sidebar() {
               {users
                 .filter((u) => u.status === 'active')
                 .map((user) => {
-                  const RoleIcon = ROLE_ICON[user.role];
+                  const RoleIcon = ROLE_ICON[user.role]
                   return (
                     <DropdownMenuItem
                       key={user.id}
@@ -120,9 +123,11 @@ function Sidebar() {
                     >
                       <RoleIcon className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
                       <span className="flex-1">{user.name}</span>
-                      <span className="text-[10px] text-muted-foreground capitalize">{user.role}</span>
+                      <span className="text-[10px] text-muted-foreground capitalize">
+                        {user.role}
+                      </span>
                     </DropdownMenuItem>
-                  );
+                  )
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -130,23 +135,19 @@ function Sidebar() {
       )}
 
       <div className="px-4 pb-2">
-        <p className="text-xs text-muted-foreground text-center">
-          Prototype v0.1.0
-        </p>
+        <p className="text-xs text-muted-foreground text-center">Prototype v0.1.0</p>
       </div>
 
       <div className="px-4 pb-4 pt-2 border-t border-sidebar-border">
         <div className="flex items-center justify-center gap-2 opacity-40 hover:opacity-70 transition-opacity">
-          <span className="text-[10px] text-muted-foreground tracking-wide uppercase">Powered by</span>
-          <img
-            src="/level-set-logo.svg"
-            alt="Level Set AI Consulting"
-            className="h-16 rounded"
-          />
+          <span className="text-[10px] text-muted-foreground tracking-wide uppercase">
+            Powered by
+          </span>
+          <img src="/level-set-logo.svg" alt="Level Set AI Consulting" className="h-16 rounded" />
         </div>
       </div>
     </aside>
-  );
+  )
 }
 
-export default Sidebar;
+export default Sidebar

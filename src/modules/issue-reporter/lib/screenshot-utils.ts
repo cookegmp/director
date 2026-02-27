@@ -5,28 +5,28 @@
 // ============================================================================
 
 export async function capturePageAsCanvas(): Promise<HTMLCanvasElement> {
-  const { default: html2canvas } = await import('html2canvas');
+  const { default: html2canvas } = await import('html2canvas')
   const canvas = await html2canvas(document.body, {
     useCORS: true,
     allowTaint: false,
     scale: window.devicePixelRatio,
     logging: false,
     backgroundColor: null,
-  });
-  return canvas;
+  })
+  return canvas
 }
 
 export function cropCanvas(
   sourceCanvas: HTMLCanvasElement,
-  rect: { x: number; y: number; width: number; height: number }
+  rect: { x: number; y: number; width: number; height: number },
 ): HTMLCanvasElement {
-  const dpr = window.devicePixelRatio;
-  const cropped = document.createElement('canvas');
-  cropped.width = rect.width * dpr;
-  cropped.height = rect.height * dpr;
+  const dpr = window.devicePixelRatio
+  const cropped = document.createElement('canvas')
+  cropped.width = rect.width * dpr
+  cropped.height = rect.height * dpr
 
-  const ctx = cropped.getContext('2d');
-  if (!ctx) throw new Error('Failed to get canvas context');
+  const ctx = cropped.getContext('2d')
+  if (!ctx) throw new Error('Failed to get canvas context')
 
   ctx.drawImage(
     sourceCanvas,
@@ -37,21 +37,21 @@ export function cropCanvas(
     0,
     0,
     cropped.width,
-    cropped.height
-  );
+    cropped.height,
+  )
 
-  return cropped;
+  return cropped
 }
 
 export function canvasToBase64(canvas: HTMLCanvasElement): string {
-  return canvas.toDataURL('image/png');
+  return canvas.toDataURL('image/png')
 }
 
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }

@@ -1,14 +1,14 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-export type Environment = 'dsp' | 'development' | 'production';
-export type Model = 'claude' | 'gemini' | 'codex';
+export type Environment = 'dsp' | 'development' | 'production'
+export type Model = 'claude' | 'gemini' | 'codex'
 
 interface DevSettingsState {
-  environment: Environment;
-  model: Model;
-  setEnvironment: (env: Environment) => void;
-  setModel: (model: Model) => void;
+  environment: Environment
+  model: Model
+  setEnvironment: (env: Environment) => void
+  setModel: (model: Model) => void
 }
 
 export const useDevSettingsStore = create<DevSettingsState>()(
@@ -19,6 +19,6 @@ export const useDevSettingsStore = create<DevSettingsState>()(
       setEnvironment: (environment) => set({ environment }),
       setModel: (model) => set({ model }),
     }),
-    { name: 'stagemanager-dev-settings' }
-  )
-);
+    { name: 'stagemanager-dev-settings' },
+  ),
+)

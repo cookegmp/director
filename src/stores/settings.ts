@@ -1,16 +1,16 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { EnvironmentServer, AISettings, ConnectionStatus } from '@/types';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { EnvironmentServer, AISettings, ConnectionStatus } from '@/types'
 
 interface SettingsState {
-  servers: EnvironmentServer[];
-  aiSettings: AISettings;
-  updateServer: (id: string, updates: Partial<EnvironmentServer>) => void;
-  setConnectionStatus: (id: string, status: ConnectionStatus, errorMessage?: string | null) => void;
-  testConnection: (id: string) => Promise<void>;
-  updateAISettings: (updates: Partial<AISettings>) => void;
-  verifyApiKey: () => Promise<void>;
-  setVerbosity: (level: number) => void;
+  servers: EnvironmentServer[]
+  aiSettings: AISettings
+  updateServer: (id: string, updates: Partial<EnvironmentServer>) => void
+  setConnectionStatus: (id: string, status: ConnectionStatus, errorMessage?: string | null) => void
+  testConnection: (id: string) => Promise<void>
+  updateAISettings: (updates: Partial<AISettings>) => void
+  verifyApiKey: () => Promise<void>
+  setVerbosity: (level: number) => void
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -42,33 +42,36 @@ export const useSettingsStore = create<SettingsState>()(
 
       updateServer: (id, updates) =>
         set((state) => ({
-          servers: state.servers.map((s) =>
-            s.id === id ? { ...s, ...updates } : s
-          ),
+          servers: state.servers.map((s) => (s.id === id ? { ...s, ...updates } : s)),
         })),
 
       setConnectionStatus: (id, status, errorMessage = null) =>
         set((state) => ({
           servers: state.servers.map((s) =>
             s.id === id
-              ? { ...s, connectionStatus: status, errorMessage, lastTested: new Date().toISOString() }
-              : s
+              ? {
+                  ...s,
+                  connectionStatus: status,
+                  errorMessage,
+                  lastTested: new Date().toISOString(),
+                }
+              : s,
           ),
         })),
 
       testConnection: async (id) => {
-        const server = get().servers.find((s) => s.id === id);
-        if (!server) return;
+        const server = get().servers.find((s) => s.id === id)
+        if (!server) return
 
         // Simulate connection test (prototype)
-        get().setConnectionStatus(id, 'disconnected');
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        get().setConnectionStatus(id, 'disconnected')
+        await new Promise((resolve) => setTimeout(resolve, 1500))
 
         // If host is configured, simulate success; otherwise error
         if (server.host.trim()) {
-          get().setConnectionStatus(id, 'connected');
+          get().setConnectionStatus(id, 'connected')
         } else {
-          get().setConnectionStatus(id, 'error', 'No host configured');
+          get().setConnectionStatus(id, 'error', 'No host configured')
         }
       },
 
@@ -78,25 +81,25 @@ export const useSettingsStore = create<SettingsState>()(
         })),
 
       verifyApiKey: async () => {
-        const { aiSettings } = get();
+        const { aiSettings } = get()
         // Simulate verification (prototype)
         set((state) => ({
           aiSettings: { ...state.aiSettings, keyStatus: 'unconfigured' },
-        }));
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+        }))
+        await new Promise((resolve) => setTimeout(resolve, 1200))
 
         if (aiSettings.openrouterApiKey.startsWith('sk-or-')) {
           set((state) => ({
             aiSettings: { ...state.aiSettings, keyStatus: 'valid' },
-          }));
+          }))
         } else if (aiSettings.openrouterApiKey.trim()) {
           set((state) => ({
             aiSettings: { ...state.aiSettings, keyStatus: 'invalid' },
-          }));
+          }))
         } else {
           set((state) => ({
             aiSettings: { ...state.aiSettings, keyStatus: 'unconfigured' },
-          }));
+          }))
         }
       },
 
@@ -105,6 +108,6 @@ export const useSettingsStore = create<SettingsState>()(
           aiSettings: { ...state.aiSettings, translationVerbosity: level },
         })),
     }),
-    { name: 'stagemanager-settings' }
-  )
-);
+    { name: 'stagemanager-settings' },
+  ),
+)

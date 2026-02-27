@@ -1,6 +1,6 @@
 interface WizardStepDotsProps {
-  totalSteps: number;
-  currentStep: number;
+  totalSteps: number
+  currentStep: number
 }
 
 function WizardStepDots({ totalSteps, currentStep }: WizardStepDotsProps) {
@@ -15,7 +15,7 @@ function WizardStepDots({ totalSteps, currentStep }: WizardStepDotsProps) {
         />
       ))}
     </div>
-  );
+  )
 }
 
-export default WizardStepDots;
+export default WizardStepDots

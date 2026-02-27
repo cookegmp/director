@@ -5,42 +5,42 @@
 // prominently with tier badge and horizontal bars for each dimension.
 // ============================================================================
 
-import { Badge } from '@/components/ui/badge';
-import type { IssueScore } from '../types';
+import { Badge } from '@/components/ui/badge'
+import type { IssueScore } from '../types'
 import {
   getTierClasses,
   getTierLabel,
   BUG_DIMENSION_LABELS,
   FEATURE_DIMENSION_LABELS,
-} from '../types';
+} from '../types'
 
 interface ScoreDisplayProps {
-  score: IssueScore;
+  score: IssueScore
 }
 
 const DIMENSION_LABELS: Record<string, string> = {
   ...BUG_DIMENSION_LABELS,
   ...FEATURE_DIMENSION_LABELS,
-};
+}
 
 function ScoreDisplay({ score }: ScoreDisplayProps) {
-  const tierClasses = getTierClasses(score);
-  const tierLabel = getTierLabel(score.tier);
+  const tierClasses = getTierClasses(score)
+  const tierLabel = getTierLabel(score.tier)
 
   // Bar color based on individual score value
   const getBarColor = (value: number): string => {
     if (score.score_type === 'bug') {
-      if (value >= 80) return 'bg-red-500';
-      if (value >= 60) return 'bg-amber-500';
-      if (value >= 40) return 'bg-blue-500';
-      return 'bg-gray-500';
+      if (value >= 80) return 'bg-red-500'
+      if (value >= 60) return 'bg-amber-500'
+      if (value >= 40) return 'bg-blue-500'
+      return 'bg-gray-500'
     }
     // Feature: green scale
-    if (value >= 75) return 'bg-green-500';
-    if (value >= 50) return 'bg-blue-500';
-    if (value >= 25) return 'bg-gray-400';
-    return 'bg-gray-500';
-  };
+    if (value >= 75) return 'bg-green-500'
+    if (value >= 50) return 'bg-blue-500'
+    if (value >= 25) return 'bg-gray-400'
+    return 'bg-gray-500'
+  }
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 space-y-5">
@@ -91,7 +91,7 @@ function ScoreDisplay({ score }: ScoreDisplayProps) {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default ScoreDisplay;
+export default ScoreDisplay

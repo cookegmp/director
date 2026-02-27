@@ -4,18 +4,18 @@
 // Admin-configurable settings for thresholds, weights, and environments.
 // ============================================================================
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { RemediationSettings, IdeaWeights, BugWeights, FeatureWeights } from '../types';
-import { DEFAULT_REMEDIATION_SETTINGS } from '../types';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { RemediationSettings, IdeaWeights, BugWeights, FeatureWeights } from '../types'
+import { DEFAULT_REMEDIATION_SETTINGS } from '../types'
 
 interface RemediationSettingsState {
-  settings: RemediationSettings;
-  updateSettings: (updates: Partial<RemediationSettings>) => void;
-  updateIdeaWeights: (weights: Partial<IdeaWeights>) => void;
-  updateBugWeights: (weights: Partial<BugWeights>) => void;
-  updateFeatureWeights: (weights: Partial<FeatureWeights>) => void;
-  resetDefaults: () => void;
+  settings: RemediationSettings
+  updateSettings: (updates: Partial<RemediationSettings>) => void
+  updateIdeaWeights: (weights: Partial<IdeaWeights>) => void
+  updateBugWeights: (weights: Partial<BugWeights>) => void
+  updateFeatureWeights: (weights: Partial<FeatureWeights>) => void
+  resetDefaults: () => void
 }
 
 export const useRemediationSettingsStore = create<RemediationSettingsState>()(
@@ -52,8 +52,7 @@ export const useRemediationSettingsStore = create<RemediationSettingsState>()(
           },
         })),
 
-      resetDefaults: () =>
-        set({ settings: { ...DEFAULT_REMEDIATION_SETTINGS } }),
+      resetDefaults: () => set({ settings: { ...DEFAULT_REMEDIATION_SETTINGS } }),
     }),
     {
       name: 'stagemanager-remediation-settings',
@@ -61,14 +60,14 @@ export const useRemediationSettingsStore = create<RemediationSettingsState>()(
         const merged = {
           ...current,
           ...(persisted as Partial<RemediationSettingsState>),
-        };
+        }
         // Ensure new settings fields get defaults when loading old persisted data
         merged.settings = {
           ...DEFAULT_REMEDIATION_SETTINGS,
           ...merged.settings,
-        };
-        return merged;
+        }
+        return merged
       },
-    }
-  )
-);
+    },
+  ),
+)

@@ -1,128 +1,127 @@
 execution_plan:
   meta:
-    project: "StageManager"
-    repo: "stage-manager"
-    plan_version: "1.0.0"
-    generated_from_charter_date: "2026-02-24"
+    project: 'StageManager'
+    repo: 'stage-manager'
+    plan_version: '1.0.0'
+    generated_from_charter_date: '2026-02-24'
     owners:
-      product_owner: "AHAUS Operations"
-      tech_owner: "AI Dev Team"
+      product_owner: 'AHAUS Operations'
+      tech_owner: 'AI Dev Team'
     non_negotiables:
-      - "Vite + React SPA only; strictly no SSR (no Next.js)."
-      - "Local storage persistence only for this prototype phase; no real backend."
-      - "Strict adherence to the dark glassmorphism design system (HSL tokens)."
-      - "Pure CSS animations only (@keyframes, conic-gradient); no Framer Motion."
-      - "Bottom-border-only inputs; pill-shaped default radius (9999px)."
-      - "Charter generation must support a fallback mock mode when API key is absent."
+      - 'Vite + React SPA only; strictly no SSR (no Next.js).'
+      - 'Local storage persistence only for this prototype phase; no real backend.'
+      - 'Strict adherence to the dark glassmorphism design system (HSL tokens).'
+      - 'Pure CSS animations only (@keyframes, conic-gradient); no Framer Motion.'
+      - 'Bottom-border-only inputs; pill-shaped default radius (9999px).'
+      - 'Charter generation must support a fallback mock mode when API key is absent.'
     definition_of_done:
-      - "Complete 6-step intake wizard with animated gradient card."
-      - "Scoring engine successfully ranks ideas."
-      - "Charter generation triggers Anthropic API (or mock) and renders structured output."
-      - "Dashboard displays priority queue, active charters, and activity feed."
-      - "Issues and scaffolding views render properly."
-      - "All data persists across page reloads via localStorage."
+      - 'Complete 6-step intake wizard with animated gradient card.'
+      - 'Scoring engine successfully ranks ideas.'
+      - 'Charter generation triggers Anthropic API (or mock) and renders structured output.'
+      - 'Dashboard displays priority queue, active charters, and activity feed.'
+      - 'Issues and scaffolding views render properly.'
+      - 'All data persists across page reloads via localStorage.'
 
   global_conventions:
     progress_protocol:
-      progress_dir: ".agent-progress"
-      file_naming: "<PHASE>__<agent>.md"
+      progress_dir: '.agent-progress'
+      file_naming: '<PHASE>__<agent>.md'
       required_sections:
-        - "Scope"
-        - "Work Completed"
-        - "Touched Files"
-        - "Commands Run"
-        - "Notes/Risks"
-        - "Next Suggested Steps"
+        - 'Scope'
+        - 'Work Completed'
+        - 'Touched Files'
+        - 'Commands Run'
+        - 'Notes/Risks'
+        - 'Next Suggested Steps'
 
     dev_toggles:
       api_mode:
-        env_var: "VITE_USE_MOCK_DATA"
-        allowed: ["true", "false"]
-        default_dev: "true"
+        env_var: 'VITE_USE_MOCK_DATA'
+        allowed: ['true', 'false']
+        default_dev: 'true'
       api_keys:
-        env_var: "VITE_ANTHROPIC_API_KEY"
-        required_when: "VITE_USE_MOCK_DATA=false"
+        env_var: 'VITE_ANTHROPIC_API_KEY'
+        required_when: 'VITE_USE_MOCK_DATA=false'
 
     architecture_boundaries:
       frontend:
-        - "Standard #root mount via Vite."
-        - "Routing via react-router-dom."
-        - "Global state and persistence via Zustand."
+        - 'Standard #root mount via Vite.'
+        - 'Routing via react-router-dom.'
+        - 'Global state and persistence via Zustand.'
       styling:
-        - "shadcn/ui v2 with full HSL token system."
-        - "CSS custom properties on :root."
+        - 'shadcn/ui v2 with full HSL token system.'
+        - 'CSS custom properties on :root.'
       api_client:
-        - "anthropic-sdk used client-side (prototype only) for charter generation."
+        - 'anthropic-sdk used client-side (prototype only) for charter generation.'
 
   # =========================
   # CHUNK C1: FOUNDATION + UI SHELL + STATE
   # =========================
   chunk_C1:
-    name: "Foundation + Styling + Global State"
+    name: 'Foundation + Styling + Global State'
     phases:
-
-      - id: "P1"
-        name: "Vite bootstrap + Shadcn configuration"
-        goal: "Initialize Vite React TS project, configure Tailwind v3, and set up Shadcn UI v2 with HSL tokens."
+      - id: 'P1'
+        name: 'Vite bootstrap + Shadcn configuration'
+        goal: 'Initialize Vite React TS project, configure Tailwind v3, and set up Shadcn UI v2 with HSL tokens.'
         parallel_workstreams:
-          - agent: "scaffold-agent"
+          - agent: 'scaffold-agent'
             depends_on: []
             tasks:
-              - "Initialize Vite React TS project."
-              - "Install Tailwind CSS, PostCSS, Autoprefixer, Lucide React, React Router Dom."
-              - "Configure absolute paths (@/*)."
-            progress_file: ".agent-progress/P1__scaffold-agent.md"
+              - 'Initialize Vite React TS project.'
+              - 'Install Tailwind CSS, PostCSS, Autoprefixer, Lucide React, React Router Dom.'
+              - 'Configure absolute paths (@/*).'
+            progress_file: '.agent-progress/P1__scaffold-agent.md'
 
-          - agent: "ui-system-agent"
-            depends_on: ["scaffold-agent"]
+          - agent: 'ui-system-agent'
+            depends_on: ['scaffold-agent']
             tasks:
-              - "Initialize shadcn/ui v2."
-              - "Configure index.css with strict HSL palette from charter (Background: 225 64% 11%, Primary: 217 100% 61%, etc.)."
-              - "Set radius to 9999px in CSS variables."
-              - "Add required shadcn components: button, card, badge, progress, tabs, tooltip."
-            progress_file: ".agent-progress/P1__ui-system-agent.md"
+              - 'Initialize shadcn/ui v2.'
+              - 'Configure index.css with strict HSL palette from charter (Background: 225 64% 11%, Primary: 217 100% 61%, etc.).'
+              - 'Set radius to 9999px in CSS variables.'
+              - 'Add required shadcn components: button, card, badge, progress, tabs, tooltip.'
+            progress_file: '.agent-progress/P1__ui-system-agent.md'
 
         acceptance_checks:
-          - "Vite dev server starts without errors."
-          - "Tailwind and shadcn base styles correctly apply dark glassmorphism background."
+          - 'Vite dev server starts without errors.'
+          - 'Tailwind and shadcn base styles correctly apply dark glassmorphism background.'
         required_commands:
-          - "npm run dev"
+          - 'npm run dev'
         phase_closeout:
           docs:
-            - "README: Setup instructions and design system notes."
+            - 'README: Setup instructions and design system notes.'
           git:
             - "git add -A && git commit -m 'phase(P1): Vite bootstrap + Shadcn configuration'"
 
-      - id: "P2"
-        name: "State management + LocalStorage + Base Shell"
-        goal: "Establish Zustand stores with persistence and build the main application layout/routing."
+      - id: 'P2'
+        name: 'State management + LocalStorage + Base Shell'
+        goal: 'Establish Zustand stores with persistence and build the main application layout/routing.'
         parallel_workstreams:
-          - agent: "state-agent"
-            depends_on: ["P1"]
+          - agent: 'state-agent'
+            depends_on: ['P1']
             tasks:
-              - "Install zustand."
-              - "Create stores with persist middleware: ideas.ts, charters.ts, issues.ts, activity.ts, scaffolding.ts."
-              - "Define TypeScript interfaces in src/types/index.ts."
-            progress_file: ".agent-progress/P2__state-agent.md"
+              - 'Install zustand.'
+              - 'Create stores with persist middleware: ideas.ts, charters.ts, issues.ts, activity.ts, scaffolding.ts.'
+              - 'Define TypeScript interfaces in src/types/index.ts.'
+            progress_file: '.agent-progress/P2__state-agent.md'
 
-          - agent: "layout-agent"
-            depends_on: ["P1"]
+          - agent: 'layout-agent'
+            depends_on: ['P1']
             tasks:
-              - "Implement App.tsx with react-router-dom."
-              - "Create main layout shell (Sidebar navigation, header)."
-              - "Implement pure CSS particle background fallback in index.css (radial gradients)."
-              - "Create empty route components for Dashboard, Intake, Idea Detail, Charter View, Issues, Scaffolding."
-            progress_file: ".agent-progress/P2__layout-agent.md"
+              - 'Implement App.tsx with react-router-dom.'
+              - 'Create main layout shell (Sidebar navigation, header).'
+              - 'Implement pure CSS particle background fallback in index.css (radial gradients).'
+              - 'Create empty route components for Dashboard, Intake, Idea Detail, Charter View, Issues, Scaffolding.'
+            progress_file: '.agent-progress/P2__layout-agent.md'
 
         acceptance_checks:
-          - "Navigation between empty routes works."
-          - "Zustand stores initialize and persist to localStorage."
-          - "Particle background renders behind the application shell."
+          - 'Navigation between empty routes works.'
+          - 'Zustand stores initialize and persist to localStorage.'
+          - 'Particle background renders behind the application shell.'
         required_commands:
-          - "npm run lint"
+          - 'npm run lint'
         phase_closeout:
           docs:
-            - "README: Update route structure and state architecture."
+            - 'README: Update route structure and state architecture.'
           git:
             - "git add -A && git commit -m 'phase(P2): State management + Base Shell'"
 
@@ -130,70 +129,69 @@ execution_plan:
   # CHUNK C2: INTAKE WIZARD + SCORING ENGINE
   # =========================
   chunk_C2:
-    name: "Intake Wizard + Scoring Engine"
+    name: 'Intake Wizard + Scoring Engine'
     phases:
-
-      - id: "P3"
-        name: "Intake Wizard Component"
-        goal: "Build the multi-step animated glassmorphism wizard card."
+      - id: 'P3'
+        name: 'Intake Wizard Component'
+        goal: 'Build the multi-step animated glassmorphism wizard card.'
         parallel_workstreams:
-          - agent: "wizard-ui-agent"
-            depends_on: ["P2"]
+          - agent: 'wizard-ui-agent'
+            depends_on: ['P2']
             tasks:
-              - "Implement animated rotating conic-gradient border via ::before pseudo-element in CSS."
-              - "Build WizardCard container (glassmorphism bg-card/50, backdrop-blur)."
-              - "Implement bottom-border-only textareas and select inputs."
-              - "Build gradient-button component for the action bar."
-            progress_file: ".agent-progress/P3__wizard-ui-agent.md"
+              - 'Implement animated rotating conic-gradient border via ::before pseudo-element in CSS.'
+              - 'Build WizardCard container (glassmorphism bg-card/50, backdrop-blur).'
+              - 'Implement bottom-border-only textareas and select inputs.'
+              - 'Build gradient-button component for the action bar.'
+            progress_file: '.agent-progress/P3__wizard-ui-agent.md'
 
-          - agent: "wizard-logic-agent"
-            depends_on: ["P2", "wizard-ui-agent"]
+          - agent: 'wizard-logic-agent'
+            depends_on: ['P2', 'wizard-ui-agent']
             tasks:
-              - "Implement step navigation logic (1 through 6)."
-              - "Wire AI-generated suggestion tags as clickable pills."
-              - "Capture state for Problem, Impact, Current State, Desired Outcome, Constraints, Urgency."
-            progress_file: ".agent-progress/P3__wizard-logic-agent.md"
+              - 'Implement step navigation logic (1 through 6).'
+              - 'Wire AI-generated suggestion tags as clickable pills.'
+              - 'Capture state for Problem, Impact, Current State, Desired Outcome, Constraints, Urgency.'
+            progress_file: '.agent-progress/P3__wizard-logic-agent.md'
 
         acceptance_checks:
-          - "Wizard card renders with rotating gradient border."
-          - "User can navigate through all 6 steps and input data."
-          - "Suggestion pills populate text areas when clicked."
+          - 'Wizard card renders with rotating gradient border.'
+          - 'User can navigate through all 6 steps and input data.'
+          - 'Suggestion pills populate text areas when clicked.'
         required_commands:
-          - "npm run dev"
+          - 'npm run dev'
         phase_closeout:
           docs:
-            - "README: Document Wizard component and CSS animation implementation."
+            - 'README: Document Wizard component and CSS animation implementation.'
           git:
             - "git add -A && git commit -m 'phase(P3): Intake Wizard Component'"
 
-      - id: "P4"
-        name: "Scoring Engine + Idea Detail"
-        goal: "Score wizard submissions and render the Idea Detail view."
+      - id: 'P4'
+        name: 'Scoring Engine + Idea Detail'
+        goal: 'Score wizard submissions and render the Idea Detail view.'
         parallel_workstreams:
-          - agent: "scoring-agent"
-            depends_on: ["P3"]
+          - agent: 'scoring-agent'
+            depends_on: ['P3']
             tasks:
-              - "Implement src/lib/scoring.ts rules-based engine."
-              - "Calculate Impact (30%), Urgency (25%), Feasibility (25%), Alignment (20%)."
-              - "Determine priority tiers (Critical, High, Medium, Low)."
-              - "Wire wizard completion to save to ideas store and trigger activity feed."
-            progress_file: ".agent-progress/P4__scoring-agent.md"
+              - 'Implement src/lib/scoring.ts rules-based engine.'
+              - 'Calculate Impact (30%), Urgency (25%), Feasibility (25%), Alignment (20%).'
+              - 'Determine priority tiers (Critical, High, Medium, Low).'
+              - 'Wire wizard completion to save to ideas store and trigger activity feed.'
+            progress_file: '.agent-progress/P4__scoring-agent.md'
 
-          - agent: "idea-detail-agent"
-            depends_on: ["P3"]
+          - agent: 'idea-detail-agent'
+            depends_on: ['P3']
             tasks:
-              - "Implement /ideas/:id view."
-              - "Build visual score breakdown component (bars/gauges with semantic colors)."
-              - "Render intake summary as clean, editable list."
+              - 'Implement /ideas/:id view.'
+              - 'Build visual score breakdown component (bars/gauges with semantic colors).'
+              - 'Render intake summary as clean, editable list.'
               - "Add 'Generate Charter' primary action button."
-            progress_file: ".agent-progress/P4__idea-detail-agent.md"
+            progress_file: '.agent-progress/P4__idea-detail-agent.md'
 
         acceptance_checks:
-          - "Completing the wizard successfully generates a scored idea."
-          - "Score dimensions calculate accurately and map to correct semantic colors."
-          - "Idea Detail view correctly reads from Zustand store."
+          - 'Completing the wizard successfully generates a scored idea.'
+          - 'Score dimensions calculate accurately and map to correct semantic colors.'
+          - 'Idea Detail view correctly reads from Zustand store.'
         required_commands:
-          - "npm run lint"
+          - 'npm run lint'
         phase_closeout:
           git:
             - "git add -A && git commit -m 'phase(P4): Scoring Engine + Idea Detail'"
@@ -202,59 +200,58 @@ execution_plan:
   # CHUNK C3: CHARTER GENERATION + DASHBOARD
   # =========================
   chunk_C3:
-    name: "Charter Generation + Dashboard"
+    name: 'Charter Generation + Dashboard'
     phases:
-
-      - id: "P5"
-        name: "Anthropic Integration + Charter Generation"
-        goal: "Connect to Claude API (and build mock fallback) to generate structured execution plans."
+      - id: 'P5'
+        name: 'Anthropic Integration + Charter Generation'
+        goal: 'Connect to Claude API (and build mock fallback) to generate structured execution plans.'
         parallel_workstreams:
-          - agent: "api-integration-agent"
-            depends_on: ["P4"]
+          - agent: 'api-integration-agent'
+            depends_on: ['P4']
             tasks:
-              - "Install @anthropic-ai/sdk."
-              - "Implement src/lib/charter-generator.ts."
-              - "Create mock data generator triggered by VITE_USE_MOCK_DATA=true."
-              - "Construct system prompt combining intake data and scaffolding context."
-            progress_file: ".agent-progress/P5__api-integration-agent.md"
+              - 'Install @anthropic-ai/sdk.'
+              - 'Implement src/lib/charter-generator.ts.'
+              - 'Create mock data generator triggered by VITE_USE_MOCK_DATA=true.'
+              - 'Construct system prompt combining intake data and scaffolding context.'
+            progress_file: '.agent-progress/P5__api-integration-agent.md'
 
-          - agent: "charter-view-agent"
-            depends_on: ["P4"]
+          - agent: 'charter-view-agent'
+            depends_on: ['P4']
             tasks:
-              - "Implement /charters/:id view."
-              - "Build structured-display renderer for the generated charter JSON/object."
-              - "Implement status tracking badges (draft -> complete)."
-              - "Add clipboard export functionality."
-            progress_file: ".agent-progress/P5__charter-view-agent.md"
+              - 'Implement /charters/:id view.'
+              - 'Build structured-display renderer for the generated charter JSON/object.'
+              - 'Implement status tracking badges (draft -> complete).'
+              - 'Add clipboard export functionality.'
+            progress_file: '.agent-progress/P5__charter-view-agent.md'
 
         acceptance_checks:
           - "Mock mode successfully generates a dummy charter after clicking 'Generate'."
-          - "Live mode (with key) successfully calls Claude API and parses structured response."
-          - "Charter view renders phases, tasks, and acceptance criteria clearly."
+          - 'Live mode (with key) successfully calls Claude API and parses structured response.'
+          - 'Charter view renders phases, tasks, and acceptance criteria clearly.'
         required_commands:
-          - "npm run dev"
+          - 'npm run dev'
         phase_closeout:
           git:
             - "git add -A && git commit -m 'phase(P5): Charter Generation'"
 
-      - id: "P6"
-        name: "Dashboard Aggregation"
-        goal: "Build the primary landing view summarizing all operations."
+      - id: 'P6'
+        name: 'Dashboard Aggregation'
+        goal: 'Build the primary landing view summarizing all operations.'
         parallel_workstreams:
-          - agent: "dashboard-ui-agent"
-            depends_on: ["P2", "P4", "P5"]
+          - agent: 'dashboard-ui-agent'
+            depends_on: ['P2', 'P4', 'P5']
             tasks:
-              - "Implement Priority Queue list sorted by composite score."
-              - "Implement Active Projects cards filtered by status."
-              - "Implement Recent Activity feed reading from activity.ts store."
-              - "Add prominent Quick Action gradient buttons."
-            progress_file: ".agent-progress/P6__dashboard-ui-agent.md"
+              - 'Implement Priority Queue list sorted by composite score.'
+              - 'Implement Active Projects cards filtered by status.'
+              - 'Implement Recent Activity feed reading from activity.ts store.'
+              - 'Add prominent Quick Action gradient buttons.'
+            progress_file: '.agent-progress/P6__dashboard-ui-agent.md'
 
         acceptance_checks:
-          - "Dashboard accurately reflects data currently in localStorage."
-          - "Clicking items correctly routes to detail views."
+          - 'Dashboard accurately reflects data currently in localStorage.'
+          - 'Clicking items correctly routes to detail views.'
         required_commands:
-          - "npm run lint"
+          - 'npm run lint'
         phase_closeout:
           git:
             - "git add -A && git commit -m 'phase(P6): Dashboard Aggregation'"
@@ -263,65 +260,64 @@ execution_plan:
   # CHUNK C4: ISSUES + SCAFFOLDING + DEMO DATA
   # =========================
   chunk_C4:
-    name: "Issues + Scaffolding + Final Demo State"
+    name: 'Issues + Scaffolding + Final Demo State'
     phases:
-
-      - id: "P7"
-        name: "Issues & Scaffolding Views"
-        goal: "Complete the remaining navigational views for bug tracking and reference standards."
+      - id: 'P7'
+        name: 'Issues & Scaffolding Views'
+        goal: 'Complete the remaining navigational views for bug tracking and reference standards.'
         parallel_workstreams:
-          - agent: "issues-agent"
-            depends_on: ["P2"]
+          - agent: 'issues-agent'
+            depends_on: ['P2']
             tasks:
-              - "Implement /issues list view with filters (type, severity, status)."
-              - "Build new issue submission form (bottom-border aesthetics)."
-              - "Implement issue detail view."
-            progress_file: ".agent-progress/P7__issues-agent.md"
+              - 'Implement /issues list view with filters (type, severity, status).'
+              - 'Build new issue submission form (bottom-border aesthetics).'
+              - 'Implement issue detail view.'
+            progress_file: '.agent-progress/P7__issues-agent.md'
 
-          - agent: "scaffolding-agent"
-            depends_on: ["P2"]
+          - agent: 'scaffolding-agent'
+            depends_on: ['P2']
             tasks:
-              - "Implement /scaffolding read-only viewer."
-              - "Build side-navigation for document types (company-context, brand-standards, etc.)."
-            progress_file: ".agent-progress/P7__scaffolding-agent.md"
+              - 'Implement /scaffolding read-only viewer.'
+              - 'Build side-navigation for document types (company-context, brand-standards, etc.).'
+            progress_file: '.agent-progress/P7__scaffolding-agent.md'
 
         acceptance_checks:
-          - "User can submit and view a bug report."
-          - "Scaffolding view successfully renders loaded document structures."
+          - 'User can submit and view a bug report.'
+          - 'Scaffolding view successfully renders loaded document structures.'
         required_commands:
-          - "npm run dev"
+          - 'npm run dev'
         phase_closeout:
           git:
             - "git add -A && git commit -m 'phase(P7): Issues & Scaffolding Views'"
 
-      - id: "P8"
-        name: "Demo Data Seeding & Final Polish"
-        goal: "Load realistic fictional data to make the prototype immediately demonstrable."
+      - id: 'P8'
+        name: 'Demo Data Seeding & Final Polish'
+        goal: 'Load realistic fictional data to make the prototype immediately demonstrable.'
         parallel_workstreams:
-          - agent: "demo-data-agent"
-            depends_on: ["P4", "P5", "P6", "P7"]
+          - agent: 'demo-data-agent'
+            depends_on: ['P4', 'P5', 'P6', 'P7']
             tasks:
-              - "Implement src/lib/sample-data.ts."
+              - 'Implement src/lib/sample-data.ts.'
               - "Create comprehensive dummy data centered around 'AHAUS', a fictional manufacturing company."
-              - "Seed 3 scored ideas, 1 active charter, 5 issues, and a full scaffolding package."
-              - "Inject loader logic in App.tsx to populate empty Zustand stores on first load."
-            progress_file: ".agent-progress/P8__demo-data-agent.md"
+              - 'Seed 3 scored ideas, 1 active charter, 5 issues, and a full scaffolding package.'
+              - 'Inject loader logic in App.tsx to populate empty Zustand stores on first load.'
+            progress_file: '.agent-progress/P8__demo-data-agent.md'
 
-          - agent: "qa-polish-agent"
-            depends_on: ["demo-data-agent"]
+          - agent: 'qa-polish-agent'
+            depends_on: ['demo-data-agent']
             tasks:
-              - "Verify mobile responsiveness (desktop-first, functional on tablet)."
-              - "Ensure strict adherence to font-light everywhere."
-              - "Audit muted text opacities (55% lightness)."
-            progress_file: ".agent-progress/P8__qa-polish-agent.md"
+              - 'Verify mobile responsiveness (desktop-first, functional on tablet).'
+              - 'Ensure strict adherence to font-light everywhere.'
+              - 'Audit muted text opacities (55% lightness).'
+            progress_file: '.agent-progress/P8__qa-polish-agent.md'
 
         acceptance_checks:
-          - "Opening the app on a fresh browser immediately displays a rich dashboard of AHAUS data."
-          - "No console errors; strict TypeScript compilation passes."
+          - 'Opening the app on a fresh browser immediately displays a rich dashboard of AHAUS data.'
+          - 'No console errors; strict TypeScript compilation passes.'
         required_commands:
-          - "npm run build"
+          - 'npm run build'
         phase_closeout:
           docs:
-            - "README: Finalize demo instructions."
+            - 'README: Finalize demo instructions.'
           git:
             - "git add -A && git commit -m 'phase(P8): Demo Data Seeding & Final Polish'"

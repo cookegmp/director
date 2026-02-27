@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Wifi, WifiOff, AlertTriangle, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useSettingsStore } from '@/stores/settings';
-import type { EnvironmentServer } from '@/types';
+import { useState } from 'react'
+import { Wifi, WifiOff, AlertTriangle, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { useSettingsStore } from '@/stores/settings'
+import type { EnvironmentServer } from '@/types'
 
 const ENV_META: Record<string, { label: string; warning?: string }> = {
   dsp: {
@@ -13,33 +13,48 @@ const ENV_META: Record<string, { label: string; warning?: string }> = {
   },
   development: { label: 'Development' },
   production: { label: 'Production' },
-};
+}
 
 interface ServerCardProps {
-  server: EnvironmentServer;
+  server: EnvironmentServer
 }
 
 function ServerCard({ server }: ServerCardProps) {
-  const updateServer = useSettingsStore((s) => s.updateServer);
-  const testConnection = useSettingsStore((s) => s.testConnection);
-  const [testing, setTesting] = useState(false);
-  const meta = ENV_META[server.environment];
+  const updateServer = useSettingsStore((s) => s.updateServer)
+  const testConnection = useSettingsStore((s) => s.testConnection)
+  const [testing, setTesting] = useState(false)
+  const meta = ENV_META[server.environment]
 
   const handleTest = async () => {
-    setTesting(true);
-    await testConnection(server.id);
-    setTesting(false);
-  };
+    setTesting(true)
+    await testConnection(server.id)
+    setTesting(false)
+  }
 
-  const wsUrl = `ws://${server.host || '…'}:${server.port}${server.websocketPath}`;
+  const wsUrl = `ws://${server.host || '…'}:${server.port}${server.websocketPath}`
 
   const statusConfig = {
-    connected: { icon: Wifi, label: 'Connected', className: 'bg-teal-500/20 text-teal-400 border-teal-500/30', dot: 'bg-teal-400' },
-    disconnected: { icon: WifiOff, label: 'Disconnected', className: 'bg-muted text-muted-foreground border-border', dot: 'bg-muted-foreground' },
-    error: { icon: AlertTriangle, label: 'Error', className: 'bg-red-500/20 text-red-400 border-red-500/30', dot: 'bg-red-400' },
-  };
+    connected: {
+      icon: Wifi,
+      label: 'Connected',
+      className: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+      dot: 'bg-teal-400',
+    },
+    disconnected: {
+      icon: WifiOff,
+      label: 'Disconnected',
+      className: 'bg-muted text-muted-foreground border-border',
+      dot: 'bg-muted-foreground',
+    },
+    error: {
+      icon: AlertTriangle,
+      label: 'Error',
+      className: 'bg-red-500/20 text-red-400 border-red-500/30',
+      dot: 'bg-red-400',
+    },
+  }
 
-  const status = statusConfig[server.connectionStatus];
+  const status = statusConfig[server.connectionStatus]
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-4">
@@ -76,7 +91,9 @@ function ServerCard({ server }: ServerCardProps) {
             <input
               type="number"
               value={server.port}
-              onChange={(e) => updateServer(server.id, { port: parseInt(e.target.value, 10) || 8080 })}
+              onChange={(e) =>
+                updateServer(server.id, { port: parseInt(e.target.value, 10) || 8080 })
+              }
               className="w-full bg-transparent border-b-2 border-border text-foreground focus:border-primary outline-none py-1.5 text-sm transition-colors"
             />
           </div>
@@ -117,7 +134,7 @@ function ServerCard({ server }: ServerCardProps) {
         </Button>
       </div>
     </div>
-  );
+  )
 }
 
-export default ServerCard;
+export default ServerCard

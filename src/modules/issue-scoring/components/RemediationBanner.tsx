@@ -4,20 +4,20 @@
 // Status banner displayed on issue detail for remediation state.
 // ============================================================================
 
-import { useState } from 'react';
-import { Wrench, CheckCircle, XCircle, Loader2 } from 'lucide-react';
-import type { IssueScore } from '../types';
-import RemediationApproval from './RemediationApproval';
+import { useState } from 'react'
+import { Wrench, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import type { IssueScore } from '../types'
+import RemediationApproval from './RemediationApproval'
 
 interface RemediationBannerProps {
-  score: IssueScore;
-  projectId: string | null;
+  score: IssueScore
+  projectId: string | null
 }
 
 function RemediationBanner({ score, projectId }: RemediationBannerProps) {
-  const [showApproval, setShowApproval] = useState(false);
+  const [showApproval, setShowApproval] = useState(false)
 
-  if (!score.remediation_status || score.score_type !== 'bug') return null;
+  if (!score.remediation_status || score.score_type !== 'bug') return null
 
   switch (score.remediation_status) {
     case 'recommended':
@@ -28,7 +28,8 @@ function RemediationBanner({ score, projectId }: RemediationBannerProps) {
             <div className="flex-1">
               <p className="text-sm text-amber-300 font-medium">Auto-fix recommended</p>
               <p className="text-xs text-amber-300/70 mt-0.5">
-                This bug scored high enough for automated remediation. Review and approve to initiate.
+                This bug scored high enough for automated remediation. Review and approve to
+                initiate.
               </p>
             </div>
             <button
@@ -46,7 +47,7 @@ function RemediationBanner({ score, projectId }: RemediationBannerProps) {
             />
           )}
         </>
-      );
+      )
 
     case 'approved':
     case 'triggered':
@@ -56,14 +57,17 @@ function RemediationBanner({ score, projectId }: RemediationBannerProps) {
           <Loader2 className="w-4 h-4 text-teal-400 shrink-0 animate-spin" />
           <div className="flex-1">
             <p className="text-sm text-teal-300 font-medium">
-              {score.remediation_status === 'in_progress' ? 'Auto-fix in progress' : 'Auto-fix initiated'}
+              {score.remediation_status === 'in_progress'
+                ? 'Auto-fix in progress'
+                : 'Auto-fix initiated'}
             </p>
             <p className="text-xs text-teal-300/70 mt-0.5">
-              An agentic coding session is working on a fix. You can monitor progress in the development portal.
+              An agentic coding session is working on a fix. You can monitor progress in the
+              development portal.
             </p>
           </div>
         </div>
-      );
+      )
 
     case 'completed':
       return (
@@ -72,28 +76,32 @@ function RemediationBanner({ score, projectId }: RemediationBannerProps) {
           <div className="flex-1">
             <p className="text-sm text-green-300 font-medium">Auto-fix complete</p>
             <p className="text-xs text-green-300/70 mt-0.5">
-              Staged changes are ready for review. Check the development portal to inspect and deploy.
+              Staged changes are ready for review. Check the development portal to inspect and
+              deploy.
             </p>
           </div>
         </div>
-      );
+      )
 
     case 'failed':
       return (
         <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
           <XCircle className="w-4 h-4 text-red-400 shrink-0" />
           <div className="flex-1">
-            <p className="text-sm text-red-300 font-medium">Auto-fix attempted — manual review needed</p>
+            <p className="text-sm text-red-300 font-medium">
+              Auto-fix attempted — manual review needed
+            </p>
             <p className="text-xs text-red-300/70 mt-0.5">
-              The automated remediation session encountered an issue and could not complete. A developer should review manually.
+              The automated remediation session encountered an issue and could not complete. A
+              developer should review manually.
             </p>
           </div>
         </div>
-      );
+      )
 
     default:
-      return null;
+      return null
   }
 }
 
-export default RemediationBanner;
+export default RemediationBanner

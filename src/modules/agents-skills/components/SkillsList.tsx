@@ -1,61 +1,56 @@
-import { useState } from 'react';
-import { Plus, MoreHorizontal, Zap, Link2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { Plus, MoreHorizontal, Zap, Link2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useAgentsSkillsStore } from '@/stores/agents-skills';
-import type { SkillDefinition } from '@/types';
-import SkillDetailPanel from './SkillDetailPanel';
+} from '@/components/ui/dropdown-menu'
+import { useAgentsSkillsStore } from '@/stores/agents-skills'
+import type { SkillDefinition } from '@/types'
+import SkillDetailPanel from './SkillDetailPanel'
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
+  })
 }
 
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   inactive: 'bg-muted text-muted-foreground border-border',
   draft: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-};
+}
 
 const STATUS_DOTS: Record<string, string> = {
   active: 'bg-teal-400',
   inactive: 'bg-muted-foreground',
   draft: 'bg-amber-400',
-};
+}
 
 interface SkillsListProps {
-  onCreateNew: () => void;
+  onCreateNew: () => void
 }
 
 function SkillsList({ onCreateNew }: SkillsListProps) {
-  const skills = useAgentsSkillsStore((s) => s.skills);
-  const agents = useAgentsSkillsStore((s) => s.agents);
-  const setSkillStatus = useAgentsSkillsStore((s) => s.setSkillStatus);
-  const removeSkill = useAgentsSkillsStore((s) => s.removeSkill);
-  const [selectedSkill, setSelectedSkill] = useState<SkillDefinition | null>(null);
+  const skills = useAgentsSkillsStore((s) => s.skills)
+  const agents = useAgentsSkillsStore((s) => s.agents)
+  const setSkillStatus = useAgentsSkillsStore((s) => s.setSkillStatus)
+  const removeSkill = useAgentsSkillsStore((s) => s.removeSkill)
+  const [selectedSkill, setSelectedSkill] = useState<SkillDefinition | null>(null)
 
   const getAgentName = (agentId: string | null) => {
-    if (!agentId) return null;
-    return agents.find((a) => a.id === agentId)?.name ?? null;
-  };
+    if (!agentId) return null
+    return agents.find((a) => a.id === agentId)?.name ?? null
+  }
 
   if (selectedSkill) {
-    return (
-      <SkillDetailPanel
-        skill={selectedSkill}
-        onBack={() => setSelectedSkill(null)}
-      />
-    );
+    return <SkillDetailPanel skill={selectedSkill} onBack={() => setSelectedSkill(null)} />
   }
 
   return (
@@ -107,7 +102,7 @@ function SkillsList({ onCreateNew }: SkillsListProps) {
             </thead>
             <tbody className="divide-y divide-border">
               {skills.map((skill) => {
-                const agentName = getAgentName(skill.agentId);
+                const agentName = getAgentName(skill.agentId)
 
                 return (
                   <tr
@@ -121,8 +116,12 @@ function SkillsList({ onCreateNew }: SkillsListProps) {
                           <Zap className="w-4 h-4 text-amber-400" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{skill.name}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[280px]">{skill.description}</p>
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {skill.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[280px]">
+                            {skill.description}
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -143,7 +142,9 @@ function SkillsList({ onCreateNew }: SkillsListProps) {
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant="outline" className={STATUS_STYLES[skill.status]}>
-                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${STATUS_DOTS[skill.status]}`} />
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full mr-1.5 ${STATUS_DOTS[skill.status]}`}
+                        />
                         {skill.status.charAt(0).toUpperCase() + skill.status.slice(1)}
                       </Badge>
                     </td>
@@ -179,14 +180,14 @@ function SkillsList({ onCreateNew }: SkillsListProps) {
                       </DropdownMenu>
                     </td>
                   </tr>
-                );
+                )
               })}
             </tbody>
           </table>
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default SkillsList;
+export default SkillsList

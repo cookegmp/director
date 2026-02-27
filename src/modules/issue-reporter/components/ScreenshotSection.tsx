@@ -4,35 +4,35 @@
 // Capture/upload controls and thumbnail preview on the review card.
 // ============================================================================
 
-import { useRef, useState } from 'react';
-import { Camera, Upload, X, Maximize2 } from 'lucide-react';
-import { useIssueReporterStore } from '../stores/issue-reporter';
-import { fileToBase64 } from '../lib/screenshot-utils';
-import CaptureOverlay from './CaptureOverlay';
+import { useRef, useState } from 'react'
+import { Camera, Upload, X, Maximize2 } from 'lucide-react'
+import { useIssueReporterStore } from '../stores/issue-reporter'
+import { fileToBase64 } from '../lib/screenshot-utils'
+import CaptureOverlay from './CaptureOverlay'
 
 function ScreenshotSection() {
-  const { screenshot, setScreenshot } = useIssueReporterStore();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [showCapture, setShowCapture] = useState(false);
-  const [showLightbox, setShowLightbox] = useState(false);
+  const { screenshot, setScreenshot } = useIssueReporterStore()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [showCapture, setShowCapture] = useState(false)
+  const [showLightbox, setShowLightbox] = useState(false)
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
-    const base64 = await fileToBase64(file);
-    setScreenshot(base64);
+    const base64 = await fileToBase64(file)
+    setScreenshot(base64)
 
     // Reset file input
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = ''
     }
-  };
+  }
 
   const handleCaptureComplete = (base64: string) => {
-    setScreenshot(base64);
-    setShowCapture(false);
-  };
+    setScreenshot(base64)
+    setShowCapture(false)
+  }
 
   return (
     <>
@@ -95,10 +95,7 @@ function ScreenshotSection() {
 
       {/* Capture overlay */}
       {showCapture && (
-        <CaptureOverlay
-          onCapture={handleCaptureComplete}
-          onCancel={() => setShowCapture(false)}
-        />
+        <CaptureOverlay onCapture={handleCaptureComplete} onCancel={() => setShowCapture(false)} />
       )}
 
       {/* Lightbox */}
@@ -122,7 +119,7 @@ function ScreenshotSection() {
         </div>
       )}
     </>
-  );
+  )
 }
 
-export default ScreenshotSection;
+export default ScreenshotSection

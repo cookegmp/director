@@ -1,24 +1,24 @@
-import { ArrowLeft, Bot, Cpu } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useAgentsSkillsStore } from '@/stores/agents-skills';
-import type { AgentDefinition } from '@/types';
+import { ArrowLeft, Bot, Cpu } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useAgentsSkillsStore } from '@/stores/agents-skills'
+import type { AgentDefinition } from '@/types'
 
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   inactive: 'bg-muted text-muted-foreground border-border',
   draft: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-};
+}
 
 interface AgentDetailPanelProps {
-  agent: AgentDefinition;
-  onBack: () => void;
+  agent: AgentDefinition
+  onBack: () => void
 }
 
 function AgentDetailPanel({ agent, onBack }: AgentDetailPanelProps) {
-  const setAgentStatus = useAgentsSkillsStore((s) => s.setAgentStatus);
-  const skills = useAgentsSkillsStore((s) => s.skills);
-  const linkedSkills = skills.filter((s) => s.agentId === agent.id);
+  const setAgentStatus = useAgentsSkillsStore((s) => s.setAgentStatus)
+  const skills = useAgentsSkillsStore((s) => s.skills)
+  const linkedSkills = skills.filter((s) => s.agentId === agent.id)
 
   return (
     <div className="space-y-6">
@@ -57,7 +57,9 @@ function AgentDetailPanel({ agent, onBack }: AgentDetailPanelProps) {
             </div>
 
             <div>
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Max Turns</span>
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                Max Turns
+              </span>
               <p className="text-sm text-foreground mt-1">{agent.maxTurns}</p>
             </div>
 
@@ -74,7 +76,9 @@ function AgentDetailPanel({ agent, onBack }: AgentDetailPanelProps) {
 
             {linkedSkills.length > 0 && (
               <div>
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Linked Skills</span>
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                  Linked Skills
+                </span>
                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {linkedSkills.map((skill) => (
                     <Badge key={skill.id} variant="outline" className="text-xs">
@@ -87,9 +91,13 @@ function AgentDetailPanel({ agent, onBack }: AgentDetailPanelProps) {
           </div>
 
           <div>
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">System Prompt</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">
+              System Prompt
+            </span>
             <div className="mt-1.5 p-3 bg-muted/30 rounded-lg border border-border max-h-64 overflow-y-auto">
-              <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">{agent.systemPrompt}</p>
+              <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">
+                {agent.systemPrompt}
+              </p>
             </div>
           </div>
         </div>
@@ -101,7 +109,11 @@ function AgentDetailPanel({ agent, onBack }: AgentDetailPanelProps) {
             </Button>
           )}
           {agent.status === 'active' && (
-            <Button onClick={() => setAgentStatus(agent.id, 'inactive')} variant="outline" size="sm">
+            <Button
+              onClick={() => setAgentStatus(agent.id, 'inactive')}
+              variant="outline"
+              size="sm"
+            >
               Deactivate
             </Button>
           )}
@@ -111,7 +123,7 @@ function AgentDetailPanel({ agent, onBack }: AgentDetailPanelProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default AgentDetailPanel;
+export default AgentDetailPanel

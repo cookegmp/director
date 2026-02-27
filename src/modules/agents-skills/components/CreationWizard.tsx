@@ -6,137 +6,143 @@
 // user responds, then a review card shows the generated configuration.
 // ============================================================================
 
-import { useState, useCallback, useEffect } from 'react';
-import { ArrowLeft, Bot, Zap, Check } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react'
+import { ArrowLeft, Bot, Zap, Check } from 'lucide-react'
 import {
   WizardStepDots,
   WizardInput,
   WizardSuggestionTags,
   WizardActionBar,
-} from '@/components/shared/wizard';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useAgentsSkillsStore } from '@/stores/agents-skills';
+} from '@/components/shared/wizard'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { useAgentsSkillsStore } from '@/stores/agents-skills'
 import {
   sendConversationMessage,
   type CreationType,
   type ConversationMessage,
   type AgentCompletionResponse,
   type SkillCompletionResponse,
-} from '../lib/ai-conversation';
+} from '../lib/ai-conversation'
 
-type Phase = 'type-select' | 'conversing' | 'review' | 'done';
+type Phase = 'type-select' | 'conversing' | 'review' | 'done'
 
 interface CreationWizardProps {
-  onClose: () => void;
-  defaultType?: CreationType | null;
+  onClose: () => void
+  defaultType?: CreationType | null
 }
 
 function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
-  const [phase, setPhase] = useState<Phase>(defaultType ? 'conversing' : 'type-select');
-  const [creationType, setCreationType] = useState<CreationType | null>(defaultType);
-  const [messages, setMessages] = useState<ConversationMessage[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<string | null>(null);
-  const [currentSuggestions, setCurrentSuggestions] = useState<string[]>([]);
-  const [currentHelperText, setCurrentHelperText] = useState<string | null>(null);
-  const [stepCount, setStepCount] = useState(0);
-  const [currentAnswer, setCurrentAnswer] = useState('');
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<AgentCompletionResponse | SkillCompletionResponse | null>(null);
+  const [phase, setPhase] = useState<Phase>(defaultType ? 'conversing' : 'type-select')
+  const [creationType, setCreationType] = useState<CreationType | null>(defaultType)
+  const [messages, setMessages] = useState<ConversationMessage[]>([])
+  const [currentQuestion, setCurrentQuestion] = useState<string | null>(null)
+  const [currentSuggestions, setCurrentSuggestions] = useState<string[]>([])
+  const [currentHelperText, setCurrentHelperText] = useState<string | null>(null)
+  const [stepCount, setStepCount] = useState(0)
+  const [currentAnswer, setCurrentAnswer] = useState('')
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [result, setResult] = useState<AgentCompletionResponse | SkillCompletionResponse | null>(
+    null,
+  )
 
-  const addAgent = useAgentsSkillsStore((s) => s.addAgent);
-  const addSkill = useAgentsSkillsStore((s) => s.addSkill);
+  const addAgent = useAgentsSkillsStore((s) => s.addAgent)
+  const addSkill = useAgentsSkillsStore((s) => s.addSkill)
 
   // Initialize conversation when type is selected
   const initConversation = useCallback(async (type: CreationType) => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
-      const response = await sendConversationMessage([], type);
+      const response = await sendConversationMessage([], type)
       if (!response.done) {
-        setMessages([{ role: 'assistant', content: response.question }]);
-        setCurrentQuestion(response.question);
-        setCurrentSuggestions(response.suggestions);
-        setCurrentHelperText(response.helper_text);
-        setPhase('conversing');
+        setMessages([{ role: 'assistant', content: response.question }])
+        setCurrentQuestion(response.question)
+        setCurrentSuggestions(response.suggestions)
+        setCurrentHelperText(response.helper_text)
+        setPhase('conversing')
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to initialize');
-      const fallback = type === 'agent'
-        ? 'What task should this new agent handle?'
-        : 'What should this new skill do?';
-      setMessages([{ role: 'assistant', content: fallback }]);
-      setCurrentQuestion(fallback);
+      setError(err instanceof Error ? err.message : 'Failed to initialize')
+      const fallback =
+        type === 'agent'
+          ? 'What task should this new agent handle?'
+          : 'What should this new skill do?'
+      setMessages([{ role: 'assistant', content: fallback }])
+      setCurrentQuestion(fallback)
       setCurrentSuggestions(
         type === 'agent'
           ? ['Code review', 'Documentation', 'Testing']
-          : ['Health check', 'Report generation', 'Analysis']
-      );
-      setPhase('conversing');
+          : ['Health check', 'Report generation', 'Analysis'],
+      )
+      setPhase('conversing')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, []);
+  }, [])
 
   // Auto-init when defaultType is provided
   useEffect(() => {
     if (defaultType && phase === 'conversing' && messages.length === 0) {
-      initConversation(defaultType);
+      initConversation(defaultType)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   const handleSelectType = (type: CreationType) => {
-    setCreationType(type);
-    initConversation(type);
-  };
+    setCreationType(type)
+    initConversation(type)
+  }
 
   const handleSubmitAnswer = useCallback(async () => {
-    if (!currentAnswer.trim() || isLoading || !creationType) return;
+    if (!currentAnswer.trim() || isLoading || !creationType) return
 
-    const userMessage = currentAnswer.trim();
-    setCurrentAnswer('');
-    setSelectedTag(null);
+    const userMessage = currentAnswer.trim()
+    setCurrentAnswer('')
+    setSelectedTag(null)
 
-    const updatedMessages: ConversationMessage[] = [...messages, { role: 'user', content: userMessage }];
-    setMessages(updatedMessages);
-    setStepCount((s) => s + 1);
-    setIsLoading(true);
-    setError(null);
+    const updatedMessages: ConversationMessage[] = [
+      ...messages,
+      { role: 'user', content: userMessage },
+    ]
+    setMessages(updatedMessages)
+    setStepCount((s) => s + 1)
+    setIsLoading(true)
+    setError(null)
 
     try {
-      const response = await sendConversationMessage(updatedMessages, creationType);
+      const response = await sendConversationMessage(updatedMessages, creationType)
 
       if (response.done) {
-        setMessages([...updatedMessages, { role: 'assistant', content: JSON.stringify(response) }]);
-        setResult(response as AgentCompletionResponse | SkillCompletionResponse);
-        setPhase('review');
+        setMessages([...updatedMessages, { role: 'assistant', content: JSON.stringify(response) }])
+        setResult(response as AgentCompletionResponse | SkillCompletionResponse)
+        setPhase('review')
       } else {
-        setMessages([...updatedMessages, { role: 'assistant', content: response.question }]);
-        setCurrentQuestion(response.question);
-        setCurrentSuggestions(response.suggestions);
-        setCurrentHelperText(response.helper_text);
+        setMessages([...updatedMessages, { role: 'assistant', content: response.question }])
+        setCurrentQuestion(response.question)
+        setCurrentSuggestions(response.suggestions)
+        setCurrentHelperText(response.helper_text)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get AI response');
+      setError(err instanceof Error ? err.message : 'Failed to get AI response')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [currentAnswer, isLoading, creationType, messages]);
+  }, [currentAnswer, isLoading, creationType, messages])
 
   const handleTagClick = (tag: string) => {
-    setCurrentAnswer(tag);
-    setSelectedTag(tag);
-  };
+    setCurrentAnswer(tag)
+    setSelectedTag(tag)
+  }
 
   const handleConfirm = () => {
-    if (!result) return;
+    if (!result) return
 
     if (result.type === 'agent') {
-      const r = result as AgentCompletionResponse;
+      const r = result as AgentCompletionResponse
       addAgent({
         name: r.name,
         description: r.description,
@@ -145,9 +151,9 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
         tools: r.tools,
         maxTurns: r.maxTurns,
         status: 'draft',
-      });
+      })
     } else {
-      const r = result as SkillCompletionResponse;
+      const r = result as SkillCompletionResponse
       addSkill({
         name: r.name,
         description: r.description,
@@ -155,23 +161,23 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
         instructions: r.instructions,
         agentId: r.agentId,
         status: 'draft',
-      });
+      })
     }
 
-    setPhase('done');
-  };
+    setPhase('done')
+  }
 
   // Keyboard shortcut
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && e.metaKey && phase === 'conversing') {
-        e.preventDefault();
-        handleSubmitAnswer();
+        e.preventDefault()
+        handleSubmitAnswer()
       }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSubmitAnswer, phase]);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleSubmitAnswer, phase])
 
   // Done confirmation
   if (phase === 'done') {
@@ -184,14 +190,15 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
           {result?.type === 'agent' ? 'Agent' : 'Skill'} Created
         </h2>
         <p className="text-sm text-muted-foreground mb-1">
-          <span className="text-foreground font-medium">{result?.name}</span> has been created as a draft.
+          <span className="text-foreground font-medium">{result?.name}</span> has been created as a
+          draft.
         </p>
         <p className="text-xs text-muted-foreground mb-6">
           Activate it from the list when ready to use.
         </p>
         <Button onClick={onClose}>Back to List</Button>
       </div>
-    );
+    )
   }
 
   // Review card
@@ -208,8 +215,12 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
               )}
             </div>
             <div>
-              <h2 className="text-lg font-light text-foreground">Review {result.type === 'agent' ? 'Agent' : 'Skill'}</h2>
-              <p className="text-xs text-muted-foreground">AI-generated configuration — review before saving</p>
+              <h2 className="text-lg font-light text-foreground">
+                Review {result.type === 'agent' ? 'Agent' : 'Skill'}
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                AI-generated configuration — review before saving
+              </p>
             </div>
           </div>
           <Badge variant="outline" className="bg-amber-500/20 text-amber-400 border-amber-500/30">
@@ -233,14 +244,16 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   // Type selection
   if (phase === 'type-select') {
     return (
       <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-8">
-        <h2 className="text-xl font-light text-foreground mb-2 text-center">What would you like to create?</h2>
+        <h2 className="text-xl font-light text-foreground mb-2 text-center">
+          What would you like to create?
+        </h2>
         <p className="text-sm text-muted-foreground mb-8 text-center">
           The AI assistant will guide you through the configuration.
         </p>
@@ -278,10 +291,12 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
         </div>
 
         <div className="mt-6 text-center">
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
         </div>
       </div>
-    );
+    )
   }
 
   // Conversation
@@ -310,7 +325,7 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
             <span className="text-muted-foreground">Preparing your first question...</span>
           </span>
         ) : (
-          currentQuestion ?? 'What would you like to create?'
+          (currentQuestion ?? 'What would you like to create?')
         )}
       </h2>
 
@@ -323,8 +338,8 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
       <WizardInput
         value={currentAnswer}
         onChange={(val) => {
-          setCurrentAnswer(val);
-          setSelectedTag(null);
+          setCurrentAnswer(val)
+          setSelectedTag(null)
         }}
         placeholder="Type your response..."
         onSubmit={handleSubmitAnswer}
@@ -339,9 +354,7 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
       />
 
       {/* Error */}
-      {error && (
-        <p className="text-sm text-destructive mt-3">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive mt-3">{error}</p>}
 
       {/* Action bar */}
       <WizardActionBar
@@ -351,7 +364,7 @@ function CreationWizard({ onClose, defaultType = null }: CreationWizardProps) {
         submitLabel="Send"
       />
     </div>
-  );
+  )
 }
 
 // --- Review sub-components ---
@@ -374,18 +387,22 @@ function AgentReviewCard({ data }: { data: AgentCompletionResponse }) {
         </div>
       </div>
       <div>
-        <span className="text-xs text-muted-foreground uppercase tracking-wider">System Prompt</span>
+        <span className="text-xs text-muted-foreground uppercase tracking-wider">
+          System Prompt
+        </span>
         <div className="mt-1.5 p-3 bg-muted/30 rounded-lg border border-border">
-          <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">{data.systemPrompt}</p>
+          <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">
+            {data.systemPrompt}
+          </p>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function SkillReviewCard({ data }: { data: SkillCompletionResponse }) {
-  const agents = useAgentsSkillsStore((s) => s.agents);
-  const linkedAgent = data.agentId ? agents.find((a) => a.id === data.agentId) : null;
+  const agents = useAgentsSkillsStore((s) => s.agents)
+  const linkedAgent = data.agentId ? agents.find((a) => a.id === data.agentId) : null
 
   return (
     <div className="space-y-4">
@@ -396,11 +413,13 @@ function SkillReviewCard({ data }: { data: SkillCompletionResponse }) {
       <div>
         <span className="text-xs text-muted-foreground uppercase tracking-wider">Instructions</span>
         <div className="mt-1.5 p-3 bg-muted/30 rounded-lg border border-border">
-          <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">{data.instructions}</p>
+          <p className="text-sm text-foreground/80 whitespace-pre-wrap leading-relaxed">
+            {data.instructions}
+          </p>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function ReviewField({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
@@ -409,7 +428,7 @@ function ReviewField({ label, value, mono }: { label: string; value: string; mon
       <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
       <p className={`text-sm text-foreground mt-0.5 ${mono ? 'font-mono' : ''}`}>{value}</p>
     </div>
-  );
+  )
 }
 
-export default CreationWizard;
+export default CreationWizard

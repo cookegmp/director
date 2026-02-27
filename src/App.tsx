@@ -1,27 +1,27 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import AppShell from '@/components/layout/AppShell';
-import DashboardPage from '@/pages/DashboardPage';
-import IntakePage from '@/pages/IntakePage';
-import IssueReportPage from '@/pages/IssueReportPage';
-import IdeasListPage from '@/pages/IdeasListPage';
-import IdeaDetailPage from '@/pages/IdeaDetailPage';
-import ChartersListPage from '@/pages/ChartersListPage';
-import CharterViewPage from '@/pages/CharterViewPage';
-import IssuesPage from '@/pages/IssuesPage';
-import ScaffoldingPage from '@/pages/ScaffoldingPage';
-import AdminPage from '@/components/admin/AdminPage';
-import { useIdeasStore } from '@/stores/ideas';
-import { useChartersStore } from '@/stores/charters';
-import { useIssuesStore } from '@/stores/issues';
-import { useActivityStore } from '@/stores/activity';
-import { useScaffoldingStore } from '@/stores/scaffolding';
-import { useAgentSessionsStore } from '@/stores/agent-sessions';
-import { useUsersStore } from '@/stores/users';
-import { useSettingsStore } from '@/stores/settings';
-import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores';
-import { useRemediationSessionsStore } from '@/modules/issue-scoring/stores/remediation-sessions';
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import AppShell from '@/components/layout/AppShell'
+import DashboardPage from '@/pages/DashboardPage'
+import IntakePage from '@/pages/IntakePage'
+import IssueReportPage from '@/pages/IssueReportPage'
+import IdeasListPage from '@/pages/IdeasListPage'
+import IdeaDetailPage from '@/pages/IdeaDetailPage'
+import ChartersListPage from '@/pages/ChartersListPage'
+import CharterViewPage from '@/pages/CharterViewPage'
+import IssuesPage from '@/pages/IssuesPage'
+import ScaffoldingPage from '@/pages/ScaffoldingPage'
+import AdminPage from '@/components/admin/AdminPage'
+import { useIdeasStore } from '@/stores/ideas'
+import { useChartersStore } from '@/stores/charters'
+import { useIssuesStore } from '@/stores/issues'
+import { useActivityStore } from '@/stores/activity'
+import { useScaffoldingStore } from '@/stores/scaffolding'
+import { useAgentSessionsStore } from '@/stores/agent-sessions'
+import { useUsersStore } from '@/stores/users'
+import { useSettingsStore } from '@/stores/settings'
+import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores'
+import { useRemediationSessionsStore } from '@/modules/issue-scoring/stores/remediation-sessions'
 import {
   sampleIdeas,
   sampleCharters,
@@ -34,53 +34,53 @@ import {
   sampleAISettings,
   sampleIssueScores,
   sampleRemediationSessions,
-} from '@/lib/sample-data';
+} from '@/lib/sample-data'
 
 // Increment this when the data model changes shape to force a re-seed
-const DATA_VERSION = 10;
-const VERSION_KEY = 'stagemanager-data-version';
+const DATA_VERSION = 10
+const VERSION_KEY = 'stagemanager-data-version'
 
 function SeedData() {
   useEffect(() => {
-    const storedVersion = localStorage.getItem(VERSION_KEY);
-    const currentVersion = parseInt(storedVersion ?? '0', 10);
+    const storedVersion = localStorage.getItem(VERSION_KEY)
+    const currentVersion = parseInt(storedVersion ?? '0', 10)
 
     // If version mismatch, clear all stores and re-seed
     if (currentVersion < DATA_VERSION) {
-      localStorage.removeItem('stagemanager-ideas');
-      localStorage.removeItem('stagemanager-charters');
-      localStorage.removeItem('stagemanager-issues');
-      localStorage.removeItem('stagemanager-activity');
-      localStorage.removeItem('stagemanager-scaffolding');
-      localStorage.removeItem('stagemanager-agent-sessions');
-      localStorage.removeItem('stagemanager-users');
-      localStorage.removeItem('stagemanager-settings');
-      localStorage.removeItem('stagemanager-reported-issues');
-      localStorage.removeItem('stagemanager-issue-scores');
-      localStorage.removeItem('stagemanager-remediation-settings');
-      localStorage.removeItem('stagemanager-remediation-sessions');
+      localStorage.removeItem('stagemanager-ideas')
+      localStorage.removeItem('stagemanager-charters')
+      localStorage.removeItem('stagemanager-issues')
+      localStorage.removeItem('stagemanager-activity')
+      localStorage.removeItem('stagemanager-scaffolding')
+      localStorage.removeItem('stagemanager-agent-sessions')
+      localStorage.removeItem('stagemanager-users')
+      localStorage.removeItem('stagemanager-settings')
+      localStorage.removeItem('stagemanager-reported-issues')
+      localStorage.removeItem('stagemanager-issue-scores')
+      localStorage.removeItem('stagemanager-remediation-settings')
+      localStorage.removeItem('stagemanager-remediation-sessions')
 
-      useIdeasStore.setState({ ideas: sampleIdeas });
-      useChartersStore.setState({ charters: sampleCharters });
-      useIssuesStore.setState({ issues: sampleIssues });
-      useActivityStore.setState({ activities: sampleActivities });
-      useScaffoldingStore.getState().setDocuments(sampleScaffolding);
-      useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
-      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' });
-      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings });
-      useIssueScoresStore.setState({ scores: sampleIssueScores });
-      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] });
+      useIdeasStore.setState({ ideas: sampleIdeas })
+      useChartersStore.setState({ charters: sampleCharters })
+      useIssuesStore.setState({ issues: sampleIssues })
+      useActivityStore.setState({ activities: sampleActivities })
+      useScaffoldingStore.getState().setDocuments(sampleScaffolding)
+      useAgentSessionsStore.setState({ sessions: sampleAgentSessions })
+      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' })
+      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings })
+      useIssueScoresStore.setState({ scores: sampleIssueScores })
+      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] })
 
-      localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
-      return;
+      localStorage.setItem(VERSION_KEY, String(DATA_VERSION))
+      return
     }
 
     // Only seed if all stores are empty (fresh browser)
-    const ideas = useIdeasStore.getState().ideas;
-    const charters = useChartersStore.getState().charters;
-    const issues = useIssuesStore.getState().issues;
-    const activities = useActivityStore.getState().activities;
-    const scaffolding = useScaffoldingStore.getState().documents;
+    const ideas = useIdeasStore.getState().ideas
+    const charters = useChartersStore.getState().charters
+    const issues = useIssuesStore.getState().issues
+    const activities = useActivityStore.getState().activities
+    const scaffolding = useScaffoldingStore.getState().documents
 
     if (
       ideas.length === 0 &&
@@ -89,22 +89,22 @@ function SeedData() {
       activities.length === 0 &&
       scaffolding.length === 0
     ) {
-      useIdeasStore.setState({ ideas: sampleIdeas });
-      useChartersStore.setState({ charters: sampleCharters });
-      useIssuesStore.setState({ issues: sampleIssues });
-      useActivityStore.setState({ activities: sampleActivities });
-      useScaffoldingStore.getState().setDocuments(sampleScaffolding);
-      useAgentSessionsStore.setState({ sessions: sampleAgentSessions });
-      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' });
-      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings });
-      useIssueScoresStore.setState({ scores: sampleIssueScores });
-      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] });
+      useIdeasStore.setState({ ideas: sampleIdeas })
+      useChartersStore.setState({ charters: sampleCharters })
+      useIssuesStore.setState({ issues: sampleIssues })
+      useActivityStore.setState({ activities: sampleActivities })
+      useScaffoldingStore.getState().setDocuments(sampleScaffolding)
+      useAgentSessionsStore.setState({ sessions: sampleAgentSessions })
+      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' })
+      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings })
+      useIssueScoresStore.setState({ scores: sampleIssueScores })
+      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] })
 
-      localStorage.setItem(VERSION_KEY, String(DATA_VERSION));
+      localStorage.setItem(VERSION_KEY, String(DATA_VERSION))
     }
-  }, []);
+  }, [])
 
-  return null;
+  return null
 }
 
 function App() {
@@ -129,7 +129,7 @@ function App() {
         </Routes>
       </TooltipProvider>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App

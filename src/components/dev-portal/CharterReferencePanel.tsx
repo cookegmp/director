@@ -1,51 +1,54 @@
-import { useState, useMemo } from 'react';
-import { ChevronRight, CheckCircle, Circle, Activity } from 'lucide-react';
-import { useChartersStore } from '@/stores/charters';
-import type { TranslatedEntry } from '@/types';
+import { useState, useMemo } from 'react'
+import { ChevronRight, CheckCircle, Circle, Activity } from 'lucide-react'
+import { useChartersStore } from '@/stores/charters'
+import type { TranslatedEntry } from '@/types'
 
-type PhaseStatus = 'complete' | 'in-progress' | 'not-started';
+type PhaseStatus = 'complete' | 'in-progress' | 'not-started'
 
-const STATUS_CONFIG: Record<PhaseStatus, { label: string; icon: typeof CheckCircle; className: string }> = {
+const STATUS_CONFIG: Record<
+  PhaseStatus,
+  { label: string; icon: typeof CheckCircle; className: string }
+> = {
   complete: { label: 'Complete', icon: CheckCircle, className: 'text-green-400' },
   'in-progress': { label: 'In Progress', icon: Activity, className: 'text-primary' },
   'not-started': { label: 'Not Started', icon: Circle, className: 'text-muted-foreground' },
-};
+}
 
 interface CharterReferencePanelProps {
-  charterId: string;
-  entries?: TranslatedEntry[];
+  charterId: string
+  entries?: TranslatedEntry[]
 }
 
 function CharterReferencePanel({ charterId, entries = [] }: CharterReferencePanelProps) {
-  const charter = useChartersStore((s) => s.getCharter(charterId));
-  const [collapsed, setCollapsed] = useState(true);
+  const charter = useChartersStore((s) => s.getCharter(charterId))
+  const [collapsed, setCollapsed] = useState(true)
 
   // Derive phase status from translated entries
   const phaseStatuses = useMemo(() => {
-    const planPhases = charter?.content.executionPlan ?? [];
-    const phaseNames = planPhases.map((p) => p.phase.toLowerCase());
+    const planPhases = charter?.content.executionPlan ?? []
+    const phaseNames = planPhases.map((p) => p.phase.toLowerCase())
 
     // Collect entry types per phase
-    const phaseEntryTypes = new Map<string, Set<string>>();
+    const phaseEntryTypes = new Map<string, Set<string>>()
     for (const entry of entries) {
-      const key = entry.phase.toLowerCase();
+      const key = entry.phase.toLowerCase()
       if (!phaseEntryTypes.has(key)) {
-        phaseEntryTypes.set(key, new Set());
+        phaseEntryTypes.set(key, new Set())
       }
-      phaseEntryTypes.get(key)!.add(entry.type);
+      phaseEntryTypes.get(key)!.add(entry.type)
     }
 
     return phaseNames.map((name): PhaseStatus => {
-      const types = phaseEntryTypes.get(name);
-      if (!types) return 'not-started';
-      if (types.has('complete')) return 'complete';
-      return 'in-progress';
-    });
-  }, [charter, entries]);
+      const types = phaseEntryTypes.get(name)
+      if (!types) return 'not-started'
+      if (types.has('complete')) return 'complete'
+      return 'in-progress'
+    })
+  }, [charter, entries])
 
-  if (!charter) return null;
+  if (!charter) return null
 
-  const { content } = charter;
+  const { content } = charter
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border">
@@ -66,7 +69,9 @@ function CharterReferencePanel({ charterId, entries = [] }: CharterReferencePane
           {/* Overview */}
           <section>
             <h3 className="text-sm font-medium text-foreground mb-2">Project Overview</h3>
-            <p className="text-sm text-foreground/70 font-light leading-relaxed">{content.projectOverview}</p>
+            <p className="text-sm text-foreground/70 font-light leading-relaxed">
+              {content.projectOverview}
+            </p>
           </section>
 
           {/* Objectives */}
@@ -74,7 +79,10 @@ function CharterReferencePanel({ charterId, entries = [] }: CharterReferencePane
             <h3 className="text-sm font-medium text-foreground mb-2">Objectives</h3>
             <ul className="space-y-1.5">
               {content.objectives.map((obj, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-foreground/70 font-light">
+                <li
+                  key={i}
+                  className="flex items-start gap-2 text-sm text-foreground/70 font-light"
+                >
                   <span className="text-primary text-xs mt-0.5">{i + 1}.</span>
                   {obj}
                 </li>
@@ -87,7 +95,10 @@ function CharterReferencePanel({ charterId, entries = [] }: CharterReferencePane
             <h3 className="text-sm font-medium text-foreground mb-2">Acceptance Criteria</h3>
             <ul className="space-y-1.5">
               {content.acceptanceCriteria.map((criteria, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-foreground/70 font-light">
+                <li
+                  key={i}
+                  className="flex items-start gap-2 text-sm text-foreground/70 font-light"
+                >
                   <CheckCircle className="w-3.5 h-3.5 text-green-400 mt-0.5 shrink-0" />
                   {criteria}
                 </li>
@@ -100,9 +111,9 @@ function CharterReferencePanel({ charterId, entries = [] }: CharterReferencePane
             <h3 className="text-sm font-medium text-foreground mb-2">Execution Plan</h3>
             <div className="space-y-2">
               {content.executionPlan.map((phase, i) => {
-                const status = phaseStatuses[i] ?? 'not-started';
-                const config = STATUS_CONFIG[status];
-                const StatusIcon = config.icon;
+                const status = phaseStatuses[i] ?? 'not-started'
+                const config = STATUS_CONFIG[status]
+                const StatusIcon = config.icon
 
                 return (
                   <div key={i} className="border border-border rounded-[1rem] p-3">
@@ -117,21 +128,24 @@ function CharterReferencePanel({ charterId, entries = [] }: CharterReferencePane
                     </div>
                     <ul className="space-y-0.5">
                       {phase.tasks.map((task, j) => (
-                        <li key={j} className="text-xs text-foreground/60 font-light flex items-start gap-1.5">
+                        <li
+                          key={j}
+                          className="text-xs text-foreground/60 font-light flex items-start gap-1.5"
+                        >
                           <span className="text-muted-foreground">-</span>
                           {task}
                         </li>
                       ))}
                     </ul>
                   </div>
-                );
+                )
               })}
             </div>
           </section>
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default CharterReferencePanel;
+export default CharterReferencePanel

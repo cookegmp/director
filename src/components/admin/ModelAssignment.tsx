@@ -1,12 +1,12 @@
-import { Switch } from '@/components/ui/switch';
+import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useSettingsStore } from '@/stores/settings';
+} from '@/components/ui/select'
+import { useSettingsStore } from '@/stores/settings'
 
 const STATIC_MODELS = [
   'anthropic/claude-sonnet-4',
@@ -18,24 +18,32 @@ const STATIC_MODELS = [
   'google/gemini-2.5-pro',
   'meta/llama-3.1-70b',
   'mistral/mistral-large',
-];
+]
 
 interface ModelAssignmentProps {
-  functionKey: 'charter' | 'executionPlan' | 'scoring' | 'conversation' | 'bugScoring' | 'featureScoring' | 'ideaChat' | 'abstraction';
-  label: string;
-  description: string;
-  whenDisabled: string;
+  functionKey:
+    | 'charter'
+    | 'executionPlan'
+    | 'scoring'
+    | 'conversation'
+    | 'bugScoring'
+    | 'featureScoring'
+    | 'ideaChat'
+    | 'abstraction'
+  label: string
+  description: string
+  whenDisabled: string
 }
 
 function ModelAssignment({ functionKey, label, description, whenDisabled }: ModelAssignmentProps) {
-  const aiSettings = useSettingsStore((s) => s.aiSettings);
-  const updateAISettings = useSettingsStore((s) => s.updateAISettings);
+  const aiSettings = useSettingsStore((s) => s.aiSettings)
+  const updateAISettings = useSettingsStore((s) => s.updateAISettings)
 
-  const modelKey = `${functionKey}Model` as keyof typeof aiSettings;
-  const enabledKey = `${functionKey}Enabled` as keyof typeof aiSettings;
+  const modelKey = `${functionKey}Model` as keyof typeof aiSettings
+  const enabledKey = `${functionKey}Enabled` as keyof typeof aiSettings
 
-  const currentModel = aiSettings[modelKey] as string;
-  const isEnabled = aiSettings[enabledKey] as boolean;
+  const currentModel = aiSettings[modelKey] as string
+  const isEnabled = aiSettings[enabledKey] as boolean
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-3">
@@ -51,10 +59,7 @@ function ModelAssignment({ functionKey, label, description, whenDisabled }: Mode
       </div>
 
       {isEnabled ? (
-        <Select
-          value={currentModel}
-          onValueChange={(val) => updateAISettings({ [modelKey]: val })}
-        >
+        <Select value={currentModel} onValueChange={(val) => updateAISettings({ [modelKey]: val })}>
           <SelectTrigger className="bg-transparent border-border text-sm">
             <SelectValue />
           </SelectTrigger>
@@ -72,7 +77,7 @@ function ModelAssignment({ functionKey, label, description, whenDisabled }: Mode
         </p>
       )}
     </div>
-  );
+  )
 }
 
-export default ModelAssignment;
+export default ModelAssignment

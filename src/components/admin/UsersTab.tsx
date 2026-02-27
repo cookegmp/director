@@ -1,53 +1,53 @@
-import { useState } from 'react';
-import { Plus, MoreHorizontal, Shield, Code2, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { Plus, MoreHorizontal, Shield, Code2, Eye } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useUsersStore } from '@/stores/users';
-import type { User, UserRole } from '@/types';
-import UserAddDialog from './UserAddDialog';
-import UserRemoveDialog from './UserRemoveDialog';
+} from '@/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useUsersStore } from '@/stores/users'
+import type { User, UserRole } from '@/types'
+import UserAddDialog from './UserAddDialog'
+import UserRemoveDialog from './UserRemoveDialog'
 
 function formatRelativeTime(dateStr: string | null): string {
-  if (!dateStr) return 'Never';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return `${Math.floor(days / 30)}mo ago`;
+  if (!dateStr) return 'Never'
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'Just now'
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days}d ago`
+  return `${Math.floor(days / 30)}mo ago`
 }
 
 function UsersTab() {
-  const users = useUsersStore((s) => s.users);
-  const currentUserId = useUsersStore((s) => s.currentUserId);
-  const changeRole = useUsersStore((s) => s.changeRole);
-  const setStatus = useUsersStore((s) => s.setStatus);
-  const isLastAdmin = useUsersStore((s) => s.isLastAdmin);
-  const [addOpen, setAddOpen] = useState(false);
-  const [removeTarget, setRemoveTarget] = useState<User | null>(null);
+  const users = useUsersStore((s) => s.users)
+  const currentUserId = useUsersStore((s) => s.currentUserId)
+  const changeRole = useUsersStore((s) => s.changeRole)
+  const setStatus = useUsersStore((s) => s.setStatus)
+  const isLastAdmin = useUsersStore((s) => s.isLastAdmin)
+  const [addOpen, setAddOpen] = useState(false)
+  const [removeTarget, setRemoveTarget] = useState<User | null>(null)
 
   const handleRoleChange = (userId: string, role: UserRole) => {
-    if (isLastAdmin(userId) && role !== 'admin') return;
-    changeRole(userId, role);
-  };
+    if (isLastAdmin(userId) && role !== 'admin') return
+    changeRole(userId, role)
+  }
 
   return (
     <div className="space-y-4">
@@ -88,8 +88,8 @@ function UsersTab() {
           </thead>
           <tbody className="divide-y divide-border">
             {users.map((user) => {
-              const isCurrent = user.id === currentUserId;
-              const isOnlyAdmin = isLastAdmin(user.id);
+              const isCurrent = user.id === currentUserId
+              const isOnlyAdmin = isLastAdmin(user.id)
 
               return (
                 <tr
@@ -100,7 +100,10 @@ function UsersTab() {
                     <span className="flex items-center gap-2">
                       {user.name}
                       {isCurrent && (
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-primary/40 text-primary">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] px-1.5 py-0 border-primary/40 text-primary"
+                        >
                           You
                         </Badge>
                       )}
@@ -191,7 +194,7 @@ function UsersTab() {
                     </DropdownMenu>
                   </td>
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
@@ -200,7 +203,7 @@ function UsersTab() {
       <UserAddDialog open={addOpen} onOpenChange={setAddOpen} />
       <UserRemoveDialog user={removeTarget} onClose={() => setRemoveTarget(null)} />
     </div>
-  );
+  )
 }
 
-export default UsersTab;
+export default UsersTab

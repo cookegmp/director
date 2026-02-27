@@ -1,4 +1,4 @@
-import type { UserRole } from '@/types';
+import type { UserRole } from '@/types'
 
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   admin: [
@@ -32,18 +32,13 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     'view-scaffolding',
     'view-technical',
   ],
-  viewer: [
-    'view-dashboard',
-    'view-charters',
-    'view-scaffolding',
-    'file-issues',
-  ],
-};
+  viewer: ['view-dashboard', 'view-charters', 'view-scaffolding', 'file-issues'],
+}
 
 export function hasPermission(role: UserRole, permission: string): boolean {
-  return ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
+  return ROLE_PERMISSIONS[role]?.includes(permission) ?? false
 }
 
 export function canAccessAdmin(role: UserRole): boolean {
-  return hasPermission(role, 'access-admin');
+  return hasPermission(role, 'access-admin')
 }

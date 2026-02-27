@@ -1,4 +1,5 @@
 # StageManager Charter — Revision Notes
+
 ## Changes from Initial Draft to Current Version
 
 ---
@@ -60,6 +61,7 @@ Also includes a collapsible charter reference panel and linked issues list.
 Added within the `production` state of the idea detail view. Replaces the development portal with application health monitoring:
 
 **Health Indicators** — Four metric cards:
+
 - Open Bug Count: number with severity breakdown, color-coded (green 0–2, amber 3–5, red 6+ or any critical)
 - Avg Resolution Time: duration display, color-coded (green <3 days, amber 3–7, red >7)
 - Feature Request Count: informational, no color coding
@@ -78,6 +80,7 @@ Actions include filing new issues and returning to development if a major revisi
 Entirely new charter section defining the translation engine that sits between raw agent output and the client-facing feed. Key elements:
 
 **Translation Rules** — Pattern-matching system that maps technical output to plain English. Organized by category (project setup, component creation, testing, errors, deployment). Each rule has a regex-style match pattern and a corresponding translation. Examples:
+
 - `npm install` → "Installing required components"
 - `Created src/components/Dashboard.tsx` → "Built the main dashboard view"
 - `Error: Module not found. Retrying...` → "Encountered an issue — working through it"
@@ -106,6 +109,7 @@ Entirely new charter section defining the WebSocket protocol between StageManage
 ### New Data Model: Agent Session
 
 New model tracking agentic coding sessions:
+
 - Links to parent idea and governing charter
 - Status enum: `connecting`, `connected`, `building`, `paused`, `stopped`, `error`, `complete`
 - Timestamps for started, paused, stopped, completed
@@ -137,6 +141,7 @@ Expanded the activity type enum to include new lifecycle events: `idea-scored`, 
 ### Scope: Included
 
 Added to prototype scope:
+
 - Adaptive idea detail view with four lifecycle states
 - Development portal with agent control bar (start/stop/pause)
 - Real-time translated activity feed
@@ -164,20 +169,25 @@ Expanded from three scored ideas to five ideas across all lifecycle states: one 
 ### File Structure
 
 **New component directories:**
+
 - `dev-portal/` — Agent control bar, translated feed, raw output panel, phase groupings
 - `production/` — Health indicators, issue trend sparkline, production dashboard
 
 **New store:**
+
 - `agent-sessions.ts` — Zustand store for agent sessions and streaming state
 
 **New lib files:**
+
 - `abstraction-layer.ts` — Translation engine with pattern matching
 - `agent-connection.ts` — WebSocket client for agent communication
 
 **Updated lib:**
+
 - `sample-data.ts` — Now includes pre-recorded build sessions
 
 **New top-level directory:**
+
 - `mock-server/` — Contains mock WebSocket server entry point, pre-recorded build session data, and README
 
 ---

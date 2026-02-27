@@ -1,15 +1,11 @@
 interface WizardSuggestionTagsProps {
-  suggestions: string[];
-  onSelect: (tag: string) => void;
-  selectedTag?: string | null;
+  suggestions: string[]
+  onSelect: (tag: string) => void
+  selectedTag?: string | null
 }
 
-function WizardSuggestionTags({
-  suggestions,
-  onSelect,
-  selectedTag,
-}: WizardSuggestionTagsProps) {
-  if (suggestions.length === 0) return null;
+function WizardSuggestionTags({ suggestions, onSelect, selectedTag }: WizardSuggestionTagsProps) {
+  if (suggestions.length === 0) return null
 
   return (
     <div className="flex flex-wrap gap-2 mt-4">
@@ -27,7 +23,7 @@ function WizardSuggestionTags({
         </button>
       ))}
     </div>
-  );
+  )
 }
 
-export default WizardSuggestionTags;
+export default WizardSuggestionTags

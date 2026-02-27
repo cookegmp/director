@@ -1,45 +1,57 @@
-import { useState } from 'react';
-import { Eye, EyeOff, Loader2, CheckCircle, XCircle, CircleDashed } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useSettingsStore } from '@/stores/settings';
+import { useState } from 'react'
+import { Eye, EyeOff, Loader2, CheckCircle, XCircle, CircleDashed } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { useSettingsStore } from '@/stores/settings'
 
 function APIKeyField() {
-  const aiSettings = useSettingsStore((s) => s.aiSettings);
-  const updateAISettings = useSettingsStore((s) => s.updateAISettings);
-  const verifyApiKey = useSettingsStore((s) => s.verifyApiKey);
-  const [editing, setEditing] = useState(false);
-  const [localKey, setLocalKey] = useState('');
-  const [verifying, setVerifying] = useState(false);
-  const [showKey, setShowKey] = useState(false);
+  const aiSettings = useSettingsStore((s) => s.aiSettings)
+  const updateAISettings = useSettingsStore((s) => s.updateAISettings)
+  const verifyApiKey = useSettingsStore((s) => s.verifyApiKey)
+  const [editing, setEditing] = useState(false)
+  const [localKey, setLocalKey] = useState('')
+  const [verifying, setVerifying] = useState(false)
+  const [showKey, setShowKey] = useState(false)
 
   const maskedKey = aiSettings.openrouterApiKey
     ? `••••••••${aiSettings.openrouterApiKey.slice(-4)}`
-    : '';
+    : ''
 
   const handleEdit = () => {
-    setEditing(true);
-    setLocalKey('');
-  };
+    setEditing(true)
+    setLocalKey('')
+  }
 
   const handleVerify = async () => {
     if (editing) {
-      updateAISettings({ openrouterApiKey: localKey });
-      setEditing(false);
+      updateAISettings({ openrouterApiKey: localKey })
+      setEditing(false)
     }
-    setVerifying(true);
-    await verifyApiKey();
-    setVerifying(false);
-  };
+    setVerifying(true)
+    await verifyApiKey()
+    setVerifying(false)
+  }
 
   const statusConfig = {
-    valid: { icon: CheckCircle, label: 'Valid', className: 'bg-green-500/20 text-green-400 border-green-500/30' },
-    invalid: { icon: XCircle, label: 'Invalid', className: 'bg-red-500/20 text-red-400 border-red-500/30' },
-    unconfigured: { icon: CircleDashed, label: 'Not configured', className: 'bg-muted text-muted-foreground border-border' },
-  };
+    valid: {
+      icon: CheckCircle,
+      label: 'Valid',
+      className: 'bg-green-500/20 text-green-400 border-green-500/30',
+    },
+    invalid: {
+      icon: XCircle,
+      label: 'Invalid',
+      className: 'bg-red-500/20 text-red-400 border-red-500/30',
+    },
+    unconfigured: {
+      icon: CircleDashed,
+      label: 'Not configured',
+      className: 'bg-muted text-muted-foreground border-border',
+    },
+  }
 
-  const status = statusConfig[aiSettings.keyStatus];
-  const StatusIcon = status.icon;
+  const status = statusConfig[aiSettings.keyStatus]
+  const StatusIcon = status.icon
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-4">
@@ -106,7 +118,7 @@ function APIKeyField() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default APIKeyField;
+export default APIKeyField

@@ -1,21 +1,21 @@
-import { Link } from 'react-router-dom';
-import { useChartersStore } from '@/stores/charters';
-import { useIdeasStore } from '@/stores/ideas';
-import { Badge } from '@/components/ui/badge';
-import { STATUS_LABELS } from '@/types';
-import type { IdeaStatus } from '@/types';
+import { Link } from 'react-router-dom'
+import { useChartersStore } from '@/stores/charters'
+import { useIdeasStore } from '@/stores/ideas'
+import { Badge } from '@/components/ui/badge'
+import { STATUS_LABELS } from '@/types'
+import type { IdeaStatus } from '@/types'
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
   scored: 'text-muted-foreground',
   'on-deck': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  'development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  development: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   production: 'bg-green-500/20 text-green-400 border-green-500/30',
   archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 function ChartersListPage() {
-  const charters = useChartersStore((s) => s.charters);
-  const getIdea = useIdeasStore((s) => s.getIdea);
+  const charters = useChartersStore((s) => s.charters)
+  const getIdea = useIdeasStore((s) => s.getIdea)
 
   return (
     <div>
@@ -25,7 +25,7 @@ function ChartersListPage() {
       ) : (
         <div className="space-y-3">
           {charters.map((charter) => {
-            const idea = getIdea(charter.ideaId);
+            const idea = getIdea(charter.ideaId)
             return (
               <Link
                 key={charter.id}
@@ -41,12 +41,12 @@ function ChartersListPage() {
                   )}
                 </div>
               </Link>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default ChartersListPage;
+export default ChartersListPage

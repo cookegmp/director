@@ -4,20 +4,20 @@
 // Collapsible section showing potential duplicate issues identified by AI.
 // ============================================================================
 
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertTriangle, Link2 } from 'lucide-react';
-import type { PotentialDuplicate } from '../types';
+import { useState } from 'react'
+import { ChevronDown, ChevronUp, AlertTriangle, Link2 } from 'lucide-react'
+import type { PotentialDuplicate } from '../types'
 
 interface DuplicateCheckProps {
-  duplicates: PotentialDuplicate[];
-  onLinkDuplicate: (issueId: string) => void;
-  linkedDuplicateId: string | null;
+  duplicates: PotentialDuplicate[]
+  onLinkDuplicate: (issueId: string) => void
+  linkedDuplicateId: string | null
 }
 
 function DuplicateCheck({ duplicates, onLinkDuplicate, linkedDuplicateId }: DuplicateCheckProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(true)
 
-  if (duplicates.length === 0) return null;
+  if (duplicates.length === 0) return null
 
   return (
     <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 overflow-hidden">
@@ -41,19 +41,15 @@ function DuplicateCheck({ duplicates, onLinkDuplicate, linkedDuplicateId }: Dupl
       {isExpanded && (
         <div className="border-t border-amber-500/20 divide-y divide-amber-500/10">
           {duplicates.map((dup) => {
-            const isLinked = linkedDuplicateId === dup.issueId;
+            const isLinked = linkedDuplicateId === dup.issueId
 
             return (
               <div key={dup.issueId} className="px-4 py-3">
                 <div className="flex items-start gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground">{dup.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {dup.similarity_reason}
-                    </p>
-                    <p className="text-xs text-muted-foreground/60 mt-0.5">
-                      ID: {dup.issueId}
-                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">{dup.similarity_reason}</p>
+                    <p className="text-xs text-muted-foreground/60 mt-0.5">ID: {dup.issueId}</p>
                   </div>
                 </div>
 
@@ -80,12 +76,12 @@ function DuplicateCheck({ duplicates, onLinkDuplicate, linkedDuplicateId }: Dupl
                   )}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default DuplicateCheck;
+export default DuplicateCheck

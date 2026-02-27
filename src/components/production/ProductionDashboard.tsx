@@ -1,10 +1,10 @@
-import HealthIndicators from './HealthIndicators';
-import ProductionIssueFeed from './ProductionIssueFeed';
-import CharterReferencePanel from '@/components/dev-portal/CharterReferencePanel';
+import HealthIndicators from './HealthIndicators'
+import ProductionIssueFeed from './ProductionIssueFeed'
+import CharterReferencePanel from '@/components/dev-portal/CharterReferencePanel'
 
 interface ProductionDashboardProps {
-  charterId: string;
-  projectId: string;
+  charterId: string
+  projectId: string
 }
 
 function ProductionDashboard({ charterId, projectId }: ProductionDashboardProps) {
@@ -16,7 +16,7 @@ function ProductionDashboard({ charterId, projectId }: ProductionDashboardProps)
         <CharterReferencePanel charterId={charterId} />
       </div>
     </div>
-  );
+  )
 }
 
-export default ProductionDashboard;
+export default ProductionDashboard

@@ -18,10 +18,10 @@
 # ============================================================================
 
 charter:
-  project: "StageManager Issue Reporter Module"
-  repo: "stage-manager"
-  charter_version: "3.0.0"
-  charter_date: "2025-02-25"
+  project: 'StageManager Issue Reporter Module'
+  repo: 'stage-manager'
+  charter_version: '3.0.0'
+  charter_date: '2025-02-25'
 
   description: >
     An AI-driven issue reporting module for StageManager that guides users
@@ -39,8 +39,8 @@ charter:
     report that is immediately actionable by a developer.
 
   owners:
-    product_owner: "IT / Operations"
-    tech_owner: "IT"
+    product_owner: 'IT / Operations'
+    tech_owner: 'IT'
 
   # ==========================================================================
   # ARCHITECTURAL CONTEXT
@@ -69,14 +69,14 @@ charter:
   # ==========================================================================
 
   non_negotiables:
-    - "The issue reporter is completely independent from the idea intake module. No shared state, no shared stores, no shared AI prompts, no shared data models."
-    - "The issue reporter uses the same wizard card component (animated gradient border, bottom-border inputs, suggestion tags, action bar) but the component is shared UI only — not shared logic."
-    - "The AI drives the conversation. There are no fixed steps. The wizard renders whatever the AI decides to ask next."
+    - 'The issue reporter is completely independent from the idea intake module. No shared state, no shared stores, no shared AI prompts, no shared data models.'
+    - 'The issue reporter uses the same wizard card component (animated gradient border, bottom-border inputs, suggestion tags, action bar) but the component is shared UI only — not shared logic.'
+    - 'The AI drives the conversation. There are no fixed steps. The wizard renders whatever the AI decides to ask next.'
     - "The AI classifies the submission as 'bug' or 'feature' — the user never selects this themselves."
-    - "The AI must have access to governing documents, existing issues, and the charter execution plan for the relevant project."
-    - "StageManager has no database. All persistence uses mock data / localStorage for now. Data layer interfaces must be BackStage-ready."
-    - "Do not modify the idea intake module in any way."
-    - "Do not create shared stores or shared state between the issue reporter and the idea intake."
+    - 'The AI must have access to governing documents, existing issues, and the charter execution plan for the relevant project.'
+    - 'StageManager has no database. All persistence uses mock data / localStorage for now. Data layer interfaces must be BackStage-ready.'
+    - 'Do not modify the idea intake module in any way.'
+    - 'Do not create shared stores or shared state between the issue reporter and the idea intake.'
 
   # ==========================================================================
   # ENTRY POINT — Soft Pre-Filter
@@ -91,23 +91,23 @@ charter:
       independent module.
 
     pre_filter:
-      component: "PreFilterCard"
+      component: 'PreFilterCard'
       description: >
         A single wizard card (same animated gradient border container)
         with a simple question and two large, clear selection options.
         No text input — just two clickable cards or buttons.
-      question: "What would you like to do?"
+      question: 'What would you like to do?'
       options:
         - id: idea
-          label: "I have an idea"
-          description: "Propose a new application or process improvement"
-          icon: "Lightbulb"  # Lucide icon
-          routes_to: "/new"  # Existing idea intake wizard
+          label: 'I have an idea'
+          description: 'Propose a new application or process improvement'
+          icon: 'Lightbulb' # Lucide icon
+          routes_to: '/new' # Existing idea intake wizard
         - id: issue
-          label: "I want to report an issue"
-          description: "Report a bug or request a feature for an existing application"
-          icon: "MessageCircleWarning"  # Lucide icon
-          routes_to: "/report"  # Issue reporter wizard
+          label: 'I want to report an issue'
+          description: 'Report a bug or request a feature for an existing application'
+          icon: 'MessageCircleWarning' # Lucide icon
+          routes_to: '/report' # Issue reporter wizard
 
       behavior: >
         Clicking an option immediately transitions to the respective
@@ -125,12 +125,12 @@ charter:
         pre-selected project context, bypassing the pre-filter. This
         happens when the user clicks "File Issue" from specific locations.
       launch_points:
-        - location: "Production portal — actions"
-          behavior: "Launches issue reporter with project pre-selected"
-        - location: "Development portal — linked issues section"
-          behavior: "Launches issue reporter with project pre-selected"
+        - location: 'Production portal — actions'
+          behavior: 'Launches issue reporter with project pre-selected'
+        - location: 'Development portal — linked issues section'
+          behavior: 'Launches issue reporter with project pre-selected'
         - location: "Issues view — 'New Issue' button"
-          behavior: "Launches issue reporter (no project pre-selected, AI will ask)"
+          behavior: 'Launches issue reporter (no project pre-selected, AI will ask)'
 
   # ==========================================================================
   # THE AI-DRIVEN WIZARD
@@ -138,7 +138,7 @@ charter:
 
   wizard:
     route: /report
-    component: "IssueReporterWizard"
+    component: 'IssueReporterWizard'
     description: >
       A conversational intake powered by AI. Unlike the idea intake wizard
       which has fixed steps, the issue reporter wizard has no predetermined
@@ -187,7 +187,7 @@ charter:
     # --- AI behavior ---------------------------------------------------------
 
     ai:
-      model_source: "OpenRouter — uses the model configured in admin settings"
+      model_source: 'OpenRouter — uses the model configured in admin settings'
       context_window:
         description: >
           Each AI request includes the full conversation history plus
@@ -275,40 +275,48 @@ charter:
           technical problems by offering pre-formed descriptions they
           can click.
         examples:
-          - question: "Which part of the application is this about?"
-            tags: ["Dashboard", "Project list", "Data import", "Reporting", "User settings"]
+          - question: 'Which part of the application is this about?'
+            tags: ['Dashboard', 'Project list', 'Data import', 'Reporting', 'User settings']
             note: "Generated from the project's charter — these are actual components that exist."
-          - question: "What happens when you encounter this problem?"
-            tags: ["The page crashes", "Data doesn't save", "It's very slow", "The display is wrong", "I get an error message"]
-          - question: "How often does this happen?"
-            tags: ["Every time", "Most of the time", "Occasionally", "It happened once", "I'm not sure"]
+          - question: 'What happens when you encounter this problem?'
+            tags:
+              [
+                'The page crashes',
+                "Data doesn't save",
+                "It's very slow",
+                'The display is wrong',
+                'I get an error message',
+              ]
+          - question: 'How often does this happen?'
+            tags:
+              ['Every time', 'Most of the time', 'Occasionally', 'It happened once', "I'm not sure"]
 
     # --- AI response format --------------------------------------------------
 
     ai_response_schema:
       question_response:
-        description: "AI wants to ask another question"
+        description: 'AI wants to ask another question'
         fields:
           done: false
-          question: "string — the next question to display"
-          suggestions: "string[] — optional suggestion tags"
-          helper_text: "string — optional helper text below the input"
+          question: 'string — the next question to display'
+          suggestions: 'string[] — optional suggestion tags'
+          helper_text: 'string — optional helper text below the input'
 
       completion_response:
-        description: "AI has enough information to produce the report"
+        description: 'AI has enough information to produce the report'
         fields:
           done: true
           classification: "enum — 'bug' or 'feature'"
-          title: "string — concise issue title"
-          description: "string — structured, actionable description"
+          title: 'string — concise issue title'
+          description: 'string — structured, actionable description'
           severity: "enum — 'critical', 'high', 'medium', 'low'"
-          steps_to_reproduce: "string[] — bugs only, null for features"
-          expected_behavior: "string — bugs only, null for features"
-          actual_behavior: "string — bugs only, null for features"
-          desired_outcome: "string — features only, null for bugs"
-          affected_area: "string — which component or section of the app"
-          potential_duplicates: "object[] — { issueId, title, similarity_reason }"
-          conversation_summary: "string — brief summary of the conversation for internal reference"
+          steps_to_reproduce: 'string[] — bugs only, null for features'
+          expected_behavior: 'string — bugs only, null for features'
+          actual_behavior: 'string — bugs only, null for features'
+          desired_outcome: 'string — features only, null for bugs'
+          affected_area: 'string — which component or section of the app'
+          potential_duplicates: 'object[] — { issueId, title, similarity_reason }'
+          conversation_summary: 'string — brief summary of the conversation for internal reference'
 
   # ==========================================================================
   # REVIEW CARD
@@ -330,16 +338,16 @@ charter:
           title is displayed prominently.
         elements:
           - classification_badge:
-              bug: "Red badge with bug icon"
-              feature: "Blue/teal badge with sparkle icon"
+              bug: 'Red badge with bug icon'
+              feature: 'Blue/teal badge with sparkle icon'
           - severity_badge:
-              critical: "Red"
-              high: "Amber/orange"
-              medium: "Blue"
-              low: "Muted/grey"
+              critical: 'Red'
+              high: 'Amber/orange'
+              medium: 'Blue'
+              low: 'Muted/grey'
           - title:
-              display: "text-xl sm:text-2xl font-light"
-              editable: true  # Click to edit inline
+              display: 'text-xl sm:text-2xl font-light'
+              editable: true # Click to edit inline
 
       body:
         description: >
@@ -347,32 +355,32 @@ charter:
           Each section is editable — the user can refine before submitting.
         sections:
           - description:
-              label: "Description"
+              label: 'Description'
               editable: true
-              display: "Paragraph text"
+              display: 'Paragraph text'
           - steps_to_reproduce:
-              label: "Steps to Reproduce"
+              label: 'Steps to Reproduce'
               visible_when: "classification === 'bug'"
               editable: true
-              display: "Numbered list"
+              display: 'Numbered list'
           - expected_vs_actual:
-              label: "Expected vs Actual Behavior"
+              label: 'Expected vs Actual Behavior'
               visible_when: "classification === 'bug'"
               editable: true
-              display: "Two-column or labeled pair"
+              display: 'Two-column or labeled pair'
           - desired_outcome:
-              label: "Desired Outcome"
+              label: 'Desired Outcome'
               visible_when: "classification === 'feature'"
               editable: true
-              display: "Paragraph text"
+              display: 'Paragraph text'
           - affected_area:
-              label: "Affected Area"
+              label: 'Affected Area'
               editable: true
-              display: "Tag or short text"
+              display: 'Tag or short text'
           - severity:
-              label: "Severity"
+              label: 'Severity'
               editable: true
-              display: "Dropdown — critical, high, medium, low"
+              display: 'Dropdown — critical, high, medium, low'
 
       duplicates:
         description: >
@@ -384,10 +392,10 @@ charter:
           one instead of creating a new issue), or dismiss and proceed
           with the new report.
         behavior:
-          - "If duplicates found: section is expanded by default with a notice"
+          - 'If duplicates found: section is expanded by default with a notice'
           - "User can click 'This is the same issue' → links to existing, no new issue created"
           - "User can click 'This is different' → proceeds with new issue"
-          - "If no duplicates: section is hidden entirely"
+          - 'If no duplicates: section is hidden entirely'
 
       screenshot:
         description: >
@@ -399,36 +407,36 @@ charter:
           visual evidence is added at the end.
         actions:
           - capture_screenshot:
-              label: "Capture Screenshot"
-              behavior: "Launches the CaptureOverlay flow (same as original bug reporter spec)"
+              label: 'Capture Screenshot'
+              behavior: 'Launches the CaptureOverlay flow (same as original bug reporter spec)'
           - upload_file:
-              label: "Upload Image"
-              behavior: "Standard file picker, accepts png/jpg/gif"
+              label: 'Upload Image'
+              behavior: 'Standard file picker, accepts png/jpg/gif'
           - remove:
-              label: "Remove"
-              visible_when: "screenshot attached"
+              label: 'Remove'
+              visible_when: 'screenshot attached'
         display: >
           Thumbnail preview of the attached screenshot with a remove
           button. Click to expand full-size in a lightbox.
 
       actions:
         submit:
-          label: "Submit Report"
-          style: "gradient button (primary CTA)"
+          label: 'Submit Report'
+          style: 'gradient button (primary CTA)'
           behavior: >
             Creates the issue in the data store with all fields from the
             review card. Emits an activity event. Transitions to a
             confirmation view with a link to the new issue.
         restart:
-          label: "Start Over"
-          style: "muted text button"
-          behavior: "Clears conversation history and returns to first question."
+          label: 'Start Over'
+          style: 'muted text button'
+          behavior: 'Clears conversation history and returns to first question.'
           confirmation: true
         cancel:
-          label: "Cancel"
-          style: "muted text button"
-          behavior: "Returns to previous view without saving."
-          confirmation: true  # Only if conversation has started
+          label: 'Cancel'
+          style: 'muted text button'
+          behavior: 'Returns to previous view without saving.'
+          confirmation: true # Only if conversation has started
 
   # ==========================================================================
   # CAPTURE SYSTEM (Carried forward from original spec)
@@ -442,36 +450,36 @@ charter:
       bug reporter specification.
 
     flow:
-      - step: "User clicks Capture Screenshot on the review card"
-        action: "html2canvas captures full page DOM as offscreen canvas"
-      - step: "Selection overlay appears"
+      - step: 'User clicks Capture Screenshot on the review card'
+        action: 'html2canvas captures full page DOM as offscreen canvas'
+      - step: 'Selection overlay appears'
         action: >
           Full-screen overlay with dimmed background. User draws a rectangle
           via pointerdown/pointermove/pointerup. Body scroll locked.
           Cancel via Esc or on-screen button.
-      - step: "Region cropped"
-        action: "Canvas drawImage extracts selected region at devicePixelRatio scale"
-      - step: "Annotation canvas opens"
+      - step: 'Region cropped'
+        action: 'Canvas drawImage extracts selected region at devicePixelRatio scale'
+      - step: 'Annotation canvas opens'
         action: >
           Cropped image with toolbar: freehand draw, arrows, rectangles,
           text. Color picker (7 colors) and stroke width (3 sizes).
           Undo support.
-      - step: "User clicks Use Screenshot"
-        action: "Annotated canvas exported as base64 PNG, attached to review card"
+      - step: 'User clicks Use Screenshot'
+        action: 'Annotated canvas exported as base64 PNG, attached to review card'
 
     ios_considerations:
-      - "Body scroll locked (position: fixed + overflow: hidden) during overlay"
-      - "safe-area-inset-* for positioning"
-      - "touchAction: none on canvas elements"
-      - "setPointerCapture for reliable tracking"
-      - "Manual upload fallback always available"
+      - 'Body scroll locked (position: fixed + overflow: hidden) during overlay'
+      - 'safe-area-inset-* for positioning'
+      - 'touchAction: none on canvas elements'
+      - 'setPointerCapture for reliable tracking'
+      - 'Manual upload fallback always available'
 
   # ==========================================================================
   # DATA MODEL
   # ==========================================================================
 
   data_model:
-    storage: "localStorage via Zustand (BackStage-ready interfaces)"
+    storage: 'localStorage via Zustand (BackStage-ready interfaces)'
 
     issue:
       description: >
@@ -479,28 +487,28 @@ charter:
         from the idea model — no shared state. When BackStage is
         implemented, these map to the issues table.
       fields:
-        - id: string                    # UUID
-        - type: enum                    # bug, feature (AI-classified)
-        - title: string                 # AI-generated, user-editable
-        - description: string           # AI-generated structured description
-        - severity: enum                # critical, high, medium, low (AI-assessed, user-editable)
-        - status: enum                  # open, in_progress, resolved, closed, wont_fix
-        - project_id: string | null     # Linked StageManager project/idea
-        - app_id: string | null         # Source application identifier
-        - source: enum                  # internal, external
-        - environment: enum | null      # dsp, development, production
-        - affected_area: string | null  # Component or section of the app
-        - steps_to_reproduce: string[] | null  # Bugs only
-        - expected_behavior: string | null     # Bugs only
-        - actual_behavior: string | null       # Bugs only
-        - desired_outcome: string | null       # Features only
+        - id: string # UUID
+        - type: enum # bug, feature (AI-classified)
+        - title: string # AI-generated, user-editable
+        - description: string # AI-generated structured description
+        - severity: enum # critical, high, medium, low (AI-assessed, user-editable)
+        - status: enum # open, in_progress, resolved, closed, wont_fix
+        - project_id: string | null # Linked StageManager project/idea
+        - app_id: string | null # Source application identifier
+        - source: enum # internal, external
+        - environment: enum | null # dsp, development, production
+        - affected_area: string | null # Component or section of the app
+        - steps_to_reproduce: string[] | null # Bugs only
+        - expected_behavior: string | null # Bugs only
+        - actual_behavior: string | null # Bugs only
+        - desired_outcome: string | null # Features only
         - reporter_name: string | null
         - reporter_email: string | null
-        - reporter_user_id: string | null      # StageManager user ID if internal
-        - screenshot: string | null            # Base64 PNG (localStorage) or path (BackStage)
-        - metadata: object                     # Auto-captured: userAgent, URL, viewport, etc.
-        - conversation_summary: string | null  # Brief summary of AI conversation
-        - linked_duplicate_id: string | null   # If user confirmed duplicate
+        - reporter_user_id: string | null # StageManager user ID if internal
+        - screenshot: string | null # Base64 PNG (localStorage) or path (BackStage)
+        - metadata: object # Auto-captured: userAgent, URL, viewport, etc.
+        - conversation_summary: string | null # Brief summary of AI conversation
+        - linked_duplicate_id: string | null # If user confirmed duplicate
         - created_at: datetime
         - updated_at: datetime
 
@@ -520,27 +528,27 @@ charter:
   structure:
     src/modules/issue-reporter/:
       components/:
-        IssueReporterWizard.tsx: "Main wizard component — manages AI conversation loop and step rendering"
-        ReviewCard.tsx: "AI-generated report review with editable fields, duplicate check, screenshot attachment"
-        DuplicateCheck.tsx: "Collapsible section showing potential duplicate issues"
-        ScreenshotSection.tsx: "Capture/upload controls and thumbnail preview on review card"
-        CaptureOverlay.tsx: "Full-screen html2canvas capture with region selection"
-        AnnotationCanvas.tsx: "Drawing tools on cropped screenshot"
-        ConfirmationView.tsx: "Post-submission confirmation with link to new issue"
+        IssueReporterWizard.tsx: 'Main wizard component — manages AI conversation loop and step rendering'
+        ReviewCard.tsx: 'AI-generated report review with editable fields, duplicate check, screenshot attachment'
+        DuplicateCheck.tsx: 'Collapsible section showing potential duplicate issues'
+        ScreenshotSection.tsx: 'Capture/upload controls and thumbnail preview on review card'
+        CaptureOverlay.tsx: 'Full-screen html2canvas capture with region selection'
+        AnnotationCanvas.tsx: 'Drawing tools on cropped screenshot'
+        ConfirmationView.tsx: 'Post-submission confirmation with link to new issue'
 
       lib/:
-        ai-conversation.ts: "AI conversation manager — builds prompts, sends requests, parses responses"
-        context-builder.ts: "Assembles AI context from scaffolding, charter, and existing issues"
-        field-mapper.ts: "Maps AI completion response to issue data model"
-        screenshot-utils.ts: "html2canvas wrapper, crop, export, base64 handling"
-        mock-data.ts: "Sample issues, sample AI responses for demo mode"
+        ai-conversation.ts: 'AI conversation manager — builds prompts, sends requests, parses responses'
+        context-builder.ts: 'Assembles AI context from scaffolding, charter, and existing issues'
+        field-mapper.ts: 'Maps AI completion response to issue data model'
+        screenshot-utils.ts: 'html2canvas wrapper, crop, export, base64 handling'
+        mock-data.ts: 'Sample issues, sample AI responses for demo mode'
 
       stores/:
-        issue-reporter.ts: "Zustand store for conversation state, current report, screenshot"
-        issues.ts: "Zustand store for submitted issues (BackStage-ready interface)"
+        issue-reporter.ts: 'Zustand store for conversation state, current report, screenshot'
+        issues.ts: 'Zustand store for submitted issues (BackStage-ready interface)'
 
       types/:
-        index.ts: "TypeScript interfaces for AI responses, issue model, conversation state"
+        index.ts: 'TypeScript interfaces for AI responses, issue model, conversation state'
 
     note: >
       The issue reporter module lives entirely within src/modules/issue-reporter/
@@ -562,28 +570,28 @@ charter:
 
     components:
       WizardCard:
-        description: "The animated gradient border glassmorphism card container"
-        props: ["children", "className"]
+        description: 'The animated gradient border glassmorphism card container'
+        props: ['children', 'className']
 
       WizardStepDots:
-        description: "Step progress dots — receives count and current index"
-        props: ["totalSteps", "currentStep"]
+        description: 'Step progress dots — receives count and current index'
+        props: ['totalSteps', 'currentStep']
 
       WizardInput:
-        description: "Bottom-border textarea with auto-grow"
-        props: ["value", "onChange", "placeholder", "onSubmit"]
+        description: 'Bottom-border textarea with auto-grow'
+        props: ['value', 'onChange', 'placeholder', 'onSubmit']
 
       WizardSuggestionTags:
-        description: "Clickable suggestion tag row"
-        props: ["suggestions", "onSelect", "selectedTag"]
+        description: 'Clickable suggestion tag row'
+        props: ['suggestions', 'onSelect', 'selectedTag']
 
       WizardActionBar:
-        description: "OK button, Enter hint, optional Skip, voice mic placeholder"
-        props: ["onSubmit", "onSkip", "submitLabel", "isSkippable", "isLastStep"]
+        description: 'OK button, Enter hint, optional Skip, voice mic placeholder'
+        props: ['onSubmit', 'onSkip', 'submitLabel', 'isSkippable', 'isLastStep']
 
       PreFilterCard:
         description: "The 'What would you like to do?' selection card"
-        props: ["onSelectIdea", "onSelectIssue"]
+        props: ['onSelectIdea', 'onSelectIssue']
 
   # ==========================================================================
   # PROTOTYPE SCOPE
@@ -620,13 +628,13 @@ charter:
 
     sample_data:
       existing_issues:
-        - "5-8 sample issues across bug and feature types, mixed severities and statuses"
-        - "At least 2 issues in the same affected area to demonstrate duplicate detection"
-        - "Issues linked to at least one sample project in production state"
+        - '5-8 sample issues across bug and feature types, mixed severities and statuses'
+        - 'At least 2 issues in the same affected area to demonstrate duplicate detection'
+        - 'Issues linked to at least one sample project in production state'
       mock_ai_responses:
-        - "A complete bug conversation (4 questions → classified bug report)"
-        - "A complete feature conversation (3 questions → classified feature request)"
-        - "A conversation where a potential duplicate is identified"
+        - 'A complete bug conversation (4 questions → classified bug report)'
+        - 'A complete feature conversation (3 questions → classified feature request)'
+        - 'A conversation where a potential duplicate is identified'
       note: >
         Mock AI mode should simulate realistic response timing (500-1500ms
         delay) and return pre-recorded conversations that demonstrate the
@@ -637,11 +645,11 @@ charter:
   # ==========================================================================
 
   do_not:
-    - "Do not share state, stores, or AI prompts with the idea intake module."
-    - "Do not modify the idea intake module in any way."
-    - "Do not create a database or backend API — StageManager is frontend only."
-    - "Do not use fixed wizard steps — the AI controls the conversation flow."
-    - "Do not ask the user to classify their submission as bug or feature."
-    - "Do not use getDisplayMedia for screenshots — not supported on iOS Safari."
-    - "Do not store screenshots in any persistent backend — base64 in localStorage for prototype."
-    - "Do not import from src/components/wizard/ — use shared components from src/components/shared/."
+    - 'Do not share state, stores, or AI prompts with the idea intake module.'
+    - 'Do not modify the idea intake module in any way.'
+    - 'Do not create a database or backend API — StageManager is frontend only.'
+    - 'Do not use fixed wizard steps — the AI controls the conversation flow.'
+    - 'Do not ask the user to classify their submission as bug or feature.'
+    - 'Do not use getDisplayMedia for screenshots — not supported on iOS Safari.'
+    - 'Do not store screenshots in any persistent backend — base64 in localStorage for prototype.'
+    - 'Do not import from src/components/wizard/ — use shared components from src/components/shared/.'

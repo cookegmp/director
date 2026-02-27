@@ -1,14 +1,14 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
-import DictationButton from '@/components/DictationButton';
-import GradientButton from '@/components/shared/GradientButton';
-import { useIdeasStore } from '@/stores/ideas';
-import { useActivityStore } from '@/stores/activity';
-import { useRemediationSettingsStore } from '@/modules/issue-scoring/stores/remediation-settings';
-import { generateId } from '@/lib/utils';
-import { scoreIdea } from '@/lib/scoring';
-import type { WizardStep } from '@/types';
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import DictationButton from '@/components/DictationButton'
+import GradientButton from '@/components/shared/GradientButton'
+import { useIdeasStore } from '@/stores/ideas'
+import { useActivityStore } from '@/stores/activity'
+import { useRemediationSettingsStore } from '@/modules/issue-scoring/stores/remediation-settings'
+import { generateId } from '@/lib/utils'
+import { scoreIdea } from '@/lib/scoring'
+import type { WizardStep } from '@/types'
 
 const STEPS: WizardStep[] = [
   {
@@ -83,52 +83,50 @@ const STEPS: WizardStep[] = [
     ],
     submitLabel: 'Score & Prioritize',
   },
-];
+]
 
 function WizardCard() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [currentAnswer, setCurrentAnswer] = useState('');
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [currentAnswer, setCurrentAnswer] = useState('')
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   // Tracks the text before dictation interim results so we can append cleanly
-  const dictationBaseRef = useRef('');
+  const dictationBaseRef = useRef('')
 
-  const navigate = useNavigate();
-  const addIdea = useIdeasStore((s) => s.addIdea);
-  const addActivity = useActivityStore((s) => s.addActivity);
-  const ideaWeights = useRemediationSettingsStore((s) => s.settings.idea_weights);
+  const navigate = useNavigate()
+  const addIdea = useIdeasStore((s) => s.addIdea)
+  const addActivity = useActivityStore((s) => s.addActivity)
+  const ideaWeights = useRemediationSettingsStore((s) => s.settings.idea_weights)
 
-  const step = STEPS[currentStep];
-  const isLastStep = currentStep === STEPS.length - 1;
-  const canSubmitStep = step?.required ? currentAnswer.trim().length > 0 : true;
+  const step = STEPS[currentStep]
+  const isLastStep = currentStep === STEPS.length - 1
+  const canSubmitStep = step?.required ? currentAnswer.trim().length > 0 : true
 
   const handleNext = useCallback(() => {
-    if (!canSubmitStep || !step) return;
+    if (!canSubmitStep || !step) return
 
-    const updatedAnswers = { ...answers, [step.id]: currentAnswer };
-    setAnswers(updatedAnswers);
+    const updatedAnswers = { ...answers, [step.id]: currentAnswer }
+    setAnswers(updatedAnswers)
 
     if (isLastStep) {
-      setIsProcessing(true);
+      setIsProcessing(true)
 
       // Generate title from the problem description
-      const problemText = updatedAnswers.problem ?? '';
+      const problemText = updatedAnswers.problem ?? ''
       const title =
-        problemText.length > 60
-          ? problemText.slice(0, 57) + '...'
-          : problemText || 'Untitled Idea';
+        problemText.length > 60 ? problemText.slice(0, 57) + '...' : problemText || 'Untitled Idea'
 
-      const scores = scoreIdea(updatedAnswers);
+      const scores = scoreIdea(updatedAnswers)
       const compositeScore =
         scores.impact * ideaWeights.impact +
         scores.urgency * ideaWeights.urgency +
         scores.feasibility * ideaWeights.feasibility +
-        scores.alignment * ideaWeights.alignment;
+        scores.alignment * ideaWeights.alignment
 
-      const ideaId = generateId();
-      const now = new Date().toISOString();
+      const ideaId = generateId()
+      const now = new Date().toISOString()
 
       addIdea({
         id: ideaId,
@@ -142,7 +140,7 @@ function WizardCard() {
         linkedCharterId: null,
         linkedIssueIds: [],
         activeSessionId: null,
-      });
+      })
 
       addActivity({
         id: generateId(),
@@ -151,57 +149,67 @@ function WizardCard() {
         entityType: 'idea',
         summary: `New idea scored: "${title}" (${Math.round(compositeScore)})`,
         createdAt: now,
-      });
+      })
 
       setTimeout(() => {
-        navigate(`/ideas/${ideaId}`);
-      }, 600);
+        navigate(`/ideas/${ideaId}`)
+      }, 600)
     } else {
-      setCurrentStep((s) => s + 1);
-      setCurrentAnswer('');
-      setSelectedTag(null);
+      setCurrentStep((s) => s + 1)
+      setCurrentAnswer('')
+      setSelectedTag(null)
     }
-  }, [canSubmitStep, step, answers, currentAnswer, isLastStep, addIdea, addActivity, navigate, ideaWeights]);
+  }, [
+    canSubmitStep,
+    step,
+    answers,
+    currentAnswer,
+    isLastStep,
+    addIdea,
+    addActivity,
+    navigate,
+    ideaWeights,
+  ])
 
   const handleBack = () => {
     if (currentStep > 0) {
-      const prevStep = STEPS[currentStep - 1];
-      setCurrentStep((s) => s - 1);
-      setCurrentAnswer(prevStep ? answers[prevStep.id] ?? '' : '');
-      setSelectedTag(null);
+      const prevStep = STEPS[currentStep - 1]
+      setCurrentStep((s) => s - 1)
+      setCurrentAnswer(prevStep ? (answers[prevStep.id] ?? '') : '')
+      setSelectedTag(null)
     }
-  };
+  }
 
   const handleTagClick = (tag: string) => {
-    setCurrentAnswer(tag);
-    setSelectedTag(tag);
-  };
+    setCurrentAnswer(tag)
+    setSelectedTag(tag)
+  }
 
   const handleSkip = () => {
     if (step) {
-      setAnswers({ ...answers, [step.id]: '' });
+      setAnswers({ ...answers, [step.id]: '' })
     }
-    setCurrentStep((s) => s + 1);
-    setCurrentAnswer('');
-    setSelectedTag(null);
-  };
+    setCurrentStep((s) => s + 1)
+    setCurrentAnswer('')
+    setSelectedTag(null)
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey && step?.inputType !== 'textarea') {
-        e.preventDefault();
-        handleNext();
+        e.preventDefault()
+        handleNext()
       }
       if (e.key === 'Enter' && e.metaKey) {
-        e.preventDefault();
-        handleNext();
+        e.preventDefault()
+        handleNext()
       }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, step]);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleNext, step])
 
-  if (!step) return null;
+  if (!step) return null
 
   return (
     <section className="min-h-[calc(100vh-4rem)] flex flex-col justify-center px-4 sm:px-8 py-8 sm:py-16 max-w-3xl mx-auto w-full -mt-8">
@@ -239,8 +247,8 @@ function WizardCard() {
           <textarea
             value={currentAnswer}
             onChange={(e) => {
-              setCurrentAnswer(e.target.value);
-              setSelectedTag(null);
+              setCurrentAnswer(e.target.value)
+              setSelectedTag(null)
             }}
             placeholder={step.placeholder}
             rows={3}
@@ -317,19 +325,19 @@ function WizardCard() {
             <DictationButton
               onResult={(text) => {
                 // Final result: commit to base so next interim appends after it
-                const committed = dictationBaseRef.current + text;
-                dictationBaseRef.current = committed;
-                setCurrentAnswer(committed);
+                const committed = dictationBaseRef.current + text
+                dictationBaseRef.current = committed
+                setCurrentAnswer(committed)
               }}
               onInterim={(text) => {
                 if (text) {
-                  setCurrentAnswer(dictationBaseRef.current + text);
+                  setCurrentAnswer(dictationBaseRef.current + text)
                 }
               }}
               onListeningChange={(listening) => {
                 if (listening) {
                   // Snapshot whatever is in the field as the base
-                  dictationBaseRef.current = currentAnswer;
+                  dictationBaseRef.current = currentAnswer
                 }
               }}
               className="ml-auto"
@@ -338,7 +346,7 @@ function WizardCard() {
         </div>
       </div>
     </section>
-  );
+  )
 }
 
-export default WizardCard;
+export default WizardCard

@@ -2,11 +2,11 @@
 // Each event has a delay (ms from previous), output line, and optional status change
 
 export interface BuildEvent {
-  delay: number;
-  line?: string;
-  status?: string;
-  error?: { message: string; recoverable: boolean };
-  complete?: boolean;
+  delay: number
+  line?: string
+  status?: string
+  error?: { message: string; recoverable: boolean }
+  complete?: boolean
 }
 
 export const buildSession: BuildEvent[] = [
@@ -42,7 +42,10 @@ export const buildSession: BuildEvent[] = [
 
   // Error-recovery sequence (~40s mark)
   { delay: 1500, line: 'Error: TypeScript compilation failed -- cannot find module @/stores/jobs' },
-  { delay: 500, error: { message: 'TypeScript compilation error in OperatorDashboard.tsx', recoverable: true } },
+  {
+    delay: 500,
+    error: { message: 'TypeScript compilation error in OperatorDashboard.tsx', recoverable: true },
+  },
   { delay: 2000, line: 'fixing: adding missing jobs store module' },
   { delay: 1000, line: 'Created src/stores/jobs.ts -- Zustand job state store' },
   { delay: 800, line: 'retrying TypeScript compilation...' },
@@ -69,4 +72,4 @@ export const buildSession: BuildEvent[] = [
   { delay: 800, line: 'Build complete -- all phases finished' },
   { delay: 500, line: 'git commit -m "feat: shop floor job tracking application complete"' },
   { delay: 500, complete: true },
-];
+]

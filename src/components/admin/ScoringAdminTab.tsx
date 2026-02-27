@@ -5,12 +5,16 @@
 // Each subtab has a two-column layout: settings panel + weight sliders.
 // ============================================================================
 
-import { Lightbulb, Bug, Sparkles } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import RemediationSettingsPanel from '@/modules/issue-scoring/components/RemediationSettings';
-import IdeaScoringSettingsPanel from '@/modules/issue-scoring/components/IdeaScoringSettings';
-import FeatureScoringSettingsPanel from '@/modules/issue-scoring/components/FeatureScoringSettings';
-import { IdeaWeightEditor, BugWeightEditor, FeatureWeightEditor } from '@/modules/issue-scoring/components/ScoreWeightEditor';
+import { Lightbulb, Bug, Sparkles } from 'lucide-react'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import RemediationSettingsPanel from '@/modules/issue-scoring/components/RemediationSettings'
+import IdeaScoringSettingsPanel from '@/modules/issue-scoring/components/IdeaScoringSettings'
+import FeatureScoringSettingsPanel from '@/modules/issue-scoring/components/FeatureScoringSettings'
+import {
+  IdeaWeightEditor,
+  BugWeightEditor,
+  FeatureWeightEditor,
+} from '@/modules/issue-scoring/components/ScoreWeightEditor'
 
 function IdeaScoringSubtab() {
   return (
@@ -24,7 +28,7 @@ function IdeaScoringSubtab() {
         <IdeaWeightEditor />
       </div>
     </div>
-  );
+  )
 }
 
 function BugScoringSubtab() {
@@ -39,7 +43,7 @@ function BugScoringSubtab() {
         <BugWeightEditor />
       </div>
     </div>
-  );
+  )
 }
 
 function FeatureScoringSubtab() {
@@ -54,7 +58,7 @@ function FeatureScoringSubtab() {
         <FeatureWeightEditor />
       </div>
     </div>
-  );
+  )
 }
 
 function ScoringAdminTab() {
@@ -85,7 +89,7 @@ function ScoringAdminTab() {
         <FeatureScoringSubtab />
       </TabsContent>
     </Tabs>
-  );
+  )
 }
 
-export default ScoringAdminTab;
+export default ScoringAdminTab

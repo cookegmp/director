@@ -1,38 +1,38 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Play, RefreshCw, Pencil, ChevronRight, CheckCircle } from 'lucide-react';
-import { useIdeasStore } from '@/stores/ideas';
-import { useChartersStore } from '@/stores/charters';
-import { useActivityStore } from '@/stores/activity';
-import { useAgentSessionsStore } from '@/stores/agent-sessions';
-import ScoreBreakdown from '@/components/scoring/ScoreBreakdown';
-import GradientButton from '@/components/shared/GradientButton';
-import { Badge } from '@/components/ui/badge';
-import { generateId } from '@/lib/utils';
-import { generateCharter } from '@/lib/charter-generator';
-import type { Idea } from '@/types';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Play, RefreshCw, Pencil, ChevronRight, CheckCircle } from 'lucide-react'
+import { useIdeasStore } from '@/stores/ideas'
+import { useChartersStore } from '@/stores/charters'
+import { useActivityStore } from '@/stores/activity'
+import { useAgentSessionsStore } from '@/stores/agent-sessions'
+import ScoreBreakdown from '@/components/scoring/ScoreBreakdown'
+import GradientButton from '@/components/shared/GradientButton'
+import { Badge } from '@/components/ui/badge'
+import { generateId } from '@/lib/utils'
+import { generateCharter } from '@/lib/charter-generator'
+import type { Idea } from '@/types'
 
 interface CharterGeneratedViewProps {
-  idea: Idea;
+  idea: Idea
 }
 
 function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
-  const navigate = useNavigate();
-  const updateIdea = useIdeasStore((s) => s.updateIdea);
-  const charter = useChartersStore((s) => s.getCharter(idea.linkedCharterId ?? ''));
-  const updateCharter = useChartersStore((s) => s.updateCharter);
-  const addActivity = useActivityStore((s) => s.addActivity);
-  const addSession = useAgentSessionsStore((s) => s.addSession);
-  const [scoreCollapsed, setScoreCollapsed] = useState(true);
-  const [regenerating, setRegenerating] = useState(false);
+  const navigate = useNavigate()
+  const updateIdea = useIdeasStore((s) => s.updateIdea)
+  const charter = useChartersStore((s) => s.getCharter(idea.linkedCharterId ?? ''))
+  const updateCharter = useChartersStore((s) => s.updateCharter)
+  const addActivity = useActivityStore((s) => s.addActivity)
+  const addSession = useAgentSessionsStore((s) => s.addSession)
+  const [scoreCollapsed, setScoreCollapsed] = useState(true)
+  const [regenerating, setRegenerating] = useState(false)
 
-  if (!charter) return null;
+  if (!charter) return null
 
-  const { content } = charter;
+  const { content } = charter
 
   const handleStartDevelopment = () => {
-    const sessionId = generateId();
-    const now = new Date().toISOString();
+    const sessionId = generateId()
+    const now = new Date().toISOString()
 
     addSession({
       id: sessionId,
@@ -46,12 +46,12 @@ function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
       connectedAt: null,
       completedAt: null,
       stoppedAt: null,
-    });
+    })
 
     updateIdea(idea.id, {
       status: 'development',
       activeSessionId: sessionId,
-    });
+    })
 
     addActivity({
       id: generateId(),
@@ -60,15 +60,15 @@ function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
       entityType: 'idea',
       summary: `Development started for "${idea.title}"`,
       createdAt: now,
-    });
-  };
+    })
+  }
 
   const handleRegenerateCharter = async () => {
-    setRegenerating(true);
+    setRegenerating(true)
     try {
-      const now = new Date().toISOString();
-      const newContent = await generateCharter(idea);
-      updateCharter(charter.id, { content: newContent });
+      const now = new Date().toISOString()
+      const newContent = await generateCharter(idea)
+      updateCharter(charter.id, { content: newContent })
       addActivity({
         id: generateId(),
         type: 'charter-generated',
@@ -76,11 +76,11 @@ function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
         entityType: 'charter',
         summary: `Charter regenerated for "${idea.title}"`,
         createdAt: now,
-      });
+      })
     } finally {
-      setRegenerating(false);
+      setRegenerating(false)
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -153,7 +153,10 @@ function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
               </div>
               <ul className="space-y-1 ml-4">
                 {phase.tasks.map((task, j) => (
-                  <li key={j} className="text-sm text-foreground/70 font-light flex items-start gap-2">
+                  <li
+                    key={j}
+                    className="text-sm text-foreground/70 font-light flex items-start gap-2"
+                  >
                     <span className="text-muted-foreground">-</span>
                     {task}
                   </li>
@@ -192,7 +195,7 @@ function CharterGeneratedView({ idea }: CharterGeneratedViewProps) {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default CharterGeneratedView;
+export default CharterGeneratedView

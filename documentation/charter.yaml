@@ -36,10 +36,10 @@ stack:
   components: shadcn-ui-v2
   icons: lucide-react
   font: inter
-  animations: pure-css  # No Framer Motion. @keyframes and conic-gradient rotation.
-  state: zustand        # Lightweight, minimal boilerplate
+  animations: pure-css # No Framer Motion. @keyframes and conic-gradient rotation.
+  state: zustand # Lightweight, minimal boilerplate
   routing: react-router-dom
-  api-client: anthropic-sdk  # For charter generation via Claude API
+  api-client: anthropic-sdk # For charter generation via Claude API
   package-manager: npm
 
   notes:
@@ -60,51 +60,51 @@ design:
     feeling cluttered.
 
   palette:
-    background: "225 64% 11%"        # Deep navy, NOT pure black
-    foreground: "220 14% 96%"        # Near-white
-    card: "225 50% 15%"              # Slightly lighter navy
-    card-foreground: "220 14% 96%"
-    primary: "217 100% 61%"          # Vivid blue
-    primary-foreground: "0 0% 100%"
-    secondary: "225 30% 25%"
-    secondary-foreground: "220 14% 91%"
-    muted: "225 30% 20%"
-    muted-foreground: "220 14% 55%"  # Grey text for descriptions
-    accent: "225 40% 22%"
-    accent-foreground: "220 14% 91%"
-    destructive: "0 72% 51%"
-    border: "225 30% 20%"
-    input: "225 30% 20%"
-    ring: "217 100% 61%"
-    radius: "9999px"                 # Pill shape by default for buttons/badges
+    background: '225 64% 11%' # Deep navy, NOT pure black
+    foreground: '220 14% 96%' # Near-white
+    card: '225 50% 15%' # Slightly lighter navy
+    card-foreground: '220 14% 96%'
+    primary: '217 100% 61%' # Vivid blue
+    primary-foreground: '0 0% 100%'
+    secondary: '225 30% 25%'
+    secondary-foreground: '220 14% 91%'
+    muted: '225 30% 20%'
+    muted-foreground: '220 14% 55%' # Grey text for descriptions
+    accent: '225 40% 22%'
+    accent-foreground: '220 14% 91%'
+    destructive: '0 72% 51%'
+    border: '225 30% 20%'
+    input: '225 30% 20%'
+    ring: '217 100% 61%'
+    radius: '9999px' # Pill shape by default for buttons/badges
 
   semantic-colors:
-    active: "175 63% 47%"            # Teal — running/in-progress
-    queued: "217 100% 61%"           # Blue — waiting/primary
-    completed: "142 71% 45%"         # Green — success/done
-    error: "0 72% 51%"              # Red — failed/destructive
-    idle: "225 30% 20%"              # Muted — inactive
+    active: '175 63% 47%' # Teal — running/in-progress
+    queued: '217 100% 61%' # Blue — waiting/primary
+    completed: '142 71% 45%' # Green — success/done
+    error: '0 72% 51%' # Red — failed/destructive
+    idle: '225 30% 20%' # Muted — inactive
 
   gradient:
     stops:
-      - "hsl(217, 100%, 60%)"        # Blue
-      - "hsl(175, 80%, 55%)"         # Teal
-      - "hsl(263, 80%, 65%)"         # Purple/Rose
+      - 'hsl(217, 100%, 60%)' # Blue
+      - 'hsl(175, 80%, 55%)' # Teal
+      - 'hsl(263, 80%, 65%)' # Purple/Rose
     usage: >
       Three-stop gradient used for animated card borders (conic-gradient
       rotating via ::before pseudo-element with CSS mask), primary action
       buttons (linear-gradient), and hero/emphasis text (background-clip text).
 
   key-patterns:
-    - "font-light on all headings and body copy"
-    - "Pill-shaped buttons and badges (radius 9999px)"
-    - "Tags and cards use rounded-md / rounded-xl to differentiate from pills"
-    - "Bottom-border-only inputs — no boxed fields, bg-transparent"
-    - "Glassmorphism cards: bg-card/50 backdrop-blur-sm"
-    - "Animated gradient borders: rotating conic-gradient on ::before"
-    - "Muted helper text at 55% lightness, placeholders at /40 opacity"
-    - "Generous whitespace: py-20, mb-12, gap-6"
-    - "Full-screen particle canvas behind all content (z-index 0, pointer-events none)"
+    - 'font-light on all headings and body copy'
+    - 'Pill-shaped buttons and badges (radius 9999px)'
+    - 'Tags and cards use rounded-md / rounded-xl to differentiate from pills'
+    - 'Bottom-border-only inputs — no boxed fields, bg-transparent'
+    - 'Glassmorphism cards: bg-card/50 backdrop-blur-sm'
+    - 'Animated gradient borders: rotating conic-gradient on ::before'
+    - 'Muted helper text at 55% lightness, placeholders at /40 opacity'
+    - 'Generous whitespace: py-20, mb-12, gap-6'
+    - 'Full-screen particle canvas behind all content (z-index 0, pointer-events none)'
 
 # ============================================================================
 # APPLICATION STRUCTURE
@@ -172,53 +172,53 @@ views:
       Skip, and voice mic placeholder.
     steps:
       - id: problem
-        question: "What process or pain point are you looking to address?"
-        placeholder: "Describe the problem or opportunity..."
+        question: 'What process or pain point are you looking to address?'
+        placeholder: 'Describe the problem or opportunity...'
         required: true
         input-type: textarea
 
       - id: impact
-        question: "Who does this affect and how often?"
-        placeholder: "Teams, frequency, downstream effects..."
+        question: 'Who does this affect and how often?'
+        placeholder: 'Teams, frequency, downstream effects...'
         required: true
         input-type: textarea
-        suggestions: ai-generated  # Based on step 1 answer
+        suggestions: ai-generated # Based on step 1 answer
 
       - id: current-state
-        question: "How is this handled today?"
-        placeholder: "Current tools, workarounds, manual steps..."
+        question: 'How is this handled today?'
+        placeholder: 'Current tools, workarounds, manual steps...'
         required: true
         input-type: textarea
         suggestions: ai-generated
 
       - id: desired-outcome
-        question: "What does success look like?"
-        placeholder: "Ideal end state, measurable improvements..."
+        question: 'What does success look like?'
+        placeholder: 'Ideal end state, measurable improvements...'
         required: true
         input-type: textarea
         suggestions: ai-generated
 
       - id: constraints
-        question: "Any constraints or considerations?"
-        placeholder: "Budget, timeline, integration requirements, compliance..."
+        question: 'Any constraints or considerations?'
+        placeholder: 'Budget, timeline, integration requirements, compliance...'
         required: false
         input-type: textarea
         suggestions:
-          - "Must integrate with existing ERP"
-          - "Needs to work on mobile devices"
-          - "Compliance or audit requirements"
-          - "Limited internal technical resources"
+          - 'Must integrate with existing ERP'
+          - 'Needs to work on mobile devices'
+          - 'Compliance or audit requirements'
+          - 'Limited internal technical resources'
 
       - id: urgency
-        question: "How urgent is this?"
+        question: 'How urgent is this?'
         required: true
         input-type: select
         suggestions:
-          - "Blocking other work"
-          - "Causing daily friction"
-          - "Would improve efficiency"
-          - "Exploring for the future"
-        submit-label: "Score & Prioritize"
+          - 'Blocking other work'
+          - 'Causing daily friction'
+          - 'Would improve efficiency'
+          - 'Exploring for the future'
+        submit-label: 'Score & Prioritize'
 
     on-complete: >
       Submit all answers to the scoring engine. Generate a composite
@@ -244,10 +244,10 @@ views:
           score and the composite total prominent. Uses semantic colors
           (green for high scores, amber for medium, red for low).
         dimensions:
-          - impact        # How many people/processes affected, severity
-          - urgency       # Time sensitivity, blocking nature
-          - feasibility   # Technical complexity, resource requirements
-          - alignment     # Fit with organizational goals from scaffolding
+          - impact # How many people/processes affected, severity
+          - urgency # Time sensitivity, blocking nature
+          - feasibility # Technical complexity, resource requirements
+          - alignment # Fit with organizational goals from scaffolding
 
       intake-summary:
         description: >
@@ -256,10 +256,10 @@ views:
           refine answers after initial intake and rescore.
 
       actions:
-        - generate-charter  # Primary action — creates charter from this idea
-        - edit              # Return to wizard with answers pre-filled
-        - archive           # Remove from active queue
-        - link-issues       # Associate existing bug reports or feature requests
+        - generate-charter # Primary action — creates charter from this idea
+        - edit # Return to wizard with answers pre-filled
+        - archive # Remove from active queue
+        - link-issues # Associate existing bug reports or feature requests
 
   # --------------------------------------------------------------------------
   # VIEW 4: Charter View — The generated execution plan
@@ -280,7 +280,7 @@ views:
           criteria, estimated timeline, and the execution plan with
           sequenced tasks. Rendered as structured content, not raw YAML.
         format: structured-display
-        exportable: true  # Download as YAML, Markdown, or copy to clipboard
+        exportable: true # Download as YAML, Markdown, or copy to clipboard
 
       scaffolding-context:
         description: >
@@ -352,18 +352,18 @@ views:
       what governs their AI development standards. Editing is intentionally
       limited in the prototype — scaffolding updates should be deliberate.
     document-types:
-      - company-context        # Who the organization is, their domain
+      - company-context # Who the organization is, their domain
       - technology-preferences # Tech stack, hosting, infrastructure choices
-      - brand-standards        # Voice, terminology, design language
-      - security-patterns      # Auth, data handling, compliance requirements
-      - quality-standards      # Testing, documentation, code standards
+      - brand-standards # Voice, terminology, design language
+      - security-patterns # Auth, data handling, compliance requirements
+      - quality-standards # Testing, documentation, code standards
 
 # ============================================================================
 # DATA MODELS
 # ============================================================================
 
 data:
-  storage: local-storage  # Prototype only — no backend for initial build
+  storage: local-storage # Prototype only — no backend for initial build
   note: >
     All data persisted to browser localStorage for the prototype. Structure
     the data layer with clear interfaces so migration to a real backend
@@ -373,11 +373,11 @@ data:
   models:
     idea:
       fields:
-        - id: string           # UUID
-        - title: string        # Generated from intake or user-provided
-        - status: enum         # new, scored, charter-generated, archived
-        - intake-answers: map  # Step ID → answer text
-        - scores: map          # Dimension → numeric score (0-100)
+        - id: string # UUID
+        - title: string # Generated from intake or user-provided
+        - status: enum # new, scored, charter-generated, archived
+        - intake-answers: map # Step ID → answer text
+        - scores: map # Dimension → numeric score (0-100)
         - composite-score: number
         - created-at: datetime
         - updated-at: datetime
@@ -387,11 +387,11 @@ data:
     charter:
       fields:
         - id: string
-        - idea-id: string      # Source idea
+        - idea-id: string # Source idea
         - title: string
-        - content: object      # Structured charter document
-        - status: enum         # draft, reviewed, in-progress, complete
-        - scaffolding-refs: string[]  # Which scaffolding docs were used
+        - content: object # Structured charter document
+        - status: enum # draft, reviewed, in-progress, complete
+        - scaffolding-refs: string[] # Which scaffolding docs were used
         - created-at: datetime
         - updated-at: datetime
         - linked-issue-ids: string[]
@@ -399,12 +399,12 @@ data:
     issue:
       fields:
         - id: string
-        - type: enum           # bug, feature-request
+        - type: enum # bug, feature-request
         - title: string
         - description: string
-        - severity: enum       # critical, high, medium, low
-        - status: enum         # open, in-progress, resolved, closed
-        - project-id: string | null  # Linked charter/project
+        - severity: enum # critical, high, medium, low
+        - status: enum # open, in-progress, resolved, closed
+        - project-id: string | null # Linked charter/project
         - created-at: datetime
         - updated-at: datetime
         - comments: comment[]
@@ -419,9 +419,9 @@ data:
     activity:
       fields:
         - id: string
-        - type: enum           # idea-created, charter-generated, issue-filed, status-changed
+        - type: enum # idea-created, charter-generated, issue-filed, status-changed
         - entity-id: string
-        - entity-type: enum    # idea, charter, issue
+        - entity-type: enum # idea, charter, issue
         - summary: string
         - created-at: datetime
 
@@ -523,7 +523,7 @@ components:
       Reference document for full implementation details including animated
       gradient border CSS, step dot navigation, bottom-border textarea,
       suggestion tags, and action bar patterns.
-    file: WIZARD_CARD_REFERENCE.md  # The attached UI reference document
+    file: WIZARD_CARD_REFERENCE.md # The attached UI reference document
 
   particle-background:
     description: >
@@ -599,36 +599,36 @@ scope:
 
 structure:
   src/:
-    main.tsx: "App entry point"
-    App.tsx: "Root component with router"
-    index.css: "Global styles, CSS custom properties, gradient animations"
+    main.tsx: 'App entry point'
+    App.tsx: 'Root component with router'
+    index.css: 'Global styles, CSS custom properties, gradient animations'
 
     components/:
-      ui/: "shadcn/ui components (button, card, badge, progress, tabs, tooltip)"
-      wizard/: "Wizard card, step navigation, suggestion tags, action bar"
-      dashboard/: "Priority queue, active projects, activity feed, quick actions"
-      scoring/: "Score display, dimension bars, tier badges"
-      charter/: "Charter document renderer, status tracker"
-      issues/: "Issue list, issue detail, new issue form"
-      scaffolding/: "Document viewer, document type navigation"
-      layout/: "App shell, sidebar navigation, header"
-      shared/: "Status badges, gradient button, animated border card"
+      ui/: 'shadcn/ui components (button, card, badge, progress, tabs, tooltip)'
+      wizard/: 'Wizard card, step navigation, suggestion tags, action bar'
+      dashboard/: 'Priority queue, active projects, activity feed, quick actions'
+      scoring/: 'Score display, dimension bars, tier badges'
+      charter/: 'Charter document renderer, status tracker'
+      issues/: 'Issue list, issue detail, new issue form'
+      scaffolding/: 'Document viewer, document type navigation'
+      layout/: 'App shell, sidebar navigation, header'
+      shared/: 'Status badges, gradient button, animated border card'
 
     stores/:
-      ideas.ts: "Zustand store for ideas with localStorage persistence"
-      charters.ts: "Zustand store for charters"
-      issues.ts: "Zustand store for issues"
-      activity.ts: "Zustand store for activity feed"
-      scaffolding.ts: "Zustand store for scaffolding documents"
+      ideas.ts: 'Zustand store for ideas with localStorage persistence'
+      charters.ts: 'Zustand store for charters'
+      issues.ts: 'Zustand store for issues'
+      activity.ts: 'Zustand store for activity feed'
+      scaffolding.ts: 'Zustand store for scaffolding documents'
 
     lib/:
-      scoring.ts: "Scoring engine logic"
-      charter-generator.ts: "Charter generation (API call or mock)"
-      sample-data.ts: "Demo data loader"
-      utils.ts: "Shared utilities"
+      scoring.ts: 'Scoring engine logic'
+      charter-generator.ts: 'Charter generation (API call or mock)'
+      sample-data.ts: 'Demo data loader'
+      utils.ts: 'Shared utilities'
 
     types/:
-      index.ts: "All TypeScript interfaces and enums"
+      index.ts: 'All TypeScript interfaces and enums'
 
 # ============================================================================
 # BUILD & RUN
@@ -636,13 +636,13 @@ structure:
 
 setup:
   commands:
-    - "npm create vite@latest stage-manager -- --template react-ts"
-    - "cd stage-manager && npm install"
-    - "npx shadcn@latest init"  # New York style, Slate base, CSS variables: yes
-    - "npx shadcn@latest add button card badge progress tabs tooltip"
-    - "npm install lucide-react zustand react-router-dom"
-    - "npm install @fontsource-variable/inter"
+    - 'npm create vite@latest stage-manager -- --template react-ts'
+    - 'cd stage-manager && npm install'
+    - 'npx shadcn@latest init' # New York style, Slate base, CSS variables: yes
+    - 'npx shadcn@latest add button card badge progress tabs tooltip'
+    - 'npm install lucide-react zustand react-router-dom'
+    - 'npm install @fontsource-variable/inter'
 
   environment:
-    VITE_ANTHROPIC_API_KEY: "optional — enables live charter generation"
-    VITE_USE_MOCK_DATA: "true — set false when API key is available"
+    VITE_ANTHROPIC_API_KEY: 'optional — enables live charter generation'
+    VITE_USE_MOCK_DATA: 'true — set false when API key is available'

@@ -1,8 +1,8 @@
-import { useSettingsStore } from '@/stores/settings';
-import ServerCard from './ServerCard';
+import { useSettingsStore } from '@/stores/settings'
+import ServerCard from './ServerCard'
 
 function ServersTab() {
-  const servers = useSettingsStore((s) => s.servers);
+  const servers = useSettingsStore((s) => s.servers)
 
   return (
     <div className="space-y-4">
@@ -19,7 +19,7 @@ function ServersTab() {
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default ServersTab;
+export default ServersTab

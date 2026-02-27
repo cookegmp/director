@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { Idea } from '@/types';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { Idea } from '@/types'
 
 interface IdeasState {
-  ideas: Idea[];
-  addIdea: (idea: Idea) => void;
-  updateIdea: (id: string, updates: Partial<Idea>) => void;
-  getIdea: (id: string) => Idea | undefined;
-  removeIdea: (id: string) => void;
+  ideas: Idea[]
+  addIdea: (idea: Idea) => void
+  updateIdea: (id: string, updates: Partial<Idea>) => void
+  getIdea: (id: string) => Idea | undefined
+  removeIdea: (id: string) => void
 }
 
 export const useIdeasStore = create<IdeasState>()(
@@ -18,13 +18,12 @@ export const useIdeasStore = create<IdeasState>()(
       updateIdea: (id, updates) =>
         set((state) => ({
           ideas: state.ideas.map((i) =>
-            i.id === id ? { ...i, ...updates, updatedAt: new Date().toISOString() } : i
+            i.id === id ? { ...i, ...updates, updatedAt: new Date().toISOString() } : i,
           ),
         })),
       getIdea: (id) => get().ideas.find((i) => i.id === id),
-      removeIdea: (id) =>
-        set((state) => ({ ideas: state.ideas.filter((i) => i.id !== id) })),
+      removeIdea: (id) => set((state) => ({ ideas: state.ideas.filter((i) => i.id !== id) })),
     }),
-    { name: 'stagemanager-ideas' }
-  )
-);
+    { name: 'stagemanager-ideas' },
+  ),
+)

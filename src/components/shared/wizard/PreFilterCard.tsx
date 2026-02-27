@@ -1,9 +1,9 @@
-import { Lightbulb, MessageCircleWarning } from 'lucide-react';
-import WizardCard from './WizardCard';
+import { Lightbulb, MessageCircleWarning } from 'lucide-react'
+import WizardCard from './WizardCard'
 
 interface PreFilterCardProps {
-  onSelectIdea: () => void;
-  onSelectIssue: () => void;
+  onSelectIdea: () => void
+  onSelectIssue: () => void
 }
 
 function PreFilterCard({ onSelectIdea, onSelectIssue }: PreFilterCardProps) {
@@ -45,7 +45,7 @@ function PreFilterCard({ onSelectIdea, onSelectIssue }: PreFilterCardProps) {
         </button>
       </div>
     </WizardCard>
-  );
+  )
 }
 
-export default PreFilterCard;
+export default PreFilterCard

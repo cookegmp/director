@@ -10,15 +10,15 @@ Claude Code: read this file before building any wizard, intake form, or multi-st
 
 ## Tech Stack
 
-| Layer | Technology | Notes |
-|-------|-----------|-------|
-| Framework | React (SPA via Vite) | No SSR. Standard `#root` mount. |
-| CSS | Tailwind CSS v3+ | Utility-first. Arbitrary values used for gradients. |
-| Components | shadcn/ui v2 | Full HSL token system (80+ CSS vars). Radix primitives underneath. |
-| Icons | Lucide React | Standard 24px SVG icons. |
-| Font | Inter | `font-family: Inter, system-ui, sans-serif` |
-| Animations | Pure CSS | No Framer Motion. `@keyframes` for gradients, `conic-gradient` rotation for borders. |
-| Particles | Canvas element | Full-screen `<canvas>` with `position: fixed; inset: 0; pointer-events: none; z-index: 0` |
+| Layer      | Technology           | Notes                                                                                     |
+| ---------- | -------------------- | ----------------------------------------------------------------------------------------- |
+| Framework  | React (SPA via Vite) | No SSR. Standard `#root` mount.                                                           |
+| CSS        | Tailwind CSS v3+     | Utility-first. Arbitrary values used for gradients.                                       |
+| Components | shadcn/ui v2         | Full HSL token system (80+ CSS vars). Radix primitives underneath.                        |
+| Icons      | Lucide React         | Standard 24px SVG icons.                                                                  |
+| Font       | Inter                | `font-family: Inter, system-ui, sans-serif`                                               |
+| Animations | Pure CSS             | No Framer Motion. `@keyframes` for gradients, `conic-gradient` rotation for borders.      |
+| Particles  | Canvas element       | Full-screen `<canvas>` with `position: fixed; inset: 0; pointer-events: none; z-index: 0` |
 
 ---
 
@@ -31,15 +31,15 @@ All colors are HSL values set as CSS custom properties on `:root`. This enables 
 ```css
 :root {
   /* Base */
-  --background: 225 64% 11%;       /* Deep navy — NOT pure black */
-  --foreground: 220 14% 96%;       /* Near-white */
+  --background: 225 64% 11%; /* Deep navy — NOT pure black */
+  --foreground: 220 14% 96%; /* Near-white */
 
   /* Card surfaces */
-  --card: 225 50% 15%;             /* Slightly lighter navy */
+  --card: 225 50% 15%; /* Slightly lighter navy */
   --card-foreground: 220 14% 96%;
 
   /* Primary action color */
-  --primary: 217 100% 61%;         /* Vivid blue */
+  --primary: 217 100% 61%; /* Vivid blue */
   --primary-foreground: 0 0% 100%;
 
   /* Secondary / muted */
@@ -56,9 +56,9 @@ All colors are HSL values set as CSS custom properties on `:root`. This enables 
   --destructive: 0 72% 51%;
 
   /* Borders & inputs */
-  --border: 225 30% 20%;           /* Subtle, same as muted */
+  --border: 225 30% 20%; /* Subtle, same as muted */
   --input: 225 30% 20%;
-  --ring: 217 100% 61%;            /* Matches primary for focus rings */
+  --ring: 217 100% 61%; /* Matches primary for focus rings */
 
   /* Global radius — IMPORTANT: pill shape by default */
   --radius: 9999px;
@@ -72,17 +72,18 @@ Define these for StageManager orchestration states:
 ```css
 :root {
   /* Adapt from KillOrBuild's --go / --kill pattern */
-  --active: 175 63% 47%;       /* Teal — running/in-progress */
-  --queued: 217 100% 61%;      /* Blue — waiting/primary */
-  --completed: 142 71% 45%;    /* Green — success/done */
-  --error: 0 72% 51%;          /* Red — failed/destructive */
-  --idle: 225 30% 20%;         /* Muted — inactive */
+  --active: 175 63% 47%; /* Teal — running/in-progress */
+  --queued: 217 100% 61%; /* Blue — waiting/primary */
+  --completed: 142 71% 45%; /* Green — success/done */
+  --error: 0 72% 51%; /* Red — failed/destructive */
+  --idle: 225 30% 20%; /* Muted — inactive */
 }
 ```
 
 ### Gradient Colors (for text and borders)
 
 Three-stop gradient used throughout:
+
 - Blue: `hsl(217, 100%, 60%)` — `rgba(56, 132, 255)`
 - Teal: `hsl(175, 80%, 55%)` — `rgba(44, 195, 183)`
 - Rose/Purple: `hsl(263, 80%, 65%)` or Rose `rgba(229, 67, 99)`
@@ -136,19 +137,19 @@ The card uses a custom `animated-gradient-border` class that creates a rotating 
 
 /* Rotating gradient border — the main visual effect */
 .animated-gradient-border::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: 12px;
   padding: 1px; /* This is the border width */
   background: conic-gradient(
     from 0deg,
-    rgba(56, 132, 255, 0.6),   /* Blue */
-    rgba(44, 195, 183, 0.5),   /* Teal */
-    rgba(229, 67, 99, 0.4),    /* Rose */
-    rgba(56, 132, 255, 0.3),   /* Blue (faded) */
-    rgba(44, 195, 183, 0.5),   /* Teal */
-    rgba(56, 132, 255, 0.6)    /* Blue (loop) */
+    rgba(56, 132, 255, 0.6),
+    /* Blue */ rgba(44, 195, 183, 0.5),
+    /* Teal */ rgba(229, 67, 99, 0.4),
+    /* Rose */ rgba(56, 132, 255, 0.3),
+    /* Blue (faded) */ rgba(44, 195, 183, 0.5),
+    /* Teal */ rgba(56, 132, 255, 0.6) /* Blue (loop) */
   );
   animation: gradient-rotate 4s linear infinite;
   /* Mask trick: only show the border edge, not the fill */
@@ -162,7 +163,7 @@ The card uses a custom `animated-gradient-border` class that creates a rotating 
 
 /* Outer glow — subtle light bleed beyond the card */
 .animated-gradient-border::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: -4px; /* Extends beyond the card */
   border-radius: 16px;
@@ -181,7 +182,9 @@ The card uses a custom `animated-gradient-border` class that creates a rotating 
 }
 
 @keyframes gradient-rotate {
-  100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 ```
 
@@ -241,6 +244,7 @@ This is the key interaction element. NOT a bordered input box — just a bottom 
 ```
 
 **Design details**:
+
 - `bg-transparent` — no background, the glassmorphism card shows through
 - `border-b-2 border-border` — only bottom border, subtle
 - `focus:border-primary` — blue underline on focus
@@ -258,12 +262,12 @@ These appear on steps 2+ and are contextually generated based on previous answer
     <button
       key={tag}
       onClick={() => {
-        setAnswer(tag);
-        setSelectedTag(tag);
+        setAnswer(tag)
+        setSelectedTag(tag)
       }}
       className={`px-3 py-1.5 text-sm border rounded-md transition-colors ${
         selectedTag === tag
-          ? 'border-primary text-primary'              /* Selected: teal/blue border + text */
+          ? 'border-primary text-primary' /* Selected: teal/blue border + text */
           : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
       }`}
     >
@@ -318,9 +322,9 @@ For hero headings or emphasized text elsewhere in the app:
 .animated-gradient-text {
   background-image: linear-gradient(
     90deg,
-    rgb(229, 67, 99),   /* Rose */
-    rgb(56, 132, 255),   /* Blue */
-    rgb(44, 195, 183)    /* Teal */
+    rgb(229, 67, 99),
+    /* Rose */ rgb(56, 132, 255),
+    /* Blue */ rgb(44, 195, 183) /* Teal */
   );
   background-clip: text;
   -webkit-background-clip: text;
@@ -331,9 +335,15 @@ For hero headings or emphasized text elsewhere in the app:
 }
 
 @keyframes gradient-flow {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 ```
 
@@ -347,19 +357,19 @@ The wizard maintains a simple state machine. The card container stays mounted ac
 
 ```typescript
 interface WizardStep {
-  id: string;
-  question: string;
-  placeholder?: string;
-  suggestions?: string[];       // AI-generated, can be async
-  required?: boolean;           // If false, Skip button appears
-  inputType?: 'textarea' | 'email' | 'select';
-  submitLabel?: string;         // Override "OK" text (e.g. "Analyze")
+  id: string
+  question: string
+  placeholder?: string
+  suggestions?: string[] // AI-generated, can be async
+  required?: boolean // If false, Skip button appears
+  inputType?: 'textarea' | 'email' | 'select'
+  submitLabel?: string // Override "OK" text (e.g. "Analyze")
 }
 
 interface WizardState {
-  currentStep: number;
-  answers: Record<string, string>;
-  isProcessing: boolean;
+  currentStep: number
+  answers: Record<string, string>
+  isProcessing: boolean
 }
 ```
 
@@ -380,19 +390,19 @@ Adapt the step sequence for your domain. Example for a consultation intake:
 const consultationSteps: WizardStep[] = [
   {
     id: 'objective',
-    question: "What do you want to accomplish with AI?",
-    placeholder: "Describe your goal...",
+    question: 'What do you want to accomplish with AI?',
+    placeholder: 'Describe your goal...',
     required: true,
   },
   {
     id: 'domain',
-    question: "What industry or process area?",
+    question: 'What industry or process area?',
     suggestions: [], // Populated by AI after step 1
     required: true,
   },
   {
     id: 'constraints',
-    question: "What are your constraints?",
+    question: 'What are your constraints?',
     suggestions: [], // AI-generated from previous answers
     required: false,
   },
@@ -402,7 +412,7 @@ const consultationSteps: WizardStep[] = [
     suggestions: ['This week', '2-4 weeks', '1-3 months', 'Exploring'],
     required: false,
   },
-];
+]
 ```
 
 ---
@@ -414,13 +424,11 @@ const consultationSteps: WizardStep[] = [
 A full-screen canvas renders floating particles/stars behind all content:
 
 ```jsx
-<canvas
-  className="fixed inset-0 w-full h-full pointer-events-none"
-  style={{ zIndex: 0 }}
-/>
+<canvas className="fixed inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }} />
 ```
 
 Implementation options (lightweight to full-featured):
+
 - **tsparticles** / `@tsparticles/react` — most popular, configurable
 - **Custom canvas** — simple requestAnimationFrame loop drawing small dots with slow drift
 - **CSS-only fallback** — radial gradients on body achieve 80% of the effect with zero JS:

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-react';
-import type { TranslatedEntry, TranslatedEntryType } from '@/types';
+import { useEffect, useRef, useState } from 'react'
+import { Activity, CheckCircle, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-react'
+import type { TranslatedEntry, TranslatedEntryType } from '@/types'
 
 const TYPE_ICONS: Record<TranslatedEntryType, typeof Activity> = {
   progress: Activity,
@@ -8,7 +8,7 @@ const TYPE_ICONS: Record<TranslatedEntryType, typeof Activity> = {
   error: AlertCircle,
   recovery: RefreshCw,
   complete: CheckCircle2,
-};
+}
 
 const TYPE_COLORS: Record<TranslatedEntryType, string> = {
   progress: 'text-muted-foreground',
@@ -16,50 +16,46 @@ const TYPE_COLORS: Record<TranslatedEntryType, string> = {
   error: 'text-red-400',
   recovery: 'text-amber-400',
   complete: 'text-green-400',
-};
+}
 
 interface TranslatedFeedProps {
-  entries: TranslatedEntry[];
-  onEntryClick?: (rawLineIndex: number) => void;
+  entries: TranslatedEntry[]
+  onEntryClick?: (rawLineIndex: number) => void
 }
 
 function TranslatedFeed({ entries, onEntryClick }: TranslatedFeedProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [autoScroll, setAutoScroll] = useState(true)
 
   // Auto-scroll to bottom on new entries
   useEffect(() => {
     if (autoScroll && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [entries.length, autoScroll]);
+  }, [entries.length, autoScroll])
 
   // Detect user scroll-up to disable auto-scroll
   const handleScroll = () => {
-    if (!scrollRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    const isNearBottom = scrollHeight - scrollTop - clientHeight < 40;
-    setAutoScroll(isNearBottom);
-  };
+    if (!scrollRef.current) return
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 40
+    setAutoScroll(isNearBottom)
+  }
 
   // Group entries by phase
-  const grouped: { phase: string; entries: TranslatedEntry[] }[] = [];
-  let currentPhase = '';
+  const grouped: { phase: string; entries: TranslatedEntry[] }[] = []
+  let currentPhase = ''
   for (const entry of entries) {
     if (entry.phase !== currentPhase) {
-      currentPhase = entry.phase;
-      grouped.push({ phase: currentPhase, entries: [entry] });
+      currentPhase = entry.phase
+      grouped.push({ phase: currentPhase, entries: [entry] })
     } else {
-      grouped[grouped.length - 1]!.entries.push(entry);
+      grouped[grouped.length - 1]!.entries.push(entry)
     }
   }
 
   return (
-    <div
-      ref={scrollRef}
-      onScroll={handleScroll}
-      className="h-[400px] overflow-y-auto feed-scroll"
-    >
+    <div ref={scrollRef} onScroll={handleScroll} className="h-[400px] overflow-y-auto feed-scroll">
       {entries.length === 0 ? (
         <div className="flex items-center justify-center h-full">
           <p className="text-sm text-muted-foreground">Waiting for build output...</p>
@@ -78,17 +74,15 @@ function TranslatedFeed({ entries, onEntryClick }: TranslatedFeedProps) {
               </div>
 
               {group.entries.map((entry) => {
-                const Icon = TYPE_ICONS[entry.type];
-                const iconColor = TYPE_COLORS[entry.type];
-                const isError = entry.type === 'error';
+                const Icon = TYPE_ICONS[entry.type]
+                const iconColor = TYPE_COLORS[entry.type]
+                const isError = entry.type === 'error'
 
                 return (
                   <div
                     key={entry.id}
                     className={`feed-entry flex items-start gap-3 px-3 py-2 rounded-lg transition-colors ${
-                      isError
-                        ? 'bg-red-500/10 border-l-2 border-red-500'
-                        : 'hover:bg-accent/30'
+                      isError ? 'bg-red-500/10 border-l-2 border-red-500' : 'hover:bg-accent/30'
                     } ${onEntryClick ? 'cursor-pointer' : ''}`}
                     onClick={() => onEntryClick?.(entry.rawLineIndex)}
                   >
@@ -104,7 +98,7 @@ function TranslatedFeed({ entries, onEntryClick }: TranslatedFeedProps) {
                       </p>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           ))}
@@ -115,9 +109,9 @@ function TranslatedFeed({ entries, onEntryClick }: TranslatedFeedProps) {
       {!autoScroll && entries.length > 0 && (
         <button
           onClick={() => {
-            setAutoScroll(true);
+            setAutoScroll(true)
             if (scrollRef.current) {
-              scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+              scrollRef.current.scrollTop = scrollRef.current.scrollHeight
             }
           }}
           className="sticky bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs backdrop-blur-sm border border-primary/30 hover:bg-primary/30 transition-colors"
@@ -126,7 +120,7 @@ function TranslatedFeed({ entries, onEntryClick }: TranslatedFeedProps) {
         </button>
       )}
     </div>
-  );
+  )
 }
 
-export default TranslatedFeed;
+export default TranslatedFeed

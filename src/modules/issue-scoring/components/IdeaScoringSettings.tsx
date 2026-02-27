@@ -4,11 +4,11 @@
 // Admin component for idea scoring thresholds and auto-charter configuration.
 // ============================================================================
 
-import { useRemediationSettingsStore } from '../stores/remediation-settings';
+import { useRemediationSettingsStore } from '../stores/remediation-settings'
 
 function IdeaScoringSettingsPanel() {
-  const settings = useRemediationSettingsStore((s) => s.settings);
-  const updateSettings = useRemediationSettingsStore((s) => s.updateSettings);
+  const settings = useRemediationSettingsStore((s) => s.settings)
+  const updateSettings = useRemediationSettingsStore((s) => s.updateSettings)
 
   return (
     <div className="space-y-6">
@@ -21,7 +21,9 @@ function IdeaScoringSettingsPanel() {
           </p>
         </div>
         <button
-          onClick={() => updateSettings({ idea_auto_charter_enabled: !settings.idea_auto_charter_enabled })}
+          onClick={() =>
+            updateSettings({ idea_auto_charter_enabled: !settings.idea_auto_charter_enabled })
+          }
           className={`relative w-10 h-5 rounded-full transition-colors ${
             settings.idea_auto_charter_enabled ? 'bg-primary' : 'bg-muted'
           }`}
@@ -46,7 +48,7 @@ function IdeaScoringSettingsPanel() {
             updateSettings({
               idea_review_threshold: v,
               idea_auto_charter_threshold: Math.max(settings.idea_auto_charter_threshold, v + 1),
-            });
+            })
           }}
         />
 
@@ -63,9 +65,7 @@ function IdeaScoringSettingsPanel() {
 
       {/* Scoring Method Info */}
       <div className="py-4 border-b border-border">
-        <label className="block text-sm font-medium text-foreground mb-1">
-          Scoring Method
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-1">Scoring Method</label>
         <p className="text-xs text-muted-foreground mb-3">
           Idea scoring uses a rules-based engine that evaluates intake answers against keyword
           patterns. No AI model is used.
@@ -75,7 +75,7 @@ function IdeaScoringSettingsPanel() {
         </span>
       </div>
     </div>
-  );
+  )
 }
 
 function SettingSlider({
@@ -86,12 +86,12 @@ function SettingSlider({
   max,
   onChange,
 }: {
-  label: string;
-  description: string;
-  value: number;
-  min: number;
-  max: number;
-  onChange: (v: number) => void;
+  label: string
+  description: string
+  value: number
+  min: number
+  max: number
+  onChange: (v: number) => void
 }) {
   return (
     <div className="py-4 border-b border-border">
@@ -110,7 +110,7 @@ function SettingSlider({
         className="w-full h-1.5 bg-muted/50 rounded-full appearance-none cursor-pointer accent-primary"
       />
     </div>
-  );
+  )
 }
 
-export default IdeaScoringSettingsPanel;
+export default IdeaScoringSettingsPanel

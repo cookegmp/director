@@ -20,10 +20,10 @@
 # ============================================================================
 
 charter:
-  project: "StageManager Issue Scoring & Auto-Remediation"
-  repo: "stage-manager"
-  charter_version: "1.0.0"
-  charter_date: "2025-02-25"
+  project: 'StageManager Issue Scoring & Auto-Remediation'
+  repo: 'stage-manager'
+  charter_version: '1.0.0'
+  charter_date: '2025-02-25'
 
   description: >
     A scoring engine for issues (bugs and feature requests) filed against
@@ -37,8 +37,8 @@ charter:
     admins in the settings panel.
 
   owners:
-    product_owner: "IT / Operations"
-    tech_owner: "IT"
+    product_owner: 'IT / Operations'
+    tech_owner: 'IT'
 
   # ==========================================================================
   # ARCHITECTURAL CONTEXT
@@ -71,14 +71,14 @@ charter:
   # ==========================================================================
 
   non_negotiables:
-    - "Every issue must have a parent idea/project. Scoring always happens in the context of that parent."
-    - "Bug scoring and feature request scoring use different dimension sets — they are not the same evaluation."
-    - "Auto-remediation only applies to bugs. Feature requests are never auto-triggered."
-    - "Auto-remediation never targets the Production environment without explicit human approval."
-    - "Threshold tiers and target environments are admin-configurable, not hardcoded."
-    - "The scoring engine must function with mock data when no AI model is configured (rules-based fallback)."
-    - "Scoring results are transparent — the user can see how each dimension was evaluated and why."
-    - "Do not modify the idea scoring engine. Issue scoring is a separate system."
+    - 'Every issue must have a parent idea/project. Scoring always happens in the context of that parent.'
+    - 'Bug scoring and feature request scoring use different dimension sets — they are not the same evaluation.'
+    - 'Auto-remediation only applies to bugs. Feature requests are never auto-triggered.'
+    - 'Auto-remediation never targets the Production environment without explicit human approval.'
+    - 'Threshold tiers and target environments are admin-configurable, not hardcoded.'
+    - 'The scoring engine must function with mock data when no AI model is configured (rules-based fallback).'
+    - 'Scoring results are transparent — the user can see how each dimension was evaluated and why.'
+    - 'Do not modify the idea scoring engine. Issue scoring is a separate system.'
 
   # ==========================================================================
   # BUG SCORING ENGINE
@@ -93,7 +93,6 @@ charter:
       heuristics when AI is unavailable.
 
     dimensions:
-
       severity:
         weight: 0.25
         range: 0-100
@@ -114,10 +113,10 @@ charter:
             medium: 50
             low: 25
           adjustments:
-            - "Data loss or corruption mentioned: +15"
-            - "Security implications mentioned: +15"
-            - "Workaround available (from conversation): -10"
-            - "Intermittent / hard to reproduce: -5"
+            - 'Data loss or corruption mentioned: +15'
+            - 'Security implications mentioned: +15'
+            - 'Workaround available (from conversation): -10'
+            - 'Intermittent / hard to reproduce: -5'
 
       blast_radius:
         weight: 0.25
@@ -135,14 +134,14 @@ charter:
             on the critical path? How many other components depend on
             it? How many users interact with this part of the app daily?
           rules_fallback:
-            - "Affected area matches a Phase 1 / core component in charter: 85"
-            - "Affected area matches a secondary component: 60"
-            - "Affected area matches a settings / admin component: 35"
-            - "Affected area unknown or not in charter: 50 (neutral)"
+            - 'Affected area matches a Phase 1 / core component in charter: 85'
+            - 'Affected area matches a secondary component: 60'
+            - 'Affected area matches a settings / admin component: 35'
+            - 'Affected area unknown or not in charter: 50 (neutral)'
           adjustments:
             - "Bug reporter mentioned 'everyone' or 'all users': +15"
             - "Bug reporter mentioned 'just me' or single user: -20"
-            - "Affected area is a shared/foundational component in charter: +10"
+            - 'Affected area is a shared/foundational component in charter: +10'
 
       reproducibility:
         weight: 0.20
@@ -164,13 +163,13 @@ charter:
             - "Steps to reproduce present AND frequency is 'every time': 90"
             - "Steps to reproduce present AND frequency is 'most of the time': 75"
             - "Steps to reproduce present AND frequency is 'occasionally': 55"
-            - "No steps to reproduce but description is detailed: 40"
-            - "Vague description, no steps: 20"
-            - "Happened once, cannot reproduce: 10"
+            - 'No steps to reproduce but description is detailed: 40'
+            - 'Vague description, no steps: 20'
+            - 'Happened once, cannot reproduce: 10'
           adjustments:
-            - "Screenshot attached with visible error: +10"
-            - "Error message captured in metadata: +10"
-            - "User confirmed steps reproduce the issue: +5"
+            - 'Screenshot attached with visible error: +10'
+            - 'Error message captured in metadata: +10'
+            - 'User confirmed steps reproduce the issue: +5'
 
       remediation_confidence:
         weight: 0.20
@@ -192,16 +191,16 @@ charter:
             concerns? Is the fix likely a localized change or does it
             require understanding complex state interactions?
           rules_fallback:
-            - "Affected area has detailed charter documentation: 75"
-            - "Affected area has minimal charter documentation: 45"
-            - "Affected area not documented in charter: 20"
+            - 'Affected area has detailed charter documentation: 75'
+            - 'Affected area has minimal charter documentation: 45'
+            - 'Affected area not documented in charter: 20'
           adjustments:
-            - "Bug appears to be in a single isolated component: +15"
-            - "Bug involves cross-component interaction: -15"
-            - "Bug involves data layer or API integration: -10"
-            - "Bug is visual/UI only: +10"
-            - "Similar bug was previously fixed successfully (check history): +20"
-            - "Previous remediation attempt failed for similar bug: -25"
+            - 'Bug appears to be in a single isolated component: +15'
+            - 'Bug involves cross-component interaction: -15'
+            - 'Bug involves data layer or API integration: -10'
+            - 'Bug is visual/UI only: +10'
+            - 'Similar bug was previously fixed successfully (check history): +20'
+            - 'Previous remediation attempt failed for similar bug: -25'
 
       recurrence:
         weight: 0.10
@@ -221,10 +220,10 @@ charter:
             reopened or had new reports filed.
           rules_fallback:
             - "Duplicate detected during intake (user confirmed 'different'): 80"
-            - "Similar issue exists in same affected area (resolved): 60"
-            - "Similar issue exists in same affected area (open): 70"
-            - "No similar issues found: 30"
-            - "First issue ever filed for this project: 10"
+            - 'Similar issue exists in same affected area (resolved): 60'
+            - 'Similar issue exists in same affected area (open): 70'
+            - 'No similar issues found: 30'
+            - 'First issue ever filed for this project: 10'
 
     composite_score:
       calculation: weighted_average
@@ -248,7 +247,6 @@ charter:
       inform development planning.
 
     dimensions:
-
       demand:
         weight: 0.30
         range: 0-100
@@ -264,11 +262,11 @@ charter:
             issues for similar feature requests to gauge whether this
             has been asked for before.
           rules_fallback:
-            - "Similar feature request already exists: 75"
-            - "Multiple similar requests exist: 90"
-            - "User describes team-wide impact: 65"
-            - "User describes personal preference: 30"
-            - "No similar requests found: 40"
+            - 'Similar feature request already exists: 75'
+            - 'Multiple similar requests exist: 90'
+            - 'User describes team-wide impact: 65'
+            - 'User describes personal preference: 30'
+            - 'No similar requests found: 40'
 
       alignment:
         weight: 0.30
@@ -286,9 +284,9 @@ charter:
             Features that extend the charter's original vision score
             higher than features that pull the project in a new direction.
           rules_fallback:
-            - "Desired outcome directly maps to a charter objective: 85"
-            - "Desired outcome is adjacent to charter objectives: 60"
-            - "Desired outcome is unrelated to charter objectives: 30"
+            - 'Desired outcome directly maps to a charter objective: 85'
+            - 'Desired outcome is adjacent to charter objectives: 60'
+            - 'Desired outcome is unrelated to charter objectives: 30'
 
       complexity:
         weight: 0.20
@@ -307,12 +305,12 @@ charter:
             integrations? Simple extensions of existing patterns score
             highest.
           rules_fallback:
-            - "Appears to be a minor UI change or configuration: 85"
-            - "Extends existing component with new option: 70"
-            - "Requires new component but within existing architecture: 50"
-            - "Requires new data model or integration: 30"
-            - "Requires significant architectural changes: 15"
-          note: "Inverse scoring — higher score means LESS complex (more feasible)"
+            - 'Appears to be a minor UI change or configuration: 85'
+            - 'Extends existing component with new option: 70'
+            - 'Requires new component but within existing architecture: 50'
+            - 'Requires new data model or integration: 30'
+            - 'Requires significant architectural changes: 15'
+          note: 'Inverse scoring — higher score means LESS complex (more feasible)'
 
       impact:
         weight: 0.20
@@ -328,10 +326,10 @@ charter:
             new capabilities, or improve usability? How frequently
             would the improved workflow be used?
           rules_fallback:
-            - "Addresses daily workflow friction: 80"
-            - "Enables new capability not currently possible: 70"
-            - "Improves occasional workflow: 50"
-            - "Cosmetic or convenience improvement: 30"
+            - 'Addresses daily workflow friction: 80'
+            - 'Enables new capability not currently possible: 70'
+            - 'Improves occasional workflow: 50'
+            - 'Cosmetic or convenience improvement: 30'
 
     composite_score:
       calculation: weighted_average
@@ -367,7 +365,7 @@ charter:
           A developer reviews and decides what to do. This is the
           default behavior for all bugs below the recommendation
           threshold.
-        trigger: "composite_score < recommend_threshold"
+        trigger: 'composite_score < recommend_threshold'
         action: >
           Issue created, score displayed, appears in priority queue.
           No notification beyond the standard activity feed entry.
@@ -380,13 +378,13 @@ charter:
           auto-remediation is recommended. A developer reviews the
           recommendation and clicks to approve, which initiates an
           agentic coding session through the development portal.
-        trigger: "composite_score >= recommend_threshold AND composite_score < auto_trigger_threshold"
+        trigger: 'composite_score >= recommend_threshold AND composite_score < auto_trigger_threshold'
         action:
           - "Issue created with 'remediation-recommended' flag"
           - "Notification card appears on the dashboard activity feed: 'Auto-fix recommended for [title]'"
           - "Issue detail shows a prominent 'Approve Auto-Fix' action button"
-          - "On approval: developer selects target environment (DSP or Development) and the system initiates a build session"
-          - "The build session uses the bug report as the task definition and the parent charter + scaffolding as context"
+          - 'On approval: developer selects target environment (DSP or Development) and the system initiates a build session'
+          - 'The build session uses the bug report as the task definition and the parent charter + scaffolding as context'
 
       auto_trigger:
         description: >
@@ -396,22 +394,22 @@ charter:
           approval. The developer is notified that a fix is in progress
           and can monitor, pause, or stop it through the development
           portal.
-        trigger: "composite_score >= auto_trigger_threshold"
+        trigger: 'composite_score >= auto_trigger_threshold'
         action:
           - "Issue created with 'auto-remediation-triggered' flag"
           - "Notification card on dashboard: 'Auto-fix triggered for [title] — building in [environment]'"
-          - "Agentic coding session initiated automatically in the configured target environment"
-          - "Issue detail shows live development portal feed for the remediation session"
-          - "Developer can pause or stop the session at any time"
-          - "On completion: fix is staged for review, NOT auto-deployed beyond the target environment"
+          - 'Agentic coding session initiated automatically in the configured target environment'
+          - 'Issue detail shows live development portal feed for the remediation session'
+          - 'Developer can pause or stop the session at any time'
+          - 'On completion: fix is staged for review, NOT auto-deployed beyond the target environment'
 
     safety_rules:
-      - "Auto-trigger NEVER targets the Production environment. Production deployments always require human review and manual status advancement."
-      - "If the configured target environment is disconnected or in error state, auto-trigger falls back to recommend_fix behavior."
+      - 'Auto-trigger NEVER targets the Production environment. Production deployments always require human review and manual status advancement.'
+      - 'If the configured target environment is disconnected or in error state, auto-trigger falls back to recommend_fix behavior.'
       - "If an auto-triggered remediation fails (agent error or stop), the issue is flagged as 'remediation-failed' and falls back to manual triage."
-      - "A maximum of one auto-remediation session can run per project at a time. Additional qualifying bugs queue behind the active session."
-      - "If remediation_confidence dimension scores below 40, the bug cannot auto-trigger regardless of composite score. It falls back to recommend_fix at most."
-      - "Admins can disable auto-remediation entirely via a master toggle in settings."
+      - 'A maximum of one auto-remediation session can run per project at a time. Additional qualifying bugs queue behind the active session.'
+      - 'If remediation_confidence dimension scores below 40, the bug cannot auto-trigger regardless of composite score. It falls back to recommend_fix at most.'
+      - 'Admins can disable auto-remediation entirely via a master toggle in settings.'
 
     remediation_context:
       description: >
@@ -421,11 +419,11 @@ charter:
         it needs to understand and fix the bug.
       package_contents:
         - parent_charter: "The parent project's full charter and execution plan"
-        - scaffolding: "The relevant scaffolding documents (tech preferences, quality standards, security patterns)"
-        - bug_report: "The structured bug report (title, description, steps to reproduce, expected/actual behavior, affected area)"
-        - conversation_summary: "The AI intake conversation summary for additional context"
-        - screenshot: "The annotated screenshot if one was attached"
-        - related_issues: "Any issues the scoring engine identified as related (for context, not for fixing)"
+        - scaffolding: 'The relevant scaffolding documents (tech preferences, quality standards, security patterns)'
+        - bug_report: 'The structured bug report (title, description, steps to reproduce, expected/actual behavior, affected area)'
+        - conversation_summary: 'The AI intake conversation summary for additional context'
+        - screenshot: 'The annotated screenshot if one was attached'
+        - related_issues: 'Any issues the scoring engine identified as related (for context, not for fixing)'
         - remediation_instructions: >
             A system prompt instructing the agent to: read the bug report,
             locate the affected component using the charter as a map,
@@ -445,12 +443,12 @@ charter:
       admin interface, either as a new tab or as a sub-section of an
       existing tab.
 
-    location: "Admin panel — new tab or section"
-    label: "Issue Scoring & Remediation"
+    location: 'Admin panel — new tab or section'
+    label: 'Issue Scoring & Remediation'
 
     settings:
       master_toggle:
-        label: "Auto-Remediation"
+        label: 'Auto-Remediation'
         type: toggle
         default: true
         description: >
@@ -460,7 +458,7 @@ charter:
           are inactive.
 
       recommend_threshold:
-        label: "Recommendation Threshold"
+        label: 'Recommendation Threshold'
         type: slider
         range: [0, 100]
         default: 60
@@ -470,7 +468,7 @@ charter:
           approve an auto-fix.
 
       auto_trigger_threshold:
-        label: "Auto-Trigger Threshold"
+        label: 'Auto-Trigger Threshold'
         type: slider
         range: [0, 100]
         default: 80
@@ -478,21 +476,21 @@ charter:
           Bugs scoring at or above this value automatically initiate
           a remediation attempt. Must be higher than the recommendation
           threshold.
-        validation: "Must be greater than recommend_threshold"
+        validation: 'Must be greater than recommend_threshold'
 
       auto_trigger_environment:
-        label: "Auto-Trigger Target Environment"
+        label: 'Auto-Trigger Target Environment'
         type: select
-        options: ["dsp", "development"]
-        default: "dsp"
+        options: ['dsp', 'development']
+        default: 'dsp'
         description: >
           Which environment auto-triggered remediation sessions target.
           Production is intentionally excluded — production deployments
           always require human review.
-        note: "Production is not an option. This is by design."
+        note: 'Production is not an option. This is by design.'
 
       remediation_confidence_floor:
-        label: "Minimum Remediation Confidence"
+        label: 'Minimum Remediation Confidence'
         type: slider
         range: [0, 100]
         default: 40
@@ -503,7 +501,7 @@ charter:
           score qualifies.
 
       max_concurrent_sessions:
-        label: "Max Concurrent Remediation Sessions"
+        label: 'Max Concurrent Remediation Sessions'
         type: number
         range: [1, 5]
         default: 1
@@ -513,7 +511,7 @@ charter:
           bugs queue until a slot is available.
 
       bug_dimension_weights:
-        label: "Bug Scoring Weights"
+        label: 'Bug Scoring Weights'
         type: weight_sliders
         description: >
           Adjust the relative weight of each scoring dimension for bugs.
@@ -527,10 +525,10 @@ charter:
           reproducibility: 0.20
           remediation_confidence: 0.20
           recurrence: 0.10
-        constraint: "All weights must sum to 1.0"
+        constraint: 'All weights must sum to 1.0'
 
       feature_dimension_weights:
-        label: "Feature Scoring Weights"
+        label: 'Feature Scoring Weights'
         type: weight_sliders
         description: >
           Adjust the relative weight of each scoring dimension for
@@ -540,7 +538,7 @@ charter:
           alignment: 0.30
           complexity: 0.20
           impact: 0.20
-        constraint: "All weights must sum to 1.0"
+        constraint: 'All weights must sum to 1.0'
 
   # ==========================================================================
   # SCORE DISPLAY
@@ -562,26 +560,26 @@ charter:
           composite score uses tier-based color coding.
         elements:
           - composite_score:
-              display: "Large number with tier badge"
+              display: 'Large number with tier badge'
               colors:
-                critical: "semantic: error (red)"
-                high: "amber/orange"
-                medium: "semantic: queued (blue)"
-                low: "semantic: idle (muted)"
+                critical: 'semantic: error (red)'
+                high: 'amber/orange'
+                medium: 'semantic: queued (blue)'
+                low: 'semantic: idle (muted)'
                 # Feature tiers
-                high_value: "semantic: completed (green)"
-                moderate_value: "semantic: queued (blue)"
-                low_value: "semantic: idle (muted)"
-                minimal_value: "muted/faded"
+                high_value: 'semantic: completed (green)'
+                moderate_value: 'semantic: queued (blue)'
+                low_value: 'semantic: idle (muted)'
+                minimal_value: 'muted/faded'
           - dimension_bars:
-              display: "Horizontal bars, one per dimension"
-              label: "Dimension name + weight percentage"
-              score: "Numeric score at end of bar"
-              explanation: "AI-generated one-liner below the bar explaining the score"
+              display: 'Horizontal bars, one per dimension'
+              label: 'Dimension name + weight percentage'
+              score: 'Numeric score at end of bar'
+              explanation: 'AI-generated one-liner below the bar explaining the score'
           - remediation_status:
-              display: "Only visible for bugs"
+              display: 'Only visible for bugs'
               states:
-                below_threshold: "No indicator"
+                below_threshold: 'No indicator'
                 recommended: "Amber banner: 'Auto-fix recommended' with approve button"
                 auto_triggered: "Teal banner: 'Auto-fix in progress' with link to dev portal"
                 remediation_failed: "Red banner: 'Auto-fix attempted — manual review needed'"
@@ -592,7 +590,7 @@ charter:
           Compact score display in the issues view table. Shows the
           composite score as a small colored badge next to the severity
           badge. Sortable by score.
-        display: "Numeric badge with tier color, e.g., [82] in red"
+        display: 'Numeric badge with tier color, e.g., [82] in red'
 
       production_health:
         description: >
@@ -601,8 +599,8 @@ charter:
           indicators showing the average bug score for the project —
           a rising average suggests growing technical debt.
         new_metric:
-          label: "Avg Bug Score"
-          display: "number"
+          label: 'Avg Bug Score'
+          display: 'number'
           color_coding: >
             Green (avg < 40), Amber (40-60), Red (> 60). A high average
             means the bugs being reported are increasingly severe and
@@ -621,7 +619,7 @@ charter:
   # ==========================================================================
 
   data_model:
-    storage: "localStorage via Zustand (BackStage-ready interfaces)"
+    storage: 'localStorage via Zustand (BackStage-ready interfaces)'
 
     issue_score:
       description: >
@@ -630,30 +628,30 @@ charter:
         as the interface supports BackStage migration.
       fields:
         - issue_id: string
-        - score_type: enum              # bug, feature
-        - composite_score: number       # 0-100
-        - tier: enum                    # critical/high/medium/low (bugs) or high_value/moderate_value/low_value/minimal_value (features)
+        - score_type: enum # bug, feature
+        - composite_score: number # 0-100
+        - tier: enum # critical/high/medium/low (bugs) or high_value/moderate_value/low_value/minimal_value (features)
         - dimensions: dimension_score[]
-        - remediation_status: enum | null  # null, recommended, approved, triggered, in_progress, completed, failed
-        - remediation_session_id: string | null  # Links to agent session if remediation initiated
+        - remediation_status: enum | null # null, recommended, approved, triggered, in_progress, completed, failed
+        - remediation_session_id: string | null # Links to agent session if remediation initiated
         - scored_at: datetime
-        - scored_by: enum               # ai, rules_fallback
+        - scored_by: enum # ai, rules_fallback
 
     dimension_score:
       fields:
-        - dimension: string             # severity, blast_radius, reproducibility, etc.
-        - score: number                 # 0-100
-        - weight: number                # 0.0-1.0
-        - weighted_score: number        # score * weight
-        - explanation: string           # AI-generated one-liner
+        - dimension: string # severity, blast_radius, reproducibility, etc.
+        - score: number # 0-100
+        - weight: number # 0.0-1.0
+        - weighted_score: number # score * weight
+        - explanation: string # AI-generated one-liner
 
     remediation_settings:
-      description: "Singleton config object for admin settings"
+      description: 'Singleton config object for admin settings'
       fields:
         - enabled: boolean
         - recommend_threshold: number
         - auto_trigger_threshold: number
-        - auto_trigger_environment: enum  # dsp, development
+        - auto_trigger_environment: enum # dsp, development
         - confidence_floor: number
         - max_concurrent_sessions: number
         - bug_weights: weight_map
@@ -666,32 +664,32 @@ charter:
   structure:
     src/modules/issue-scoring/:
       engine/:
-        bug-scorer.ts: "Bug scoring logic — AI prompt construction, rules fallback, composite calculation"
-        feature-scorer.ts: "Feature request scoring logic — same pattern, different dimensions"
-        context-assembler.ts: "Gathers parent charter, scaffolding, and issue history for scoring context"
-        score-calculator.ts: "Shared weighted average calculation and tier assignment"
+        bug-scorer.ts: 'Bug scoring logic — AI prompt construction, rules fallback, composite calculation'
+        feature-scorer.ts: 'Feature request scoring logic — same pattern, different dimensions'
+        context-assembler.ts: 'Gathers parent charter, scaffolding, and issue history for scoring context'
+        score-calculator.ts: 'Shared weighted average calculation and tier assignment'
 
       remediation/:
-        threshold-evaluator.ts: "Evaluates scored bug against configured thresholds, returns tier action"
-        remediation-trigger.ts: "Assembles remediation package and initiates agent session"
-        remediation-monitor.ts: "Tracks active remediation sessions, handles completion/failure"
-        session-queue.ts: "Manages concurrent session limits and queuing"
+        threshold-evaluator.ts: 'Evaluates scored bug against configured thresholds, returns tier action'
+        remediation-trigger.ts: 'Assembles remediation package and initiates agent session'
+        remediation-monitor.ts: 'Tracks active remediation sessions, handles completion/failure'
+        session-queue.ts: 'Manages concurrent session limits and queuing'
 
       components/:
-        ScoreDisplay.tsx: "Full dimension breakdown with bars, explanations, and composite"
-        ScoreBadge.tsx: "Compact score badge for list views"
-        RemediationBanner.tsx: "Status banner for remediation state (recommended, in progress, etc.)"
-        RemediationApproval.tsx: "Approval prompt with environment selector"
-        ScoreWeightEditor.tsx: "Admin component for adjusting dimension weights"
-        RemediationSettings.tsx: "Admin component for threshold and environment configuration"
+        ScoreDisplay.tsx: 'Full dimension breakdown with bars, explanations, and composite'
+        ScoreBadge.tsx: 'Compact score badge for list views'
+        RemediationBanner.tsx: 'Status banner for remediation state (recommended, in progress, etc.)'
+        RemediationApproval.tsx: 'Approval prompt with environment selector'
+        ScoreWeightEditor.tsx: 'Admin component for adjusting dimension weights'
+        RemediationSettings.tsx: 'Admin component for threshold and environment configuration'
 
       stores/:
-        issue-scores.ts: "Zustand store for score data (BackStage-ready)"
-        remediation-settings.ts: "Zustand store for admin remediation config"
-        remediation-sessions.ts: "Zustand store for active/queued remediation sessions"
+        issue-scores.ts: 'Zustand store for score data (BackStage-ready)'
+        remediation-settings.ts: 'Zustand store for admin remediation config'
+        remediation-sessions.ts: 'Zustand store for active/queued remediation sessions'
 
       types/:
-        index.ts: "TypeScript interfaces for scores, dimensions, thresholds, remediation state"
+        index.ts: 'TypeScript interfaces for scores, dimensions, thresholds, remediation state'
 
   # ==========================================================================
   # PROTOTYPE SCOPE
@@ -726,10 +724,10 @@ charter:
       - Email or external notifications for remediation events
 
     sample_data:
-      - "At least one bug that scores above the auto-trigger threshold (with mock remediation session)"
-      - "At least one bug that scores in the recommend tier"
-      - "At least one bug that scores below both thresholds"
-      - "At least two feature requests at different score tiers"
+      - 'At least one bug that scores above the auto-trigger threshold (with mock remediation session)'
+      - 'At least one bug that scores in the recommend tier'
+      - 'At least one bug that scores below both thresholds'
+      - 'At least two feature requests at different score tiers'
       - "A mock remediation session in 'completed' state to demonstrate the success flow"
       - "A mock remediation session in 'failed' state to demonstrate the fallback flow"
 
@@ -738,11 +736,11 @@ charter:
   # ==========================================================================
 
   do_not:
-    - "Do not allow auto-remediation to target the Production environment under any circumstances."
-    - "Do not auto-trigger remediation if the remediation_confidence dimension is below the configured floor."
-    - "Do not modify the idea scoring engine — issue scoring is a separate system with separate dimensions."
-    - "Do not merge bug and feature scoring into a single dimension set — they evaluate different things."
-    - "Do not create a backend or database — StageManager is frontend only."
-    - "Do not allow more concurrent remediation sessions than the configured maximum."
-    - "Do not auto-deploy remediation fixes — completed fixes are always staged for human review."
-    - "Do not score issues that have no parent project — the scoring context requires a charter."
+    - 'Do not allow auto-remediation to target the Production environment under any circumstances.'
+    - 'Do not auto-trigger remediation if the remediation_confidence dimension is below the configured floor.'
+    - 'Do not modify the idea scoring engine — issue scoring is a separate system with separate dimensions.'
+    - 'Do not merge bug and feature scoring into a single dimension set — they evaluate different things.'
+    - 'Do not create a backend or database — StageManager is frontend only.'
+    - 'Do not allow more concurrent remediation sessions than the configured maximum.'
+    - 'Do not auto-deploy remediation fixes — completed fixes are always staged for human review.'
+    - 'Do not score issues that have no parent project — the scoring context requires a charter.'

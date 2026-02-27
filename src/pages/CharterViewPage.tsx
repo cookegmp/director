@@ -1,27 +1,27 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Copy, CheckCircle, Lightbulb, ChevronRight } from 'lucide-react';
-import { useChartersStore } from '@/stores/charters';
-import { useIdeasStore } from '@/stores/ideas';
-import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
-import { STATUS_LABELS } from '@/types';
-import type { CharterContent, IdeaStatus } from '@/types';
+import { useParams, useNavigate, Link } from 'react-router-dom'
+import { ArrowLeft, Copy, CheckCircle, Lightbulb, ChevronRight } from 'lucide-react'
+import { useChartersStore } from '@/stores/charters'
+import { useIdeasStore } from '@/stores/ideas'
+import { Badge } from '@/components/ui/badge'
+import { useState } from 'react'
+import { STATUS_LABELS } from '@/types'
+import type { CharterContent, IdeaStatus } from '@/types'
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
   scored: 'text-muted-foreground',
   'on-deck': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  'development': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+  development: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
   production: 'bg-green-500/20 text-green-400 border-green-500/30',
   archived: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
+}
 
 function CharterViewPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const charter = useChartersStore((s) => s.getCharter(id ?? ''));
-  const idea = useIdeasStore((s) => s.getIdea(charter?.ideaId ?? ''));
-  const [copied, setCopied] = useState(false);
-  const [collapsedScaffolding, setCollapsedScaffolding] = useState(true);
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const charter = useChartersStore((s) => s.getCharter(id ?? ''))
+  const idea = useIdeasStore((s) => s.getIdea(charter?.ideaId ?? ''))
+  const [copied, setCopied] = useState(false)
+  const [collapsedScaffolding, setCollapsedScaffolding] = useState(true)
 
   if (!charter) {
     return (
@@ -31,17 +31,17 @@ function CharterViewPage() {
           Back to Dashboard
         </Link>
       </div>
-    );
+    )
   }
 
-  const { content } = charter;
+  const { content } = charter
 
   const handleCopy = async () => {
-    const text = formatCharterAsText(charter.title, content);
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    const text = formatCharterAsText(charter.title, content)
+    await navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div>
@@ -75,7 +75,11 @@ function CharterViewPage() {
             onClick={handleCopy}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
           >
-            {copied ? <CheckCircle className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+            {copied ? (
+              <CheckCircle className="w-4 h-4 text-green-400" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
             {copied ? 'Copied' : 'Copy'}
           </button>
         </div>
@@ -105,7 +109,9 @@ function CharterViewPage() {
         {/* Technical approach */}
         <section className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6">
           <h2 className="text-lg font-light text-foreground mb-3">Technical Approach</h2>
-          <p className="text-foreground/80 font-light leading-relaxed">{content.technicalApproach}</p>
+          <p className="text-foreground/80 font-light leading-relaxed">
+            {content.technicalApproach}
+          </p>
         </section>
 
         {/* Acceptance criteria */}
@@ -132,10 +138,7 @@ function CharterViewPage() {
           <h2 className="text-lg font-light text-foreground mb-4">Execution Plan</h2>
           <div className="space-y-4">
             {content.executionPlan.map((phase, i) => (
-              <div
-                key={i}
-                className="border border-border rounded-[0.75rem] p-4"
-              >
+              <div key={i} className="border border-border rounded-[0.75rem] p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-foreground font-medium text-sm">
                     Phase {i + 1}: {phase.phase}
@@ -146,7 +149,10 @@ function CharterViewPage() {
                 </div>
                 <ul className="space-y-1 ml-4">
                   {phase.tasks.map((task, j) => (
-                    <li key={j} className="text-sm text-foreground/70 font-light flex items-start gap-2">
+                    <li
+                      key={j}
+                      className="text-sm text-foreground/70 font-light flex items-start gap-2"
+                    >
                       <span className="text-muted-foreground">-</span>
                       {task}
                     </li>
@@ -188,7 +194,7 @@ function CharterViewPage() {
         </section>
       </div>
     </div>
-  );
+  )
 }
 
 function formatCharterAsText(title: string, content: CharterContent): string {
@@ -217,8 +223,8 @@ function formatCharterAsText(title: string, content: CharterContent): string {
       p.dependencies.length > 0 ? `Dependencies: ${p.dependencies.join(', ')}` : '',
       '',
     ]),
-  ];
-  return lines.join('\n');
+  ]
+  return lines.join('\n')
 }
 
-export default CharterViewPage;
+export default CharterViewPage

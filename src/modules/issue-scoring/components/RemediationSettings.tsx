@@ -4,12 +4,12 @@
 // Admin component for threshold and environment configuration.
 // ============================================================================
 
-import { useRemediationSettingsStore } from '../stores/remediation-settings';
+import { useRemediationSettingsStore } from '../stores/remediation-settings'
 
 function RemediationSettingsPanel() {
-  const settings = useRemediationSettingsStore((s) => s.settings);
-  const updateSettings = useRemediationSettingsStore((s) => s.updateSettings);
-  const resetDefaults = useRemediationSettingsStore((s) => s.resetDefaults);
+  const settings = useRemediationSettingsStore((s) => s.settings)
+  const updateSettings = useRemediationSettingsStore((s) => s.updateSettings)
+  const resetDefaults = useRemediationSettingsStore((s) => s.resetDefaults)
 
   return (
     <div className="space-y-6">
@@ -48,7 +48,7 @@ function RemediationSettingsPanel() {
               recommend_threshold: v,
               // Ensure auto-trigger stays above recommend
               auto_trigger_threshold: Math.max(settings.auto_trigger_threshold, v + 1),
-            });
+            })
           }}
         />
 
@@ -130,7 +130,7 @@ function RemediationSettingsPanel() {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
 function SettingSlider({
@@ -141,12 +141,12 @@ function SettingSlider({
   max,
   onChange,
 }: {
-  label: string;
-  description: string;
-  value: number;
-  min: number;
-  max: number;
-  onChange: (v: number) => void;
+  label: string
+  description: string
+  value: number
+  min: number
+  max: number
+  onChange: (v: number) => void
 }) {
   return (
     <div className="py-4 border-b border-border">
@@ -165,7 +165,7 @@ function SettingSlider({
         className="w-full h-1.5 bg-muted/50 rounded-full appearance-none cursor-pointer accent-primary"
       />
     </div>
-  );
+  )
 }
 
-export default RemediationSettingsPanel;
+export default RemediationSettingsPanel

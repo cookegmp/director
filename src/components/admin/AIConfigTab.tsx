@@ -1,8 +1,8 @@
-import { ShieldCheck } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { useSettingsStore } from '@/stores/settings';
-import APIKeyField from './APIKeyField';
-import ModelAssignment from './ModelAssignment';
+import { ShieldCheck } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { useSettingsStore } from '@/stores/settings'
+import APIKeyField from './APIKeyField'
+import ModelAssignment from './ModelAssignment'
 
 const MODEL_FUNCTIONS = [
   {
@@ -69,18 +69,19 @@ const MODEL_FUNCTIONS = [
     whenDisabled:
       'The abstraction layer uses pattern matching only. Unmatched agent output is displayed as-is in the translated feed.',
   },
-];
+]
 
 function AIConfigTab() {
-  const aiSettings = useSettingsStore((s) => s.aiSettings);
-  const updateAISettings = useSettingsStore((s) => s.updateAISettings);
+  const aiSettings = useSettingsStore((s) => s.aiSettings)
+  const updateAISettings = useSettingsStore((s) => s.updateAISettings)
 
   return (
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-light text-foreground">AI Configuration</h2>
         <p className="text-sm text-muted-foreground">
-          Configure the AI provider and model settings for all AI-powered features. All AI calls route through OpenRouter.
+          Configure the AI provider and model settings for all AI-powered features. All AI calls
+          route through OpenRouter.
         </p>
       </div>
 
@@ -93,8 +94,8 @@ function AIConfigTab() {
             <div>
               <h3 className="text-sm font-medium text-foreground">Zero Data Retention</h3>
               <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                When enabled, OpenRouter providers will not store or train on any data sent through the API.
-                Recommended for sensitive project data.
+                When enabled, OpenRouter providers will not store or train on any data sent through
+                the API. Recommended for sensitive project data.
               </p>
             </div>
           </div>
@@ -116,7 +117,7 @@ function AIConfigTab() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default AIConfigTab;
+export default AIConfigTab

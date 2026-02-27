@@ -4,8 +4,8 @@
 // Maps AI completion response to the issue data model for storage.
 // ============================================================================
 
-import { generateId } from '@/lib/utils';
-import type { AICompletionResponse, ReportedIssue, IssueReport, BrowserMetadata } from '../types';
+import { generateId } from '@/lib/utils'
+import type { AICompletionResponse, ReportedIssue, IssueReport, BrowserMetadata } from '../types'
 
 export function mapAIResponseToReport(response: AICompletionResponse): IssueReport {
   return {
@@ -20,7 +20,7 @@ export function mapAIResponseToReport(response: AICompletionResponse): IssueRepo
     affected_area: response.affected_area,
     potential_duplicates: response.potential_duplicates ?? [],
     conversation_summary: response.conversation_summary,
-  };
+  }
 }
 
 export function captureBrowserMetadata(): BrowserMetadata {
@@ -33,21 +33,21 @@ export function captureBrowserMetadata(): BrowserMetadata {
     },
     devicePixelRatio: window.devicePixelRatio,
     timestamp: new Date().toISOString(),
-  };
+  }
 }
 
 export function mapReportToIssue(
   report: IssueReport,
   options: {
-    projectId: string | null;
-    screenshot: string | null;
-    userId: string | null;
-    userName: string | null;
-    userEmail: string | null;
-    linkedDuplicateId?: string | null;
-  }
+    projectId: string | null
+    screenshot: string | null
+    userId: string | null
+    userName: string | null
+    userEmail: string | null
+    linkedDuplicateId?: string | null
+  },
 ): ReportedIssue {
-  const now = new Date().toISOString();
+  const now = new Date().toISOString()
 
   return {
     id: generateId(),
@@ -74,5 +74,5 @@ export function mapReportToIssue(
     linked_duplicate_id: options.linkedDuplicateId ?? null,
     created_at: now,
     updated_at: now,
-  };
+  }
 }

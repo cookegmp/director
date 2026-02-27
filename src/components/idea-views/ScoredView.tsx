@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { FileText, Pencil, Archive } from 'lucide-react';
-import { useIdeasStore } from '@/stores/ideas';
-import { useChartersStore } from '@/stores/charters';
-import { useActivityStore } from '@/stores/activity';
-import ScoreBreakdown from '@/components/scoring/ScoreBreakdown';
-import GradientButton from '@/components/shared/GradientButton';
-import { generateId } from '@/lib/utils';
-import { generateCharter } from '@/lib/charter-generator';
-import type { Idea } from '@/types';
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { FileText, Pencil, Archive } from 'lucide-react'
+import { useIdeasStore } from '@/stores/ideas'
+import { useChartersStore } from '@/stores/charters'
+import { useActivityStore } from '@/stores/activity'
+import ScoreBreakdown from '@/components/scoring/ScoreBreakdown'
+import GradientButton from '@/components/shared/GradientButton'
+import { generateId } from '@/lib/utils'
+import { generateCharter } from '@/lib/charter-generator'
+import type { Idea } from '@/types'
 
 const STEP_LABELS: Record<string, string> = {
   problem: 'Problem / Opportunity',
@@ -17,25 +17,25 @@ const STEP_LABELS: Record<string, string> = {
   'desired-outcome': 'Desired Outcome',
   constraints: 'Constraints',
   urgency: 'Urgency',
-};
+}
 
 interface ScoredViewProps {
-  idea: Idea;
+  idea: Idea
 }
 
 function ScoredView({ idea }: ScoredViewProps) {
-  const navigate = useNavigate();
-  const updateIdea = useIdeasStore((s) => s.updateIdea);
-  const addCharter = useChartersStore((s) => s.addCharter);
-  const addActivity = useActivityStore((s) => s.addActivity);
-  const [generating, setGenerating] = useState(false);
+  const navigate = useNavigate()
+  const updateIdea = useIdeasStore((s) => s.updateIdea)
+  const addCharter = useChartersStore((s) => s.addCharter)
+  const addActivity = useActivityStore((s) => s.addActivity)
+  const [generating, setGenerating] = useState(false)
 
   const handleGenerateCharter = async () => {
-    setGenerating(true);
+    setGenerating(true)
     try {
-      const charterId = generateId();
-      const now = new Date().toISOString();
-      const content = await generateCharter(idea);
+      const charterId = generateId()
+      const now = new Date().toISOString()
+      const content = await generateCharter(idea)
 
       addCharter({
         id: charterId,
@@ -46,12 +46,12 @@ function ScoredView({ idea }: ScoredViewProps) {
         createdAt: now,
         updatedAt: now,
         linkedIssueIds: [],
-      });
+      })
 
       updateIdea(idea.id, {
         status: 'on-deck',
         linkedCharterId: charterId,
-      });
+      })
 
       addActivity({
         id: generateId(),
@@ -60,18 +60,18 @@ function ScoredView({ idea }: ScoredViewProps) {
         entityType: 'charter',
         summary: `Charter generated for "${idea.title}"`,
         createdAt: now,
-      });
+      })
 
-      navigate(`/ideas/${idea.id}`);
+      navigate(`/ideas/${idea.id}`)
     } finally {
-      setGenerating(false);
+      setGenerating(false)
     }
-  };
+  }
 
   const handleArchive = () => {
-    updateIdea(idea.id, { status: 'archived' });
-    navigate('/ideas');
-  };
+    updateIdea(idea.id, { status: 'archived' })
+    navigate('/ideas')
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -87,7 +87,7 @@ function ScoredView({ idea }: ScoredViewProps) {
           <h2 className="text-lg font-light text-foreground mb-4">Intake Summary</h2>
           <div className="space-y-4">
             {Object.entries(idea.intakeAnswers).map(([stepId, answer]) => {
-              if (!answer) return null;
+              if (!answer) return null
               return (
                 <div key={stepId}>
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">
@@ -95,7 +95,7 @@ function ScoredView({ idea }: ScoredViewProps) {
                   </h3>
                   <p className="text-foreground font-light">{answer}</p>
                 </div>
-              );
+              )
             })}
           </div>
         </div>
@@ -132,7 +132,7 @@ function ScoredView({ idea }: ScoredViewProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default ScoredView;
+export default ScoredView
