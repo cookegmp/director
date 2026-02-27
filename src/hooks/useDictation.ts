@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList;
@@ -63,6 +63,7 @@ function useDictation(options: UseDictationOptions = {}): UseDictationReturn {
   // when Chrome kills the session (silence timeout, network hiccup, etc.)
   const wantListeningRef = useRef(false);
   const restartTimerRef = useRef<number | null>(null);
+  const createRecognitionRef = useRef<() => SpeechRecognitionInstance | null>(null);
   const isSupported = getSpeechRecognition() !== null;
 
   const createRecognition = useCallback(() => {
@@ -122,7 +123,7 @@ function useDictation(options: UseDictationOptions = {}): UseDictationReturn {
         restartTimerRef.current = window.setTimeout(() => {
           if (!wantListeningRef.current) return;
           try {
-            const next = createRecognition();
+            const next = createRecognitionRef.current?.();
             if (next) {
               recognitionRef.current = next;
               next.start();
@@ -143,6 +144,10 @@ function useDictation(options: UseDictationOptions = {}): UseDictationReturn {
 
     return recognition;
   }, [language, continuous, interimResults]);
+
+  useLayoutEffect(() => {
+    createRecognitionRef.current = createRecognition;
+  });
 
   const startListening = useCallback(() => {
     if (!getSpeechRecognition()) {

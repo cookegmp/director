@@ -78,6 +78,29 @@ function AnnotationCanvas({ imageBase64, onComplete, onCancel }: AnnotationCanva
     img.src = imageBase64;
   }, [imageBase64]);
 
+  const drawAction = useCallback((ctx: CanvasRenderingContext2D, action: DrawAction) => {
+    if (action.type === 'path' && action.points.length > 1) {
+      ctx.strokeStyle = action.color;
+      ctx.lineWidth = action.width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(action.points[0]!.x, action.points[0]!.y);
+      for (let i = 1; i < action.points.length; i++) {
+        ctx.lineTo(action.points[i]!.x, action.points[i]!.y);
+      }
+      ctx.stroke();
+    } else if (action.type === 'rect') {
+      ctx.strokeStyle = action.color;
+      ctx.lineWidth = action.width;
+      ctx.strokeRect(action.x, action.y, action.w, action.h);
+    } else if (action.type === 'text') {
+      ctx.fillStyle = action.color;
+      ctx.font = 'bold 16px Inter, sans-serif';
+      ctx.fillText(action.text, action.x, action.y);
+    }
+  }, []);
+
   // Render canvas
   const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -121,34 +144,11 @@ function AnnotationCanvas({ imageBase64, onComplete, onCancel }: AnnotationCanva
         rectCurrent.y - rectStart.y
       );
     }
-  }, [actions, currentPath, rectStart, rectCurrent, color, strokeWidth]);
+  }, [actions, currentPath, rectStart, rectCurrent, color, strokeWidth, drawAction]);
 
   useEffect(() => {
     renderCanvas();
   }, [renderCanvas]);
-
-  function drawAction(ctx: CanvasRenderingContext2D, action: DrawAction) {
-    if (action.type === 'path' && action.points.length > 1) {
-      ctx.strokeStyle = action.color;
-      ctx.lineWidth = action.width;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      ctx.moveTo(action.points[0]!.x, action.points[0]!.y);
-      for (let i = 1; i < action.points.length; i++) {
-        ctx.lineTo(action.points[i]!.x, action.points[i]!.y);
-      }
-      ctx.stroke();
-    } else if (action.type === 'rect') {
-      ctx.strokeStyle = action.color;
-      ctx.lineWidth = action.width;
-      ctx.strokeRect(action.x, action.y, action.w, action.h);
-    } else if (action.type === 'text') {
-      ctx.fillStyle = action.color;
-      ctx.font = 'bold 16px Inter, sans-serif';
-      ctx.fillText(action.text, action.x, action.y);
-    }
-  }
 
   const getCanvasCoords = (e: React.PointerEvent): { x: number; y: number } => {
     const rect = canvasRef.current?.getBoundingClientRect();

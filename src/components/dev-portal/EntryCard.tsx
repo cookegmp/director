@@ -98,12 +98,10 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
   }, [settingsOpen]);
 
   // Auto-advance to latest entry when new entries arrive (unless user navigated away)
-  useEffect(() => {
-    if (entries.length === 0) return;
-    if (!userNavigated) {
-      setCurrentIndex(entries.length - 1);
-    }
-  }, [entries.length, userNavigated]);
+  const autoIndex = !userNavigated && entries.length > 0 ? entries.length - 1 : currentIndex;
+  if (autoIndex !== currentIndex) {
+    setCurrentIndex(autoIndex);
+  }
 
   const goTo = useCallback(
     (index: number) => {

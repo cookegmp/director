@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { Mic } from 'lucide-react';
 import useDictation from '@/hooks/useDictation';
 
@@ -31,9 +31,11 @@ function DictationButton({ onResult, onInterim, onListeningChange, className = '
   const onResultRef = useRef(onResult);
   const onInterimRef = useRef(onInterim);
   const onListeningChangeRef = useRef(onListeningChange);
-  onResultRef.current = onResult;
-  onInterimRef.current = onInterim;
-  onListeningChangeRef.current = onListeningChange;
+  useLayoutEffect(() => {
+    onResultRef.current = onResult;
+    onInterimRef.current = onInterim;
+    onListeningChangeRef.current = onListeningChange;
+  });
 
   const toggle = useCallback(() => {
     if (disabled) return;
