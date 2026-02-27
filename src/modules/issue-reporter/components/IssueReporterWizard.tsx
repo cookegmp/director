@@ -41,7 +41,6 @@ function IssueReporterWizard({ projectId = null, appName = null, onCancel }: Iss
     isLoading,
     error,
     report,
-    issueType,
     setPhase,
     setProjectId,
     setAppName,

@@ -7,7 +7,7 @@
 // ============================================================================
 
 import { useState, useCallback, useEffect } from 'react';
-import { ArrowLeft, Bot, Zap, Check, Pencil } from 'lucide-react';
+import { ArrowLeft, Bot, Zap, Check } from 'lucide-react';
 import {
   WizardStepDots,
   WizardInput,
@@ -21,7 +21,6 @@ import {
   sendConversationMessage,
   type CreationType,
   type ConversationMessage,
-  type AIResponse,
   type AgentCompletionResponse,
   type SkillCompletionResponse,
 } from '../lib/ai-conversation';
