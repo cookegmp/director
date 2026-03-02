@@ -5,7 +5,7 @@
 // what to ask next. Transitions to ReviewCard on completion.
 // ============================================================================
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { ArrowLeft, Bug, Lightbulb } from 'lucide-react'
 import {
   WizardCard,
@@ -35,6 +35,7 @@ function IssueReporterWizard({
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [submittedIssueId, setSubmittedIssueId] = useState<string | null>(null)
+  const dictationBaseRef = useRef('')
 
   const {
     phase,
@@ -329,6 +330,17 @@ function IssueReporterWizard({
         disabled={!currentAnswer.trim()}
         loading={isLoading}
         submitLabel="Send"
+        onDictationResult={(text) => {
+          const committed = dictationBaseRef.current + text;
+          dictationBaseRef.current = committed;
+          setCurrentAnswer(committed);
+        }}
+        onDictationInterim={(text) => {
+          if (text) setCurrentAnswer(dictationBaseRef.current + text);
+        }}
+        onDictationListeningChange={(listening) => {
+          if (listening) dictationBaseRef.current = currentAnswer;
+        }}
       />
     </WizardCard>
   )

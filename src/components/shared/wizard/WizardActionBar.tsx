@@ -1,5 +1,6 @@
-import { Check, ArrowRight, Mic } from 'lucide-react'
+import { Check, ArrowRight } from 'lucide-react'
 import GradientButton from '@/components/shared/GradientButton'
+import DictationButton from '@/components/DictationButton'
 
 interface WizardActionBarProps {
   onSubmit: () => void
@@ -9,6 +10,9 @@ interface WizardActionBarProps {
   disabled?: boolean
   loading?: boolean
   keyboardHint?: string
+  onDictationResult?: (text: string) => void
+  onDictationInterim?: (text: string) => void
+  onDictationListeningChange?: (listening: boolean) => void
 }
 
 function WizardActionBar({
@@ -19,6 +23,9 @@ function WizardActionBar({
   disabled = false,
   loading = false,
   keyboardHint = '⌘+Enter',
+  onDictationResult,
+  onDictationInterim,
+  onDictationListeningChange,
 }: WizardActionBarProps) {
   return (
     <div className="flex items-center gap-3 mt-6">
@@ -49,9 +56,14 @@ function WizardActionBar({
         </button>
       )}
 
-      <button className="ml-auto relative w-12 h-12 rounded-full flex items-center justify-center bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-        <Mic className="w-5 h-5" />
-      </button>
+      {onDictationResult && (
+        <DictationButton
+          onResult={onDictationResult}
+          onInterim={onDictationInterim}
+          onListeningChange={onDictationListeningChange}
+          className="ml-auto"
+        />
+      )}
     </div>
   )
 }
