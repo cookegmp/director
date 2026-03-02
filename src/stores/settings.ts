@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { EnvironmentServer, AISettings, ConnectionStatus } from '@/types'
 import { useScaffoldingStore } from '@/stores/scaffolding'
+import { useDevSettingsStore } from '@/stores/dev-settings'
 
 const ANTHROPIC_REPLACEMENT_MAP: Record<string, string> = {
   'anthropic/claude-sonnet-4': 'openai/gpt-4o',
@@ -13,7 +14,9 @@ function isAnthropicModel(model: string): boolean {
   return model.startsWith('anthropic/')
 }
 
-const MODEL_KEYS = [
+type ModelKey = Extract<keyof AISettings, `${string}Model`>
+
+const MODEL_KEYS: readonly ModelKey[] = [
   'charterModel',
   'executionPlanModel',
   'scoringModel',
@@ -22,7 +25,16 @@ const MODEL_KEYS = [
   'featureScoringModel',
   'ideaChatModel',
   'abstractionModel',
-] as const
+]
+
+function replaceAnthropicModels(settings: AISettings): void {
+  for (const key of MODEL_KEYS) {
+    const current = settings[key]
+    if (isAnthropicModel(current)) {
+      settings[key] = ANTHROPIC_REPLACEMENT_MAP[current] || 'openai/gpt-4o'
+    }
+  }
+}
 
 interface SettingsState {
   servers: EnvironmentServer[]
@@ -107,22 +119,18 @@ export const useSettingsStore = create<SettingsState>()(
 
           // Turning DoW ON
           if (updates.dowCompliance === true && !prev.dowCompliance) {
-            // Force ZDR on
             next.zeroDataRetention = true
+            replaceAnthropicModels(next)
 
-            // Swap all Anthropic models to replacements
-            for (const key of MODEL_KEYS) {
-              const current = next[key] as string
-              if (isAnthropicModel(current)) {
-                ;(next as Record<string, unknown>)[key] =
-                  ANTHROPIC_REPLACEMENT_MAP[current] || 'openai/gpt-4o'
-              }
+            // Switch dev portal away from Claude
+            const devSettings = useDevSettingsStore.getState()
+            if (devSettings.model === 'claude') {
+              devSettings.setModel('gemini')
             }
 
             // Inject DoW scaffolding document
             const scaffolding = useScaffoldingStore.getState()
-            const existing = scaffolding.documents.find((d) => d.type === 'dow-compliance')
-            if (!existing) {
+            if (!scaffolding.getByType('dow-compliance')) {
               scaffolding.setDocuments([
                 ...scaffolding.documents,
                 {
@@ -135,29 +143,20 @@ export const useSettingsStore = create<SettingsState>()(
                 },
               ])
             }
-          }
-
-          // Turning DoW OFF
-          if (updates.dowCompliance === false && prev.dowCompliance) {
-            // Remove DoW scaffolding document
+          } else if (updates.dowCompliance === false && prev.dowCompliance) {
+            // Turning DoW OFF — remove scaffolding document
             const scaffolding = useScaffoldingStore.getState()
-            scaffolding.setDocuments(scaffolding.documents.filter((d) => d.type !== 'dow-compliance'))
+            scaffolding.setDocuments(
+              scaffolding.documents.filter((d) => d.type !== 'dow-compliance'),
+            )
+          } else if (next.dowCompliance) {
+            // DoW already active — block any Anthropic model being set
+            replaceAnthropicModels(next)
           }
 
           // Block ZDR from being disabled while DoW is active
           if (next.dowCompliance && updates.zeroDataRetention === false) {
             next.zeroDataRetention = true
-          }
-
-          // Safety net: block Anthropic model selection while DoW is active
-          if (next.dowCompliance) {
-            for (const key of MODEL_KEYS) {
-              const val = next[key] as string
-              if (isAnthropicModel(val)) {
-                ;(next as Record<string, unknown>)[key] =
-                  ANTHROPIC_REPLACEMENT_MAP[val] || 'openai/gpt-4o'
-              }
-            }
           }
 
           return { aiSettings: next }

@@ -113,17 +113,9 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
   const dowCompliance = useSettingsStore((s) => s.aiSettings.dowCompliance)
 
   const filteredModelOptions = useMemo(
-    () =>
-      dowCompliance ? MODEL_OPTIONS.filter((o) => o.value !== 'claude') : [...MODEL_OPTIONS],
+    () => (dowCompliance ? MODEL_OPTIONS.filter((o) => o.value !== 'claude') : MODEL_OPTIONS),
     [dowCompliance],
   )
-
-  // Auto-switch away from Claude if DoW gets enabled
-  useEffect(() => {
-    if (dowCompliance && model === 'claude') {
-      setModel('gemini')
-    }
-  }, [dowCompliance, model, setModel])
 
   // Close settings popover on outside click
   useEffect(() => {
@@ -242,13 +234,13 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
             <div className="absolute right-0 mt-2 w-72 bg-card/90 backdrop-blur-md border border-border shadow-lg [border-radius:8px] p-4 flex flex-col items-stretch gap-3">
               <SegmentedToggle
                 label="Environment"
-                options={[...ENV_OPTIONS]}
+                options={ENV_OPTIONS}
                 value={environment}
                 onChange={(v) => setEnvironment(v as Environment)}
               />
               <SegmentedToggle
                 label="Model"
-                options={[...filteredModelOptions]}
+                options={filteredModelOptions}
                 value={model}
                 onChange={(v) => setModel(v as Model)}
               />
@@ -351,13 +343,13 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
           <div className="absolute right-0 mt-2 w-72 bg-card/90 backdrop-blur-md border border-border shadow-lg [border-radius:8px] p-4 flex flex-col items-stretch gap-3">
             <SegmentedToggle
               label="Environment"
-              options={[...ENV_OPTIONS]}
+              options={ENV_OPTIONS}
               value={environment}
               onChange={(v) => setEnvironment(v as Environment)}
             />
             <SegmentedToggle
               label="Model"
-              options={[...filteredModelOptions]}
+              options={filteredModelOptions}
               value={model}
               onChange={(v) => setModel(v as Model)}
             />
