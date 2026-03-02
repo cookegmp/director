@@ -1167,6 +1167,7 @@ export const sampleAISettings: AISettings = {
   abstractionEnabled: true,
   translationVerbosity: 3,
   zeroDataRetention: false,
+  dowCompliance: false,
 }
 
 // --- ISSUE SCORES (Mock Seed Data) ---

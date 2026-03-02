@@ -20,6 +20,7 @@ import GradientButton from '@/components/shared/GradientButton'
 import DictationButton from '@/components/DictationButton'
 import SegmentedToggle from '@/components/shared/SegmentedToggle'
 import { useDevSettingsStore } from '@/stores/dev-settings'
+import { useSettingsStore } from '@/stores/settings'
 import type { Environment, Model } from '@/stores/dev-settings'
 import type { TranslatedEntry, TranslatedEntryType, AgentSessionStatus } from '@/types'
 
@@ -109,6 +110,20 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
   const settingsRef = useRef<HTMLDivElement>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const { environment, model, setEnvironment, setModel } = useDevSettingsStore()
+  const dowCompliance = useSettingsStore((s) => s.aiSettings.dowCompliance)
+
+  const filteredModelOptions = useMemo(
+    () =>
+      dowCompliance ? MODEL_OPTIONS.filter((o) => o.value !== 'claude') : [...MODEL_OPTIONS],
+    [dowCompliance],
+  )
+
+  // Auto-switch away from Claude if DoW gets enabled
+  useEffect(() => {
+    if (dowCompliance && model === 'claude') {
+      setModel('gemini')
+    }
+  }, [dowCompliance, model, setModel])
 
   // Close settings popover on outside click
   useEffect(() => {
@@ -233,7 +248,7 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
               />
               <SegmentedToggle
                 label="Model"
-                options={[...MODEL_OPTIONS]}
+                options={[...filteredModelOptions]}
                 value={model}
                 onChange={(v) => setModel(v as Model)}
               />
@@ -342,7 +357,7 @@ function EntryCard({ entries, onEntryClick, onSendMessage, sessionStatus }: Entr
             />
             <SegmentedToggle
               label="Model"
-              options={[...MODEL_OPTIONS]}
+              options={[...filteredModelOptions]}
               value={model}
               onChange={(v) => setModel(v as Model)}
             />

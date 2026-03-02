@@ -45,6 +45,10 @@ function ModelAssignment({ functionKey, label, description, whenDisabled }: Mode
   const currentModel = aiSettings[modelKey] as string
   const isEnabled = aiSettings[enabledKey] as boolean
 
+  const availableModels = aiSettings.dowCompliance
+    ? STATIC_MODELS.filter((m) => !m.startsWith('anthropic/'))
+    : STATIC_MODELS
+
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-lg border border-border p-5 space-y-3">
       <div className="flex items-center justify-between">
@@ -64,7 +68,7 @@ function ModelAssignment({ functionKey, label, description, whenDisabled }: Mode
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {STATIC_MODELS.map((model) => (
+            {availableModels.map((model) => (
               <SelectItem key={model} value={model}>
                 <span className="font-mono text-xs">{model}</span>
               </SelectItem>

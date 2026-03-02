@@ -191,6 +191,7 @@ export type ScaffoldingDocType =
   | 'brand-standards'
   | 'security-patterns'
   | 'quality-standards'
+  | 'dow-compliance'
 
 // --- Admin Types ---
 
@@ -244,6 +245,7 @@ export interface AISettings {
   abstractionEnabled: boolean
   translationVerbosity: number
   zeroDataRetention: boolean
+  dowCompliance: boolean
 }
 
 // --- Agents & Skills ---

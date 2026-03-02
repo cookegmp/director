@@ -1,6 +1,28 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { EnvironmentServer, AISettings, ConnectionStatus } from '@/types'
+import { useScaffoldingStore } from '@/stores/scaffolding'
+
+const ANTHROPIC_REPLACEMENT_MAP: Record<string, string> = {
+  'anthropic/claude-sonnet-4': 'openai/gpt-4o',
+  'anthropic/claude-opus': 'openai/gpt-4o',
+  'anthropic/claude-haiku': 'openai/gpt-4o-mini',
+}
+
+function isAnthropicModel(model: string): boolean {
+  return model.startsWith('anthropic/')
+}
+
+const MODEL_KEYS = [
+  'charterModel',
+  'executionPlanModel',
+  'scoringModel',
+  'conversationModel',
+  'bugScoringModel',
+  'featureScoringModel',
+  'ideaChatModel',
+  'abstractionModel',
+] as const
 
 interface SettingsState {
   servers: EnvironmentServer[]
@@ -38,6 +60,7 @@ export const useSettingsStore = create<SettingsState>()(
         abstractionEnabled: true,
         translationVerbosity: 3,
         zeroDataRetention: false,
+        dowCompliance: false,
       },
 
       updateServer: (id, updates) =>
@@ -76,9 +99,69 @@ export const useSettingsStore = create<SettingsState>()(
       },
 
       updateAISettings: (updates) =>
-        set((state) => ({
-          aiSettings: { ...state.aiSettings, ...updates },
-        })),
+        set((state) => {
+          const prev = state.aiSettings
+          const next = { ...prev, ...updates }
+
+          // --- DoW Compliance enforcement ---
+
+          // Turning DoW ON
+          if (updates.dowCompliance === true && !prev.dowCompliance) {
+            // Force ZDR on
+            next.zeroDataRetention = true
+
+            // Swap all Anthropic models to replacements
+            for (const key of MODEL_KEYS) {
+              const current = next[key] as string
+              if (isAnthropicModel(current)) {
+                ;(next as Record<string, unknown>)[key] =
+                  ANTHROPIC_REPLACEMENT_MAP[current] || 'openai/gpt-4o'
+              }
+            }
+
+            // Inject DoW scaffolding document
+            const scaffolding = useScaffoldingStore.getState()
+            const existing = scaffolding.documents.find((d) => d.type === 'dow-compliance')
+            if (!existing) {
+              scaffolding.setDocuments([
+                ...scaffolding.documents,
+                {
+                  id: 'scaff-dow-compliance',
+                  type: 'dow-compliance',
+                  title: 'DoW Compliance Policy',
+                  content:
+                    'This platform operates under Department of War compliance requirements. Only approved AI vendors (OpenAI, Google, Meta, Mistral) may be used. Zero Data Retention is mandatory. All AI interactions must be auditable.',
+                  lastUpdated: new Date().toISOString(),
+                },
+              ])
+            }
+          }
+
+          // Turning DoW OFF
+          if (updates.dowCompliance === false && prev.dowCompliance) {
+            // Remove DoW scaffolding document
+            const scaffolding = useScaffoldingStore.getState()
+            scaffolding.setDocuments(scaffolding.documents.filter((d) => d.type !== 'dow-compliance'))
+          }
+
+          // Block ZDR from being disabled while DoW is active
+          if (next.dowCompliance && updates.zeroDataRetention === false) {
+            next.zeroDataRetention = true
+          }
+
+          // Safety net: block Anthropic model selection while DoW is active
+          if (next.dowCompliance) {
+            for (const key of MODEL_KEYS) {
+              const val = next[key] as string
+              if (isAnthropicModel(val)) {
+                ;(next as Record<string, unknown>)[key] =
+                  ANTHROPIC_REPLACEMENT_MAP[val] || 'openai/gpt-4o'
+              }
+            }
+          }
+
+          return { aiSettings: next }
+        }),
 
       verifyApiKey: async () => {
         const { aiSettings } = get()
