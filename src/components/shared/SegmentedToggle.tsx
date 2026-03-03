@@ -8,7 +8,7 @@ interface SegmentOption {
 }
 
 interface SegmentedToggleProps {
-  options: SegmentOption[]
+  options: readonly SegmentOption[]
   value: string
   onChange: (value: string) => void
   label?: string
