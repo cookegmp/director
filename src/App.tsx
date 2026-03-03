@@ -37,7 +37,7 @@ import {
 } from '@/lib/sample-data'
 
 // Increment this when the data model changes shape to force a re-seed
-const DATA_VERSION = 11
+const DATA_VERSION = 12
 const VERSION_KEY = 'stagemanager-data-version'
 
 function SeedData() {

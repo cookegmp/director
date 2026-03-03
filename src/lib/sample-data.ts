@@ -153,6 +153,214 @@ export const sampleIdeas: Idea[] = [
     activeSessionId: 'session-001',
     sortOrder: 0,
   },
+  {
+    id: 'idea-006',
+    title: 'Centralized tooling inventory tracker with barcode scanning',
+    status: 'scored',
+    intakeAnswers: {
+      problem:
+        'Cutting tools, inserts, and fixtures are stored across multiple cribs and cabinets with no centralized tracking. Operators waste time searching for the right tool, and duplicate purchases happen because nobody knows what we already have on hand.',
+      impact:
+        'Affects all 20 machinists and the purchasing team. Tool searches happen multiple times per shift. Estimated $15,000-$25,000/year in unnecessary duplicate tool purchases.',
+      'current-state':
+        'Each tool crib has a paper sign-out sheet that is rarely maintained. Purchasing relies on verbal requests. No visibility into current inventory levels or tool usage rates.',
+      'desired-outcome':
+        'Barcode-scanned check-in/check-out system for all tooling. Real-time inventory levels. Automatic reorder alerts when stock falls below threshold. Usage reports by job, machine, and operator.',
+      constraints:
+        'Must work with handheld barcode scanners already in use. Integration with Epicor purchasing module preferred. Needs to handle 5,000+ unique tool items.',
+      urgency: 'Would improve efficiency',
+    },
+    scores: { impact: 70, urgency: 55, feasibility: 72, alignment: 68 },
+    compositeScore: 66.1,
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(5),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 1,
+  },
+  {
+    id: 'idea-007',
+    title: 'Automated time-and-attendance integration with Epicor labor reporting',
+    status: 'scored',
+    intakeAnswers: {
+      problem:
+        'Shop floor employees clock in/out through a timeclock system, but labor hours against specific jobs are entered separately in Epicor. The two systems often disagree, causing payroll discrepancies and inaccurate job costing.',
+      impact:
+        'Affects all hourly employees (60+) and the payroll/accounting team (3 people). Discrepancies are found weekly and require hours of reconciliation each pay period.',
+      'current-state':
+        'Time clocks feed into a legacy payroll system. Job labor is entered manually in Epicor by operators or supervisors. Reconciliation is done in Excel by accounting. No automated cross-checking.',
+      'desired-outcome':
+        'Single point of entry for time tracking that feeds both payroll and job costing. Automated reconciliation with flagging of discrepancies. Dashboard for supervisors to approve labor allocations.',
+      constraints:
+        'Must integrate with existing ADP payroll. Epicor labor module cannot be replaced. Union rules govern certain timekeeping practices.',
+      urgency: 'Causing daily friction',
+    },
+    scores: { impact: 72, urgency: 68, feasibility: 50, alignment: 74 },
+    compositeScore: 66.5,
+    createdAt: daysAgo(3),
+    updatedAt: daysAgo(3),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 2,
+  },
+  {
+    id: 'idea-008',
+    title: 'Digital work instruction viewer for shop floor tablets',
+    status: 'on-deck',
+    intakeAnswers: {
+      problem:
+        'Work instructions and setup sheets are printed on paper and kept in binders at each machine. They frequently go missing, get damaged with coolant, or become outdated when engineering makes revisions.',
+      impact:
+        'Affects all 20 machinists and 10 assembly technicians. Outdated instructions cause quality escapes roughly once a month. Replacing damaged binders costs time and materials.',
+      'current-state':
+        'Paper binders at each workstation. Engineering prints updated revisions and manually swaps pages. No version tracking at the point of use. Operators sometimes work from photocopies of photocopies.',
+      'desired-outcome':
+        'Tablet-based viewer that always shows the latest revision. Search by job, part number, or operation. Zoom and annotate capabilities. Automatic notification when instructions are updated.',
+      constraints:
+        'Must work offline for areas with poor WiFi coverage. Needs to render PDF and image formats. Must be readable in shop floor lighting conditions.',
+      urgency: 'Causing daily friction',
+    },
+    scores: { impact: 76, urgency: 70, feasibility: 75, alignment: 82 },
+    compositeScore: 75.6,
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(3),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 1,
+  },
+  {
+    id: 'idea-009',
+    title: 'Shipping and receiving log with photo documentation',
+    status: 'on-deck',
+    intakeAnswers: {
+      problem:
+        'Incoming and outgoing shipments are logged on paper forms. When damage claims arise or parts go missing, there is no photographic evidence of package condition at receipt or shipment.',
+      impact:
+        'Affects the shipping/receiving team (4 people) and project managers. Damage disputes occur 2-3 times per month with an average cost of $3,000-$8,000 per incident.',
+      'current-state':
+        'Paper log books at the dock. Occasional photos taken on personal phones with no organized storage. Carrier BOLs filed in paper folders.',
+      'desired-outcome':
+        'Digital log with timestamped photo capture at receiving and shipping. Searchable by PO number, job number, carrier, and date. Automatic alerts to project managers when their shipments arrive.',
+      constraints:
+        'Dock area has limited WiFi. Must work on ruggedized tablets. Photos need to be stored on-premises due to customer confidentiality.',
+      urgency: 'Would improve efficiency',
+    },
+    scores: { impact: 60, urgency: 52, feasibility: 80, alignment: 65 },
+    compositeScore: 63.7,
+    createdAt: daysAgo(4),
+    updatedAt: daysAgo(4),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 2,
+  },
+  {
+    id: 'idea-010',
+    title: 'Real-time machine utilization dashboard from FANUC controllers',
+    status: 'development',
+    intakeAnswers: {
+      problem:
+        'Management has no real-time visibility into which CNC machines are running, idle, or down. Utilization data is estimated manually and is unreliable for capacity planning.',
+      impact:
+        'Affects production management and the scheduling team. Poor utilization visibility leads to over-promising delivery dates and reactive scheduling. Estimated 15-20% of machine capacity is unaccounted for.',
+      'current-state':
+        'Supervisors visually check machines and report status in daily standups. Monthly utilization reports are compiled manually from Epicor labor entries, which lag by days.',
+      'desired-outcome':
+        'Live dashboard showing run/idle/down status of every FANUC-controlled machine. Historical utilization trends by machine and shift. Alerts when machines are idle beyond a threshold.',
+      constraints:
+        'Must connect to FANUC FOCAS protocol. Cannot interfere with machine operation. Network security team must approve any connections to production equipment.',
+      urgency: 'Would improve efficiency',
+    },
+    scores: { impact: 80, urgency: 58, feasibility: 52, alignment: 78 },
+    compositeScore: 68.0,
+    createdAt: daysAgo(14),
+    updatedAt: daysAgo(2),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 1,
+  },
+  {
+    id: 'idea-011',
+    title: 'Non-conformance reporting app with corrective action tracking',
+    status: 'development',
+    intakeAnswers: {
+      problem:
+        'Non-conformance reports (NCRs) are filed on paper forms, routed manually for signatures, and tracked in a spreadsheet. The process is slow, and corrective actions often fall through the cracks.',
+      impact:
+        'Affects the quality team (4 people), engineering, and production supervisors. Approximately 20-30 NCRs per month. ISO 9001 auditors have flagged the manual process as a risk area.',
+      'current-state':
+        'Paper NCR forms with manual routing for disposition decisions. Excel spreadsheet for tracking open/closed status. Corrective actions assigned verbally with no systematic follow-up.',
+      'desired-outcome':
+        'Digital NCR submission with photo evidence. Automated routing for disposition approval. Corrective action assignment with due dates and escalation. Trend analysis dashboards for recurring issues.',
+      constraints:
+        'Must meet ISO 9001:2015 documentation requirements. Needs role-based approval workflows. Must retain records for minimum 7 years.',
+      urgency: 'Causing daily friction',
+    },
+    scores: { impact: 74, urgency: 72, feasibility: 68, alignment: 85 },
+    compositeScore: 74.6,
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(1),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 2,
+  },
+  {
+    id: 'idea-012',
+    title: 'Internal company paging and broadcast notification system',
+    status: 'production',
+    intakeAnswers: {
+      problem:
+        'The overhead PA system is the only way to reach people across the facility. It is disruptive, unreliable in noisy shop areas, and cannot target specific individuals or groups.',
+      impact:
+        'Affects all 100 employees. Pages are missed frequently in the shop due to noise. Office staff find constant overhead pages disruptive. No way to send targeted messages to specific departments.',
+      'current-state':
+        'Analog PA system with a single zone. Anyone can pick up a phone and page the entire building. No message logging, no targeting, no confirmation of receipt.',
+      'desired-outcome':
+        'Digital paging system with zone targeting (office, shop, assembly, shipping). Push notifications to phones/tablets. Message history and read receipts. Emergency broadcast capability.',
+      constraints:
+        'Must work alongside existing PA hardware during transition. Needs to function even if WiFi is degraded. Must support emergency alerts with distinct priority levels.',
+      urgency: 'Causing daily friction',
+    },
+    scores: { impact: 85, urgency: 78, feasibility: 80, alignment: 75 },
+    compositeScore: 80.0,
+    createdAt: daysAgo(45),
+    updatedAt: daysAgo(5),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 1,
+  },
+  {
+    id: 'idea-013',
+    title: 'Visitor check-in kiosk with NDA and safety acknowledgment',
+    status: 'scored',
+    intakeAnswers: {
+      problem:
+        'Visitor sign-in is a paper logbook at the front desk. Visitors are supposed to sign an NDA and safety acknowledgment, but the process is inconsistent. There is no easy way to look up who was on-site on a given date.',
+      impact:
+        'Affects front office staff (2 people) and security compliance. Approximately 15-25 visitors per week. Customer auditors have noted the informal visitor tracking as a concern.',
+      'current-state':
+        'Paper sign-in book. Separate paper NDA forms that are sometimes forgotten. No badge printing. No notification to the host that their visitor has arrived.',
+      'desired-outcome':
+        'Tablet-based kiosk with digital NDA/safety sign-off. Automatic badge printing. Host notification via app or email. Searchable visitor log with date filtering.',
+      constraints:
+        'Must print adhesive visitor badges. Needs to store NDA signatures digitally. Should integrate with Microsoft 365 for host notifications.',
+      urgency: 'Would improve efficiency',
+    },
+    scores: { impact: 45, urgency: 40, feasibility: 85, alignment: 55 },
+    compositeScore: 54.5,
+    createdAt: daysAgo(2),
+    updatedAt: daysAgo(2),
+    linkedCharterId: null,
+    linkedIssueIds: [],
+    activeSessionId: null,
+    sortOrder: 3,
+  },
 ]
 
 // --- CHARTERS ---
