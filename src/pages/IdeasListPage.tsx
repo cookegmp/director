@@ -158,23 +158,23 @@ function IdeasListPage() {
               <Link
                 key={idea.id}
                 to={`/ideas/${idea.id}`}
-                className="block bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-4 hover:border-primary/30 transition-colors"
+                className="grid grid-cols-[1fr_5rem_7rem] items-center gap-4 bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-4 hover:border-primary/30 transition-colors"
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-foreground font-light">{idea.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {idea.intakeAnswers.problem?.slice(0, 100)}...
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="outline" className={getTierBadgeClasses(tier)}>
-                      {Math.round(idea.compositeScore)}
-                    </Badge>
-                    <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
-                      {STATUS_LABELS[idea.status]}
-                    </Badge>
-                  </div>
+                <div className="min-w-0">
+                  <h3 className="text-foreground font-light truncate">{idea.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1 truncate">
+                    {idea.intakeAnswers.problem?.slice(0, 100)}
+                  </p>
+                </div>
+                <div className="flex justify-center">
+                  <Badge variant="outline" className={getTierBadgeClasses(tier)}>
+                    {Math.round(idea.compositeScore)}
+                  </Badge>
+                </div>
+                <div className="flex justify-center">
+                  <Badge variant="outline" className={STATUS_BADGE_CLASSES[idea.status]}>
+                    {STATUS_LABELS[idea.status]}
+                  </Badge>
                 </div>
               </Link>
             )
