@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { List, LayoutGrid, Search, Filter, ArrowUpDown } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { List, LayoutGrid, Search, Filter, ArrowUpDown, History } from 'lucide-react'
 import { useIdeasStore } from '@/stores/ideas'
 import { Badge } from '@/components/ui/badge'
 import { getScoreTier, getTierBadgeClasses, STATUS_LABELS } from '@/types'
-import type { IdeaStatus } from '@/types'
+import type { IdeaStatus, Idea } from '@/types'
 import KanbanBoard from '@/components/kanban/KanbanBoard'
+import IdeaTimelineDialog from '@/components/timeline/IdeaTimelineDialog'
 
 const STATUS_BADGE_CLASSES: Record<IdeaStatus, string> = {
   scored: 'text-muted-foreground',
@@ -29,11 +30,13 @@ const SORT_CYCLE: SortBy[] = ['score', 'newest', 'oldest']
 
 function IdeasListPage() {
   const ideas = useIdeasStore((s) => s.ideas)
+  const navigate = useNavigate()
   const [view, setView] = useState<ViewMode>('list')
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<IdeaStatus | 'all'>('all')
   const [filterTier, setFilterTier] = useState<ScoreTierFilter>('all')
   const [sortBy, setSortBy] = useState<SortBy>('score')
+  const [timelineIdea, setTimelineIdea] = useState<Idea | null>(null)
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
@@ -155,10 +158,10 @@ function IdeasListPage() {
           {filtered.map((idea) => {
             const tier = getScoreTier(idea.compositeScore)
             return (
-              <Link
+              <div
                 key={idea.id}
-                to={`/ideas/${idea.id}`}
-                className="grid grid-cols-[1fr_5rem_7rem] items-center gap-4 bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-4 hover:border-primary/30 transition-colors"
+                onClick={() => navigate(`/ideas/${idea.id}`)}
+                className="grid grid-cols-[1fr_5rem_7rem_2.5rem] items-center gap-4 bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-4 hover:border-primary/30 transition-colors cursor-pointer"
               >
                 <div className="min-w-0">
                   <h3 className="text-foreground font-light truncate">{idea.title}</h3>
@@ -176,10 +179,30 @@ function IdeasListPage() {
                     {STATUS_LABELS[idea.status]}
                   </Badge>
                 </div>
-              </Link>
+                <div className="flex justify-center">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setTimelineIdea(idea)
+                    }}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
+                    aria-label={`View history for ${idea.title}`}
+                  >
+                    <History className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             )
           })}
         </div>
+      )}
+
+      {timelineIdea && (
+        <IdeaTimelineDialog
+          idea={timelineIdea}
+          open={!!timelineIdea}
+          onOpenChange={(open) => { if (!open) setTimelineIdea(null) }}
+        />
       )}
     </div>
   )

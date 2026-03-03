@@ -934,6 +934,22 @@ export const sampleActivities: Activity[] = [
     createdAt: daysAgo(25),
   },
   {
+    id: 'act-024',
+    type: 'status-changed',
+    entityId: 'idea-001',
+    entityType: 'idea',
+    summary: '"Shop floor job status tracking" moved to On Deck',
+    createdAt: daysAgo(27),
+  },
+  {
+    id: 'act-025',
+    type: 'status-changed',
+    entityId: 'idea-001',
+    entityType: 'idea',
+    summary: '"Shop floor job status tracking" moved to Development',
+    createdAt: daysAgo(21),
+  },
+  {
     id: 'act-003',
     type: 'build-started',
     entityId: 'idea-001',

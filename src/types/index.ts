@@ -293,6 +293,19 @@ export interface WizardStep {
   submitLabel?: string
 }
 
+// --- Timeline ---
+
+export type TimelineEventCategory = 'creation' | 'scoring' | 'charter' | 'development' | 'production' | 'issue'
+
+export interface TimelineEvent {
+  id: string
+  timestamp: string
+  category: TimelineEventCategory
+  title: string
+  description?: string
+  activityType?: ActivityType
+}
+
 // --- Utility ---
 
 export function getScoreTier(score: number): ScoreTier {
