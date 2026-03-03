@@ -140,6 +140,7 @@ function WizardCard() {
         linkedCharterId: null,
         linkedIssueIds: [],
         activeSessionId: null,
+        sortOrder: Date.now(),
       })
 
       addActivity({

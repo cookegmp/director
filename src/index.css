@@ -224,6 +224,24 @@
   animation: dictation-pulse 1.5s ease-in-out infinite;
 }
 
+/* Custom scrollbar for kanban board */
+.kanban-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.kanban-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.kanban-scroll::-webkit-scrollbar-thumb {
+  background: hsl(225 30% 25%);
+  border-radius: 3px;
+}
+
+.kanban-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(225 30% 35%);
+}
+
 /* Raw output monospace lines */
 .raw-output-line {
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;

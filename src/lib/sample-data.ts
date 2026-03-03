@@ -47,6 +47,7 @@ export const sampleIdeas: Idea[] = [
     linkedCharterId: 'charter-001',
     linkedIssueIds: ['issue-001', 'issue-002', 'issue-003', 'issue-005', 'issue-006', 'issue-007'],
     activeSessionId: null,
+    sortOrder: 0,
   },
   {
     id: 'idea-002',
@@ -72,6 +73,7 @@ export const sampleIdeas: Idea[] = [
     linkedCharterId: null,
     linkedIssueIds: [],
     activeSessionId: null,
+    sortOrder: 0,
   },
   {
     id: 'idea-003',
@@ -97,6 +99,7 @@ export const sampleIdeas: Idea[] = [
     linkedCharterId: null,
     linkedIssueIds: [],
     activeSessionId: null,
+    sortOrder: 0,
   },
   {
     id: 'idea-004',
@@ -122,6 +125,7 @@ export const sampleIdeas: Idea[] = [
     linkedCharterId: 'charter-002',
     linkedIssueIds: [],
     activeSessionId: null,
+    sortOrder: 0,
   },
   {
     id: 'idea-005',
@@ -147,6 +151,7 @@ export const sampleIdeas: Idea[] = [
     linkedCharterId: 'charter-003',
     linkedIssueIds: [],
     activeSessionId: 'session-001',
+    sortOrder: 0,
   },
 ]
 

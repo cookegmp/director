@@ -119,6 +119,7 @@ export interface Idea {
   linkedCharterId: string | null
   linkedIssueIds: string[]
   activeSessionId: string | null
+  sortOrder: number
 }
 
 export interface CharterContent {
