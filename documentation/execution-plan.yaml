@@ -1,323 +1,698 @@
 execution_plan:
   meta:
-    project: 'Control'
-    repo: 'control'
-    plan_version: '1.0.0'
-    generated_from_charter_date: '2026-02-24'
+    project: "Director"
+    repo: "director"
+    plan_version: "1.0.0"
+    generated_from_charter_date: "2026-03-21"
     owners:
-      product_owner: 'AHAUS Operations'
-      tech_owner: 'AI Dev Team'
+      product_owner: "James — technical architect, methodology designer, lead consultant"
+      tech_owner: "James"
     non_negotiables:
-      - 'Vite + React SPA only; strictly no SSR (no Next.js).'
-      - 'Local storage persistence only for this prototype phase; no real backend.'
-      - 'Strict adherence to the dark glassmorphism design system (HSL tokens).'
-      - 'Pure CSS animations only (@keyframes, conic-gradient); no Framer Motion.'
-      - 'Bottom-border-only inputs; pill-shaped default radius (9999px).'
-      - 'Charter generation must support a fallback mock mode when API key is absent.'
+      - "Clone-and-strip must be clean: zero dead imports, zero orphaned files, zero references to removed modules after P0."
+      - "Vite SPA on port 3950. No SSR. No server. No database. No API. No authentication layer."
+      - "React 19.x + TypeScript 5.9.x strict mode. No implicit any. No ts-ignore without documented justification."
+      - "Zustand 5.x with persist middleware. All stores use 'director-' key prefix in localStorage."
+      - "DATA_VERSION constant in App.tsx drives full clear-and-reseed when incremented."
+      - "VITE_USE_MOCK_DATA=true is the default. Every AI-powered feature must have a mock fallback with simulated delay. App must be fully demonstrable without any API keys."
+      - "The design system (index.css tokens, shadcn/ui components, glassmorphism patterns, layout) is not modified during the strip — only the amber/gold --primary override and Director branding are changed."
+      - "Every phase must close with: lint passes, typecheck passes, 'npm run build' succeeds, app renders with sample data on port 3950."
+      - "Allowed hosts: localhost, 127.0.0.1, lab.ahaus.com, director.ahaus.com."
+      - "No references to removed Control modules (issue-reporter, issue-scoring, agents-skills, dev-portal, admin, production, scoring, timeline, idea-views) may remain in any file."
     definition_of_done:
-      - 'Complete 6-step intake wizard with animated gradient card.'
-      - 'Scoring engine successfully ranks ideas.'
-      - 'Charter generation triggers Anthropic API (or mock) and renders structured output.'
-      - 'Dashboard displays priority queue, active charters, and activity feed.'
-      - 'Issues and scaffolding views render properly.'
-      - 'All data persists across page reloads via localStorage.'
+      - "Director repository exists as an independent project cloned from Control with all client-specific code removed and build verified clean."
+      - "'npm install && npm run dev' starts Director on port 3950 with no errors or warnings."
+      - "'npm run build' produces dist/ with zero TypeScript errors and zero lint warnings."
+      - "Director's dark glassmorphism aesthetic matches Control exactly; amber/gold accent (hsl(38, 92%, 50%)) is the only visual differentiation."
+      - "Clients page: filterable by status, sortable by name/date/status, client detail panel, new client form, status progression visualization."
+      - "Engagements page: engagement list per client, phase progression controls, engagement detail tabs linking to discovery/scaffolding/OCAI."
+      - "Discovery page: session list grouped by type, session creation form, AI-guided interview wizard using WizardCard pattern, transcript view with extracted data highlights, scaffolding section linkage indicators."
+      - "Scaffolding page: two-tier layout (Operational Intelligence / Build Intelligence), section editors with completion indicators (empty/draft/reviewed/validated), terminology decoder management, export function, validation check."
+      - "OCAI page: assessment dashboard, Level 1 builder with 10-12 behavioral scenario questions, Level 2 workflow-specific builder auto-generated from scaffolding, response collection interface, CVF radar chart, gap analysis view."
+      - "Terminology page: searchable/sortable decoder table, add/edit/delete entries, bulk import from discovery sessions, JSON/CSV export."
+      - "Settings page: OpenRouter API key entry stored in localStorage, model-selection per function, mock data toggle indicator, About section."
+      - "Sample data auto-seeds on first load: Precision Dynamics (scaffolding phase, complete scaffolding package, 3 completed discovery sessions, L1 OCAI analyzed, L2 in progress, 30+ terminology entries) and Midwest Distribution Co (discovery phase, 2 sessions, partial scaffolding, L1 OCAI deployed)."
+      - "No dead imports, no orphaned store keys, no references to removed Control modules anywhere in the codebase."
 
   global_conventions:
     progress_protocol:
-      progress_dir: '.agent-progress'
-      file_naming: '<PHASE>__<agent>.md'
+      directory: ".agent-progress/"
+      file_naming: "<PHASE>__<agent>.md"
       required_sections:
-        - 'Scope'
-        - 'Work Completed'
-        - 'Touched Files'
-        - 'Commands Run'
-        - 'Notes/Risks'
-        - 'Next Suggested Steps'
+        - "## Scope"
+        - "## Work Completed"
+        - "## Touched Files"
+        - "## Commands Run"
+        - "## Notes / Risks"
+        - "## Next Suggested Steps"
+      instructions: >
+        Each agent creates its progress file at the start of its workstream and
+        updates it continuously. Progress files are committed with each phase
+        closeout. They are the audit trail for what changed and why.
 
     dev_toggles:
-      api_mode:
-        env_var: 'VITE_USE_MOCK_DATA'
-        allowed: ['true', 'false']
-        default_dev: 'true'
-      api_keys:
-        env_var: 'VITE_ANTHROPIC_API_KEY'
-        required_when: 'VITE_USE_MOCK_DATA=false'
+      mock_data:
+        env_var: "VITE_USE_MOCK_DATA"
+        default: "true"
+        behavior_when_true: "All OpenRouter calls are intercepted by mock handlers that return canned responses with a 600–1200ms simulated delay. No real API key is required."
+        behavior_when_false: "OpenRouter API key from Settings store is used for live calls."
+        visual_indicator: "Settings page shows a yellow 'MOCK MODE' badge when VITE_USE_MOCK_DATA=true."
+        guard: "If VITE_USE_MOCK_DATA is false but no API key is set in the settings store, AI features display a 'Configure API key in Settings' prompt and do not call OpenRouter."
+
+    env_management:
+      required_files:
+        - ".env (gitignored — local developer copy)"
+        - ".env.example (committed — documents all variables with safe defaults)"
+      variables:
+        VITE_USE_MOCK_DATA:
+          default: "true"
+          description: "When true, all AI features use mock fallbacks."
+      gitignore_additions:
+        - ".env"
+        - "dist/"
+        - "node_modules/"
+      notes: "Director has no server-side secrets. The only sensitive value is the OpenRouter API key, which is entered at runtime via the Settings page and stored in localStorage — it never appears in any env file."
 
     architecture_boundaries:
-      frontend:
-        - 'Standard #root mount via Vite.'
-        - 'Routing via react-router-dom.'
-        - 'Global state and persistence via Zustand.'
-      styling:
-        - 'shadcn/ui v2 with full HSL token system.'
-        - 'CSS custom properties on :root.'
-      api_client:
-        - 'anthropic-sdk used client-side (prototype only) for charter generation.'
+      framework: "Vite 7.x SPA. React 19.x with React Router DOM 7.x for client-side routing. No SSR, no server actions, no API routes."
+      state: "Zustand 5.x with persist middleware only. No Redux, no Context for app state. React Context permitted only for UI-scoped concerns (e.g., theme)."
+      storage: "localStorage exclusively via Zustand persist. No IndexedDB, no sessionStorage, no cookies."
+      routing: "React Router DOM 7.x. All routes declared in App.tsx. Route paths: /clients, /engagements, /discovery, /scaffolding, /ocai, /terminology, /settings."
+      styling: "Tailwind CSS 4.x with shadcn/ui Radix primitives. All tokens via CSS custom properties in index.css. No inline style objects for theming. Glassmorphism via bg-card/50 + backdrop-blur-sm."
+      ai_integration: "OpenRouter called from a dedicated src/lib/openrouter.ts module. Mock mode intercepted in that module using IMPORT.META.ENV.VITE_USE_MOCK_DATA. API key read from the settings Zustand store — never from env files."
+      component_library: "shadcn/ui components from src/components/ui/*. Do not reinstall or regenerate them during feature phases — they are inherited from Control."
+      drag_and_drop: "dnd-kit only. No other DnD libraries."
+      no_server: "Director has no Express server, no Fastify server, no Next.js server. If a feature requires server infrastructure, it is out of scope for this charter."
 
-  # =========================
-  # CHUNK C1: FOUNDATION + UI SHELL + STATE
-  # =========================
-  chunk_C1:
-    name: 'Foundation + Styling + Global State'
-    phases:
-      - id: 'P1'
-        name: 'Vite bootstrap + Shadcn configuration'
-        goal: 'Initialize Vite React TS project, configure Tailwind v3, and set up Shadcn UI v2 with HSL tokens.'
-        parallel_workstreams:
-          - agent: 'scaffold-agent'
-            depends_on: []
-            tasks:
-              - 'Initialize Vite React TS project.'
-              - 'Install Tailwind CSS, PostCSS, Autoprefixer, Lucide React, React Router Dom.'
-              - 'Configure absolute paths (@/*).'
-            progress_file: '.agent-progress/P1__scaffold-agent.md'
+  phases:
+    # ─────────────────────────────────────────────
+    # P0 — Clone, Strip, and Verify Clean Shell
+    # ─────────────────────────────────────────────
+    - id: "P0"
+      name: "Clone Control, Strip Client-Specific Code, Verify Clean Shell"
+      goal: "Produce a Director repository that builds and renders cleanly with all Control client-specific code removed and Director identity applied."
+      parallel_workstreams:
+        - agent: "strip-agent"
+          depends_on: []
+          tasks:
+            - "Clone the Control repository into a new directory named 'director'."
+            - "Remove src/pages/DashboardPage.tsx, IntakePage.tsx, IssueReportPage.tsx, IdeasListPage.tsx, IdeaDetailPage.tsx, ChartersListPage.tsx, CharterViewPage.tsx, IssuesPage.tsx, ScaffoldingPage.tsx, NewPage.tsx."
+            - "Remove src/modules/issue-reporter/*, src/modules/issue-scoring/*, src/modules/agents-skills/* (entire directories)."
+            - "Remove src/components/dev-portal/*, src/components/admin/*, src/components/production/*, src/components/scoring/*, src/components/timeline/*, src/components/idea-views/*."
+            - "Remove src/stores/ideas.ts, charters.ts, issues.ts, activity.ts, agent-sessions.ts, agents-skills.ts, scaffolding.ts, settings.ts, users.ts, dev-settings.ts."
+            - "Remove src/lib/scoring.ts, charter-generator.ts, agent-connection.ts, abstraction-layer.ts, permissions.ts, sample-data.ts."
+            - "Remove src/hooks/useIdeaTimeline.ts, useAgentConnection.ts."
+            - "Remove src/types/index.ts."
+            - "Remove mock-server/ directory entirely."
+            - "Remove documentation/ directory if present."
+            - "Remove public/level-set-logo.svg."
+          progress_file: ".agent-progress/P0__strip-agent.md"
 
-          - agent: 'ui-system-agent'
-            depends_on: ['scaffold-agent']
-            tasks:
-              - 'Initialize shadcn/ui v2.'
-              - 'Configure index.css with strict HSL palette from charter (Background: 225 64% 11%, Primary: 217 100% 61%, etc.).'
-              - 'Set radius to 9999px in CSS variables.'
-              - 'Add required shadcn components: button, card, badge, progress, tabs, tooltip.'
-            progress_file: '.agent-progress/P1__ui-system-agent.md'
+        - agent: "identity-agent"
+          depends_on: ["strip-agent"]
+          tasks:
+            - "Update vite.config.ts: set server.port to 3950, set server.host to true, add allowedHosts: ['lab.ahaus.com', 'director.ahaus.com', 'localhost', '127.0.0.1']."
+            - "Update package.json: set name to 'director', remove 'mock-server' npm scripts (e.g. 'mock', 'mock:server'), remove 'ws' from dependencies if present."
+            - "Create .env with VITE_USE_MOCK_DATA=true."
+            - "Create .env.example documenting VITE_USE_MOCK_DATA=true with description comment."
+            - "In src/index.css, add CSS custom property override: --primary: hsl(38, 92%, 50%) — amber/gold Director accent. Document the override with a comment: /* Director accent — overrides Control blue. Single token change; all other tokens inherited from Control. */"
+            - "Add a placeholder Director branding SVG at public/director-logo.svg (simple text-based SVG 'Director' in amber if no asset is available yet)."
+            - "Update AppShell.tsx: replace Level Set AI logo reference with public/director-logo.svg, update any app name strings from Control/Level Set to 'Director'."
+            - "Update Sidebar.tsx: replace Control nav items with Director nav items — Clients (/clients), Engagements (/engagements), Discovery (/discovery), Scaffolding (/scaffolding), OCAI (/ocai), Terminology (/terminology), Settings (/settings). Preserve all layout and animation classes."
+            - "Update App.tsx: remove all Control routes and their imports, remove Control DATA_VERSION and seeding calls, add skeleton routes for all 7 Director pages rendering placeholder <div> components, set DATA_VERSION = 1."
+            - "Add placeholder page components in src/pages/: ClientsPage.tsx, EngagementsPage.tsx, DiscoveryPage.tsx, ScaffoldingPage.tsx, OcaiPage.tsx, TerminologyPage.tsx, SettingsPage.tsx — each renders a titled placeholder div."
+            - "Run 'npx tsc --noEmit' and fix every TypeScript error introduced by the removals (missing imports, broken references)."
+            - "Run 'npm run lint' and fix every lint error and warning."
+            - "Run 'npm run build' and confirm dist/ is produced with zero errors."
+          progress_file: ".agent-progress/P0__identity-agent.md"
 
-        acceptance_checks:
-          - 'Vite dev server starts without errors.'
-          - 'Tailwind and shadcn base styles correctly apply dark glassmorphism background.'
-        required_commands:
-          - 'npm run dev'
-        phase_closeout:
-          docs:
-            - 'README: Setup instructions and design system notes.'
-          git:
-            - "git add -A && git commit -m 'phase(P1): Vite bootstrap + Shadcn configuration'"
+      acceptance_checks:
+        - "'npm run dev' starts on port 3950 with no errors in terminal."
+        - "Browser loads http://localhost:3950 and renders the Director shell with amber/gold sidebar accent and placeholder pages."
+        - "Sidebar shows exactly 7 nav items: Clients, Engagements, Discovery, Scaffolding, OCAI, Terminology, Settings."
+        - "'npm run build' exits with code 0, zero TypeScript errors, zero lint warnings."
+        - "grep -r 'issue-reporter\\|issue-scoring\\|agents-skills\\|dev-portal\\|IdeaDetailPage\\|CharterViewPage\\|agent-connection\\|abstraction-layer\\|permissions\\|scoring\\|useIdeaTimeline\\|useAgentConnection' src/ returns no results."
+        - "No references to removed store files (ideas.ts, charters.ts, activity.ts, agent-sessions.ts, dev-settings.ts) in any import statement."
+        - "mock-server/ directory does not exist."
+        - "public/level-set-logo.svg does not exist."
+        - "src/types/index.ts does not exist (will be recreated in P1)."
+        - "VITE_USE_MOCK_DATA=true is set in .env."
+        - "vite.config.ts server.port is 3950."
 
-      - id: 'P2'
-        name: 'State management + LocalStorage + Base Shell'
-        goal: 'Establish Zustand stores with persistence and build the main application layout/routing.'
-        parallel_workstreams:
-          - agent: 'state-agent'
-            depends_on: ['P1']
-            tasks:
-              - 'Install zustand.'
-              - 'Create stores with persist middleware: ideas.ts, charters.ts, issues.ts, activity.ts, scaffolding.ts.'
-              - 'Define TypeScript interfaces in src/types/index.ts.'
-            progress_file: '.agent-progress/P2__state-agent.md'
+      required_commands:
+        - "npm install"
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
+        - "npm run dev"
 
-          - agent: 'layout-agent'
-            depends_on: ['P1']
-            tasks:
-              - 'Implement App.tsx with react-router-dom.'
-              - 'Create main layout shell (Sidebar navigation, header).'
-              - 'Implement pure CSS particle background fallback in index.css (radial gradients).'
-              - 'Create empty route components for Dashboard, Intake, Idea Detail, Charter View, Issues, Scaffolding.'
-            progress_file: '.agent-progress/P2__layout-agent.md'
+      phase_closeout:
+        docs:
+          - "Update README.md: replace Control description with Director description, update port to 3950, update setup instructions."
+          - "Add CHANGELOG.md entry: '## [0.1.0] — P0: Clone and strip Control, establish Director identity.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P0): clone-and-strip Control, establish Director identity on port 3950\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Shell renders correctly in browser with amber accent.
+          (2) All 7 nav items present and routing to placeholder pages.
+          (3) Build is clean. Confirm before proceeding to P1.
 
-        acceptance_checks:
-          - 'Navigation between empty routes works.'
-          - 'Zustand stores initialize and persist to localStorage.'
-          - 'Particle background renders behind the application shell.'
-        required_commands:
-          - 'npm run lint'
-        phase_closeout:
-          docs:
-            - 'README: Update route structure and state architecture.'
-          git:
-            - "git add -A && git commit -m 'phase(P2): State management + Base Shell'"
+    # ─────────────────────────────────────────────
+    # P1 — Domain Types, Zustand Stores, Sample Data
+    # ─────────────────────────────────────────────
+    - id: "P1"
+      name: "Domain Types, Zustand Stores, and Sample Data"
+      goal: "Define all Director domain interfaces and enums, implement all Zustand persist stores with CRUD operations, and seed comprehensive mock data for both fictional clients."
+      parallel_workstreams:
+        - agent: "types-agent"
+          depends_on: []
+          tasks:
+            - "Create src/types/index.ts with all Director domain interfaces and enums."
+            - "Define ClientStatus enum: prospect | discovery | scaffolding | building | active | archived."
+            - "Define ClientSizeRange enum: small | mid | large."
+            - "Define Client interface: id (string uuid), name, industry, size_range (ClientSizeRange), status (ClientStatus), primary_contact, notes, created_at (string ISO), updated_at (string ISO)."
+            - "Define EngagementPhase enum: discovery | scaffolding | first_build | handoff | subscription."
+            - "Define EngagementStatus enum: active | paused | complete."
+            - "Define Engagement interface: id, client_id, phase (EngagementPhase), start_date, target_end_date (string | null), actual_end_date (string | null), status (EngagementStatus)."
+            - "Define DiscoverySessionType enum: stakeholder_interview | system_walkthrough | workflow_observation | brand_collection."
+            - "Define DiscoverySessionStatus enum: scheduled | in_progress | complete | reviewed."
+            - "Define DiscoverySession interface: id, engagement_id, session_type (DiscoverySessionType), title, participants (string[]), transcript (string), extracted_data (Record<string, unknown>), scaffolding_sections_affected (string[]), status (DiscoverySessionStatus), session_date (string ISO)."
+            - "Define ScaffoldingValidationStatus enum: draft | review | validated | exported."
+            - "Define ScaffoldingPackage interface: id, engagement_id, version (string semver), tier1_process_workflow (Record<string,unknown>), tier1_culture_profile (Record<string,unknown>), tier1_data_systems (Record<string,unknown>), tier2_company_context (Record<string,unknown>), tier2_brand_standards (Record<string,unknown>), tier2_tech_preferences (Record<string,unknown>), tier2_quality_standards (Record<string,unknown>), tier2_security_patterns (Record<string,unknown>), validation_status (ScaffoldingValidationStatus), exported_at (string | null)."
+            - "Define OCAILevel enum: baseline_1 | workflow_2 | idea_3."
+            - "Define OCAIStatus enum: draft | deployed | collecting | complete | analyzed."
+            - "Define OCAIAssessment interface: id, engagement_id, level (OCAILevel), target_scope (string), questions (Record<string,unknown>[]), responses (Record<string,unknown>[]), analysis (Record<string,unknown>), status (OCAIStatus)."
+            - "Define TerminologyEntry interface: id, scaffolding_id, client_term, universal_concept, context, source_session_id (string | null)."
+            - "Define SectionCompletionStatus enum: empty | draft | reviewed | validated."
+            - "Export all types from src/types/index.ts."
+          progress_file: ".agent-progress/P1__types-agent.md"
 
-  # =========================
-  # CHUNK C2: INTAKE WIZARD + SCORING ENGINE
-  # =========================
-  chunk_C2:
-    name: 'Intake Wizard + Scoring Engine'
-    phases:
-      - id: 'P3'
-        name: 'Intake Wizard Component'
-        goal: 'Build the multi-step animated glassmorphism wizard card.'
-        parallel_workstreams:
-          - agent: 'wizard-ui-agent'
-            depends_on: ['P2']
-            tasks:
-              - 'Implement animated rotating conic-gradient border via ::before pseudo-element in CSS.'
-              - 'Build WizardCard container (glassmorphism bg-card/50, backdrop-blur).'
-              - 'Implement bottom-border-only textareas and select inputs.'
-              - 'Build gradient-button component for the action bar.'
-            progress_file: '.agent-progress/P3__wizard-ui-agent.md'
+        - agent: "stores-agent"
+          depends_on: ["types-agent"]
+          tasks:
+            - "Install zustand@5.x if not already present from Control. Confirm persist middleware is available."
+            - "Create src/stores/clients.ts: Zustand persist store with key 'director-clients'. State: clients: Client[]. Actions: addClient(c: Omit<Client,'id'|'created_at'|'updated_at'>), updateClient(id: string, patch: Partial<Client>), deleteClient(id: string), setClients(clients: Client[]). Auto-generate uuid for id, set created_at/updated_at to new Date().toISOString() on creation."
+            - "Create src/stores/engagements.ts: Zustand persist store with key 'director-engagements'. State: engagements: Engagement[]. Actions: addEngagement, updateEngagement, deleteEngagement, setEngagements, getEngagementsByClientId(clientId: string): Engagement[]."
+            - "Create src/stores/discovery.ts: Zustand persist store with key 'director-discovery'. State: sessions: DiscoverySession[]. Actions: addSession, updateSession, deleteSession, setSessions, getSessionsByEngagementId(engagementId: string): DiscoverySession[]."
+            - "Create src/stores/scaffolding.ts: Zustand persist store with key 'director-scaffolding'. State: packages: ScaffoldingPackage[]. Actions: addPackage, updatePackage, updateSection(packageId: string, tier: 'tier1'|'tier2', section: string, data: Record<string,unknown>), setPackages, getPackageByEngagementId(engagementId: string): ScaffoldingPackage | undefined."
+            - "Create src/stores/ocai.ts: Zustand persist store with key 'director-ocai'. State: assessments: OCAIAssessment[]. Actions: addAssessment, updateAssessment, deleteAssessment, setAssessments, getAssessmentsByEngagementId(engagementId: string): OCAIAssessment[]."
+            - "Create src/stores/terminology.ts: Zustand persist store with key 'director-terminology'. State: entries: TerminologyEntry[]. Actions: addEntry, updateEntry, deleteEntry, setEntries, getEntriesByScaffoldingId(scaffoldingId: string): TerminologyEntry[]."
+            - "Create src/stores/settings.ts: Zustand persist store with key 'director-settings'. State: openrouter_api_key: string, selected_models: Record<string, string> (keyed by function name), mock_mode: boolean. Actions: setApiKey, setModel(fn: string, model: string), setMockMode. Initialize mock_mode from import.meta.env.VITE_USE_MOCK_DATA === 'true'."
+            - "Export each store as a named hook: useClientsStore, useEngagementsStore, useDiscoveryStore, useScaffoldingStore, useOcaiStore, useTerminologyStore, useSettingsStore."
+          progress_file: ".agent-progress/P1__stores-agent.md"
 
-          - agent: 'wizard-logic-agent'
-            depends_on: ['P2', 'wizard-ui-agent']
-            tasks:
-              - 'Implement step navigation logic (1 through 6).'
-              - 'Wire AI-generated suggestion tags as clickable pills.'
-              - 'Capture state for Problem, Impact, Current State, Desired Outcome, Constraints, Urgency.'
-            progress_file: '.agent-progress/P3__wizard-logic-agent.md'
+        - agent: "sample-data-agent"
+          depends_on: ["stores-agent"]
+          tasks:
+            - "Create src/lib/sample-data.ts exporting a seedSampleData() function that populates all stores via setClients, setEngagements, setSessions, setPackages, setAssessments, setEntries."
+            - "Seed Client 1 — Precision Dynamics: id='client-precision', mid-size manufacturer, 180 employees (encode in notes), status=scaffolding, industry='Manufacturing'."
+            - "Seed Client 2 — Midwest Distribution Co: id='client-midwest', distributor, 95 employees, status=discovery, industry='Distribution'."
+            - "Seed Engagement for Precision Dynamics: id='eng-precision-1', phase=scaffolding, status=active, start_date='2026-01-15'."
+            - "Seed Engagement for Midwest Distribution: id='eng-midwest-1', phase=discovery, status=active, start_date='2026-02-10'."
+            - "Seed 3 completed DiscoverySessions for Precision Dynamics (stakeholder_interview, system_walkthrough, workflow_observation) with realistic transcript strings (200+ chars each) and populated extracted_data objects."
+            - "Seed 2 DiscoverySessions for Midwest Distribution: one complete (stakeholder_interview), one in_progress (brand_collection)."
+            - "Seed 6 total session transcripts inline in sample-data.ts (one per session)."
+            - "Seed ScaffoldingPackage for Precision Dynamics: id='scaffolding-precision-1', all 8 tier sections populated with realistic JSON objects (key-value process/culture/data/context/brand/tech/quality/security fields), validation_status=validated."
+            - "Seed ScaffoldingPackage for Midwest Distribution: id='scaffolding-midwest-1', tier1 sections partially populated, tier2 sections empty objects, validation_status=draft."
+            - "Seed OCAIAssessment L1 for Precision Dynamics: status=analyzed, analysis populated with CVF quadrant scores (clan, adhocracy, hierarchy, market each 0–100)."
+            - "Seed OCAIAssessment L2 for Precision Dynamics: status=collecting, questions array with 6 questions."
+            - "Seed OCAIAssessment L1 for Midwest Distribution: status=deployed, questions array with 10 questions, responses empty array."
+            - "Seed 30+ TerminologyEntry records for Precision Dynamics scaffolding (covering ERP terms, shop floor language, organizational roles) — at minimum: 10 ERP terms, 10 shop floor terms, 10 role terms."
+            - "In App.tsx: import seedSampleData, import all store hooks, add DATA_VERSION = 1 constant, on app mount check localStorage key 'director-data-version', if missing or !== DATA_VERSION call seedSampleData() then set the version key."
+          progress_file: ".agent-progress/P1__sample-data-agent.md"
 
-        acceptance_checks:
-          - 'Wizard card renders with rotating gradient border.'
-          - 'User can navigate through all 6 steps and input data.'
-          - 'Suggestion pills populate text areas when clicked.'
-        required_commands:
-          - 'npm run dev'
-        phase_closeout:
-          docs:
-            - 'README: Document Wizard component and CSS animation implementation.'
-          git:
-            - "git add -A && git commit -m 'phase(P3): Intake Wizard Component'"
+      acceptance_checks:
+        - "src/types/index.ts exists and exports Client, Engagement, DiscoverySession, ScaffoldingPackage, OCAIAssessment, TerminologyEntry and all associated enums."
+        - "All 7 Zustand stores exist in src/stores/ and use 'director-' prefixed localStorage keys."
+        - "npx tsc --noEmit passes with zero errors after stores and types are created."
+        - "npm run dev — open browser localStorage in DevTools and confirm 'director-clients' key exists with 2 client records after first load."
+        - "localStorage 'director-scaffolding' contains a package for Precision Dynamics with all 8 sections non-empty."
+        - "localStorage 'director-terminology' contains 30+ entries for scaffolding-precision-1."
+        - "Incrementing DATA_VERSION in App.tsx, reloading the app, and inspecting localStorage confirms all stores are re-seeded from scratch."
+        - "npm run build exits 0 with zero TypeScript errors."
 
-      - id: 'P4'
-        name: 'Scoring Engine + Idea Detail'
-        goal: 'Score wizard submissions and render the Idea Detail view.'
-        parallel_workstreams:
-          - agent: 'scoring-agent'
-            depends_on: ['P3']
-            tasks:
-              - 'Implement src/lib/scoring.ts rules-based engine.'
-              - 'Calculate Impact (30%), Urgency (25%), Feasibility (25%), Alignment (20%).'
-              - 'Determine priority tiers (Critical, High, Medium, Low).'
-              - 'Wire wizard completion to save to ideas store and trigger activity feed.'
-            progress_file: '.agent-progress/P4__scoring-agent.md'
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
 
-          - agent: 'idea-detail-agent'
-            depends_on: ['P3']
-            tasks:
-              - 'Implement /ideas/:id view.'
-              - 'Build visual score breakdown component (bars/gauges with semantic colors).'
-              - 'Render intake summary as clean, editable list.'
-              - "Add 'Generate Charter' primary action button."
-            progress_file: '.agent-progress/P4__idea-detail-agent.md'
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.2.0] — P1: Domain types, Zustand stores, comprehensive sample data seeded.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P1): domain types, 7 zustand persist stores, sample data seeding with DATA_VERSION guard\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Open DevTools localStorage — confirm all 'director-' keys are present with populated data.
+          (2) Increment DATA_VERSION, reload, confirm re-seed. (3) TypeScript and build clean.
+          Confirm before proceeding to P2.
 
-        acceptance_checks:
-          - 'Completing the wizard successfully generates a scored idea.'
-          - 'Score dimensions calculate accurately and map to correct semantic colors.'
-          - 'Idea Detail view correctly reads from Zustand store.'
-        required_commands:
-          - 'npm run lint'
-        phase_closeout:
-          git:
-            - "git add -A && git commit -m 'phase(P4): Scoring Engine + Idea Detail'"
+    # ─────────────────────────────────────────────
+    # P2 — App Shell, Routing, and Settings Page
+    # ─────────────────────────────────────────────
+    - id: "P2"
+      name: "App Shell, Routing, and Settings Page"
+      goal: "Wire all 7 routes to real page components within the Director shell and deliver a fully functional Settings page."
+      parallel_workstreams:
+        - agent: "shell-agent"
+          depends_on: []
+          tasks:
+            - "Confirm AppShell.tsx renders correctly with Director amber/gold accent on the active nav item and sidebar footer branding."
+            - "In App.tsx, replace all placeholder <div> page components with imports of the real page components (to be created by page agents). For now, ensure the route structure is declared with React.lazy and Suspense so page components can be dropped in without re-touching App.tsx."
+            - "Add a root redirect: '/' → '/clients'."
+            - "Add a 404 catch-all route that renders a simple 'Page not found' component."
+            - "Verify Sidebar.tsx highlights the correct nav item based on the current route using NavLink from React Router."
+            - "Confirm backdrop-blur-sm + bg-card/50 glassmorphism effect on Sidebar and AppShell is intact from Control."
+          progress_file: ".agent-progress/P2__shell-agent.md"
 
-  # =========================
-  # CHUNK C3: CHARTER GENERATION + DASHBOARD
-  # =========================
-  chunk_C3:
-    name: 'Charter Generation + Dashboard'
-    phases:
-      - id: 'P5'
-        name: 'Anthropic Integration + Charter Generation'
-        goal: 'Connect to Claude API (and build mock fallback) to generate structured execution plans.'
-        parallel_workstreams:
-          - agent: 'api-integration-agent'
-            depends_on: ['P4']
-            tasks:
-              - 'Install @anthropic-ai/sdk.'
-              - 'Implement src/lib/charter-generator.ts.'
-              - 'Create mock data generator triggered by VITE_USE_MOCK_DATA=true.'
-              - 'Construct system prompt combining intake data and scaffolding context.'
-            progress_file: '.agent-progress/P5__api-integration-agent.md'
+        - agent: "settings-agent"
+          depends_on: []
+          tasks:
+            - "Create src/pages/SettingsPage.tsx."
+            - "Section 1 — AI Provider: labeled 'OpenRouter API Key' input (type=password, show/hide toggle), saves to useSettingsStore.setApiKey() on blur or explicit Save button. Below key input, a model-selection row for each AI function used in Director (interview_wizard, ocai_builder, extraction). Each row: function label + select dropdown showing common OpenRouter model IDs (anthropic/claude-sonnet-4-5, anthropic/claude-haiku, openai/gpt-4o-mini as options)."
+            - "Section 2 — Mock Data: read-only display of import.meta.env.VITE_USE_MOCK_DATA. If true, show a yellow badge 'MOCK MODE — AI calls are simulated'. If false, show a green badge 'LIVE MODE'."
+            - "Section 3 — About: 'Director' title, version string read from package.json (import via Vite's JSON import), build date placeholder string."
+            - "Apply shadcn/ui Card, Input, Select, Badge, Button primitives. Apply glassmorphism card style (bg-card/50 backdrop-blur-sm). Use amber accent for section headers."
+            - "Write a Vitest smoke test in src/pages/SettingsPage.test.tsx: render SettingsPage, assert 'OpenRouter API Key' label is present, assert mock mode badge renders."
+          progress_file: ".agent-progress/P2__settings-agent.md"
 
-          - agent: 'charter-view-agent'
-            depends_on: ['P4']
-            tasks:
-              - 'Implement /charters/:id view.'
-              - 'Build structured-display renderer for the generated charter JSON/object.'
-              - 'Implement status tracking badges (draft -> complete).'
-              - 'Add clipboard export functionality.'
-            progress_file: '.agent-progress/P5__charter-view-agent.md'
+      acceptance_checks:
+        - "Navigating to http://localhost:3950/ redirects to /clients."
+        - "All 7 nav items route without crashing (placeholder or real page renders)."
+        - "Active nav item in Sidebar has amber/gold highlight class."
+        - "Settings page at /settings renders all 3 sections."
+        - "Entering an API key in Settings and reloading confirms key persists in localStorage under 'director-settings'."
+        - "MOCK MODE badge is visible when VITE_USE_MOCK_DATA=true."
+        - "Vitest: 'npm run test' passes for SettingsPage.test.tsx."
+        - "npm run build exits 0."
 
-        acceptance_checks:
-          - "Mock mode successfully generates a dummy charter after clicking 'Generate'."
-          - 'Live mode (with key) successfully calls Claude API and parses structured response.'
-          - 'Charter view renders phases, tasks, and acceptance criteria clearly.'
-        required_commands:
-          - 'npm run dev'
-        phase_closeout:
-          git:
-            - "git add -A && git commit -m 'phase(P5): Charter Generation'"
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run test"
+        - "npm run build"
 
-      - id: 'P6'
-        name: 'Dashboard Aggregation'
-        goal: 'Build the primary landing view summarizing all operations.'
-        parallel_workstreams:
-          - agent: 'dashboard-ui-agent'
-            depends_on: ['P2', 'P4', 'P5']
-            tasks:
-              - 'Implement Priority Queue list sorted by composite score.'
-              - 'Implement Active Projects cards filtered by status.'
-              - 'Implement Recent Activity feed reading from activity.ts store.'
-              - 'Add prominent Quick Action gradient buttons.'
-            progress_file: '.agent-progress/P6__dashboard-ui-agent.md'
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.3.0] — P2: Full routing, Director shell verified, Settings page complete.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P2): routing, shell verified, settings page with api key + mock mode indicator\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Navigate all 7 routes — no crashes. (2) Settings page — save an API key, reload,
+          confirm persistence. (3) MOCK MODE badge visible. Confirm before P3.
 
-        acceptance_checks:
-          - 'Dashboard accurately reflects data currently in localStorage.'
-          - 'Clicking items correctly routes to detail views.'
-        required_commands:
-          - 'npm run lint'
-        phase_closeout:
-          git:
-            - "git add -A && git commit -m 'phase(P6): Dashboard Aggregation'"
+    # ─────────────────────────────────────────────
+    # P3 — Clients Page
+    # ─────────────────────────────────────────────
+    - id: "P3"
+      name: "Clients Page"
+      goal: "Deliver a fully functional Clients page with list view, filtering, sorting, detail panel, create form, and status progression visualization."
+      parallel_workstreams:
+        - agent: "clients-list-agent"
+          depends_on: []
+          tasks:
+            - "Create src/pages/ClientsPage.tsx as the page root, orchestrating list and detail panel."
+            - "Create src/components/clients/ClientList.tsx: renders a list/table of clients from useClientsStore. Columns: Name, Industry, Size, Status badge, Primary Contact, Last Updated."
+            - "Add filter bar above list: status filter (dropdown — All / prospect / discovery / scaffolding / building / active / archived) and text search (filters by name and industry)."
+            - "Add sort controls: sortable by Name (A–Z / Z–A), Status, Updated date."
+            - "Status badges use semantic colors: prospect=gray, discovery=sky, scaffolding=amber, building=blue, active=emerald, archived=neutral."
+            - "Clicking a client row opens a ClientDetailPanel (slide-in or right-panel layout using shadcn/ui Sheet or a custom panel)."
+            - "Create src/components/clients/ClientDetailPanel.tsx: shows client name, industry, size, primary contact, notes. Shows list of engagements for this client (from useEngagementsStore.getEngagementsByClientId). Shows current phase badge. Provides quick-action buttons: 'View Discovery', 'View Scaffolding', 'View OCAI' — navigate to those pages filtered to this client's active engagement."
+            - "Create src/components/clients/ClientStatusProgression.tsx: horizontal stepper visualization showing the 6 statuses (prospect → discovery → scaffolding → building → active [archived as off-path]). Current status highlighted in amber. Clicking a step calls updateClient with new status after a window.confirm prompt."
+            - "Create src/components/clients/NewClientForm.tsx (inside a shadcn/ui Dialog): fields for name (required), industry, size_range (Select), primary_contact, notes (Textarea). On submit calls addClient and closes dialog. Validate: name must be non-empty."
+            - "Add 'New Client' button in page header that opens NewClientForm dialog."
+          progress_file: ".agent-progress/P3__clients-list-agent.md"
 
-  # =========================
-  # CHUNK C4: ISSUES + SCAFFOLDING + DEMO DATA
-  # =========================
-  chunk_C4:
-    name: 'Issues + Scaffolding + Final Demo State'
-    phases:
-      - id: 'P7'
-        name: 'Issues & Scaffolding Views'
-        goal: 'Complete the remaining navigational views for bug tracking and reference standards.'
-        parallel_workstreams:
-          - agent: 'issues-agent'
-            depends_on: ['P2']
-            tasks:
-              - 'Implement /issues list view with filters (type, severity, status).'
-              - 'Build new issue submission form (bottom-border aesthetics).'
-              - 'Implement issue detail view.'
-            progress_file: '.agent-progress/P7__issues-agent.md'
+      acceptance_checks:
+        - "Clients page at /clients renders 2 sample clients (Precision Dynamics, Midwest Distribution Co)."
+        - "Status filter to 'scaffolding' shows only Precision Dynamics."
+        - "Text search for 'midwest' shows only Midwest Distribution Co."
+        - "Clicking Precision Dynamics opens ClientDetailPanel with engagement list and amber current phase indicator."
+        - "Quick-action 'View Scaffolding' navigates to /scaffolding."
+        - "ClientStatusProgression renders all 6 stages; current stage is amber-highlighted."
+        - "New Client form opens, fills, submits — new client appears in list immediately (from Zustand store)."
+        - "npm run build exits 0."
 
-          - agent: 'scaffolding-agent'
-            depends_on: ['P2']
-            tasks:
-              - 'Implement /scaffolding read-only viewer.'
-              - 'Build side-navigation for document types (company-context, brand-standards, etc.).'
-            progress_file: '.agent-progress/P7__scaffolding-agent.md'
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
 
-        acceptance_checks:
-          - 'User can submit and view a bug report.'
-          - 'Scaffolding view successfully renders loaded document structures.'
-        required_commands:
-          - 'npm run dev'
-        phase_closeout:
-          git:
-            - "git add -A && git commit -m 'phase(P7): Issues & Scaffolding Views'"
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.4.0] — P3: Clients page complete.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P3): clients page — list, filter, sort, detail panel, status progression, create form\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Both sample clients visible. (2) Filter and search work. (3) Detail panel opens.
+          (4) New client creation persists across reload. Confirm before P4.
 
-      - id: 'P8'
-        name: 'Demo Data Seeding & Final Polish'
-        goal: 'Load realistic fictional data to make the prototype immediately demonstrable.'
-        parallel_workstreams:
-          - agent: 'demo-data-agent'
-            depends_on: ['P4', 'P5', 'P6', 'P7']
-            tasks:
-              - 'Implement src/lib/sample-data.ts.'
-              - "Create comprehensive dummy data centered around 'AHAUS', a fictional manufacturing company."
-              - 'Seed 3 scored ideas, 1 active charter, 5 issues, and a full scaffolding package.'
-              - 'Inject loader logic in App.tsx to populate empty Zustand stores on first load.'
-            progress_file: '.agent-progress/P8__demo-data-agent.md'
+    # ─────────────────────────────────────────────
+    # P4 — Engagements Page
+    # ─────────────────────────────────────────────
+    - id: "P4"
+      name: "Engagements Page"
+      goal: "Deliver a fully functional Engagements page with per-client engagement list, phase progression controls, and engagement detail tabs."
+      parallel_workstreams:
+        - agent: "engagements-agent"
+          depends_on: []
+          tasks:
+            - "Create src/pages/EngagementsPage.tsx."
+            - "Add a client selector at the top of the page (dropdown populated from useClientsStore). Selected client stored in local component state. Default to Precision Dynamics on load."
+            - "Create src/components/engagements/EngagementList.tsx: shows engagements for the selected client. Columns: Phase badge, Status badge, Start Date, Target End Date, actual_end_date if set."
+            - "Phase badges use distinct colors: discovery=sky, scaffolding=amber, first_build=violet, handoff=teal, subscription=emerald."
+            - "Clicking an engagement opens EngagementDetail panel."
+            - "Create src/components/engagements/EngagementDetail.tsx: tabbed layout using shadcn/ui Tabs. Tabs: Overview, Discovery (count of sessions), Scaffolding (completion %), OCAI (assessment count), Settings (edit dates/status). Each non-Overview tab shows a summary and a 'Go to [page]' link that navigates to the relevant page."
+            - "Create src/components/engagements/PhaseProgressionControl.tsx: a horizontal stepper for EngagementPhase (discovery → scaffolding → first_build → handoff → subscription). Current phase in amber. 'Advance Phase' button moves to next phase (calls updateEngagement). 'Revert Phase' button goes back. Confirm dialog before both actions."
+            - "Create src/components/engagements/NewEngagementForm.tsx (shadcn/ui Dialog): client_id pre-selected from current selector, phase (Select), start_date (date input), target_end_date (date input, optional). Validate: start_date required."
+            - "Add 'New Engagement' button in page header."
+          progress_file: ".agent-progress/P4__engagements-agent.md"
 
-          - agent: 'qa-polish-agent'
-            depends_on: ['demo-data-agent']
-            tasks:
-              - 'Verify mobile responsiveness (desktop-first, functional on tablet).'
-              - 'Ensure strict adherence to font-light everywhere.'
-              - 'Audit muted text opacities (55% lightness).'
-            progress_file: '.agent-progress/P8__qa-polish-agent.md'
+      acceptance_checks:
+        - "Selecting Precision Dynamics in client dropdown shows its engagement (phase=scaffolding)."
+        - "Selecting Midwest Distribution Co shows its engagement (phase=discovery)."
+        - "Clicking Precision Dynamics engagement opens EngagementDetail with 5 tabs."
+        - "Discovery tab shows count '3 sessions'. Scaffolding tab shows non-zero completion %."
+        - "Advance Phase on Precision Dynamics engagement moves phase from scaffolding to first_build; Zustand store reflects the change."
+        - "Reverting undoes the phase change."
+        - "New Engagement form creates a new engagement visible in the list."
+        - "npm run build exits 0."
 
-        acceptance_checks:
-          - 'Opening the app on a fresh browser immediately displays a rich dashboard of AHAUS data.'
-          - 'No console errors; strict TypeScript compilation passes.'
-        required_commands:
-          - 'npm run build'
-        phase_closeout:
-          docs:
-            - 'README: Finalize demo instructions.'
-          git:
-            - "git add -A && git commit -m 'phase(P8): Demo Data Seeding & Final Polish'"
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
+
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.5.0] — P4: Engagements page complete.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P4): engagements page — list, phase progression, detail tabs, create form\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Both clients' engagements visible. (2) Phase progression advances and reverts.
+          (3) Detail tabs show correct counts. Confirm before P5.
+
+    # ─────────────────────────────────────────────
+    # P5 — Discovery Page
+    # ─────────────────────────────────────────────
+    - id: "P5"
+      name: "Discovery Page"
+      goal: "Deliver the Discovery page with session list grouped by type, session creation, AI-guided interview wizard, transcript view, and scaffolding section linkage."
+      parallel_workstreams:
+        - agent: "discovery-list-agent"
+          depends_on: []
+          tasks:
+            - "Create src/pages/DiscoveryPage.tsx with engagement selector at top (defaults to Precision Dynamics engagement)."
+            - "Create src/components/discovery/SessionList.tsx: groups sessions by DiscoverySessionType. Each group header shows type label and session count. Sessions within each group show: title, participants (comma-joined), session_date, status badge."
+            - "Status badge colors: scheduled=gray, in_progress=amber, complete=emerald, reviewed=teal."
+            - "Clicking a session opens SessionDetail panel."
+            - "Create src/components/discovery/SessionDetail.tsx: shows all session fields. Transcript displayed in a scrollable textarea (read-only). Extracted data displayed as a formatted JSON view (pre tag or CodeBlock). Shows scaffolding_sections_affected as a badge list."
+            - "Create src/components/discovery/NewSessionForm.tsx (shadcn/ui Dialog): engagement_id pre-set, session_type (Select), title (Input), participants (comma-separated Input), session_date (datetime-local Input). On submit calls addSession with status=scheduled."
+            - "Add 'New Session' button in page header."
+          progress_file: ".agent-progress/P5__discovery-list-agent.md"
+
+        - agent: "interview-wizard-agent"
+          depends_on: ["discovery-list-agent"]
+          tasks:
+            - "Create src/components/discovery/InterviewWizard.tsx: renders an AI-guided interview interface for a given DiscoverySession using the existing WizardCard component pattern inherited from Control."
+            - "Define scripted conversation flows per session type in src/lib/interview-flows.ts: stakeholder_interview (8 turns: intro, org structure, pain points, current tools, key decisions, success metrics, org culture, wrap-up), system_walkthrough (6 turns: system overview, integrations, data flows, pain points, wish list, wrap-up), workflow_observation (6 turns: workflow name, steps, decision points, handoff points, exceptions, improvement ideas), brand_collection (5 turns: brand adjectives, visual identity, tone, competitor differentiation, brand assets)."
+            - "Each flow step has: step_id, prompt (shown to consultant), suggested_question (AI-spoken), extraction_keys (array of strings — data fields to extract from the response)."
+            - "InterviewWizard shows: current step prompt + suggested question, a textarea for the consultant to type or paste the interviewee's response, a 'Next' button to advance, a 'Finish' button to complete. Shows progress indicator (step N of M)."
+            - "When VITE_USE_MOCK_DATA=true: on clicking 'Next', call mockExtract(step, response) from src/lib/mock-ai.ts which returns a mock extracted_data object after 800ms delay."
+            - "When VITE_USE_MOCK_DATA=false: call OpenRouter via src/lib/openrouter.ts with a prompt that asks the model to extract the extraction_keys from the response text and return JSON."
+            - "Accumulate extracted_data across all steps. On 'Finish': call updateSession with status=complete, transcript (all turns joined), extracted_data (accumulated JSON), and scaffolding_sections_affected (derived from extraction_keys across all steps)."
+            - "Add 'Start Interview' button in SessionDetail when session status=scheduled or in_progress. Opens InterviewWizard in a full-screen Dialog or dedicated panel."
+            - "Create src/lib/mock-ai.ts with mockExtract() and mockOcaiGenerate() stubs (used in later phases)."
+            - "Create src/lib/openrouter.ts with a complete() function that reads the API key from useSettingsStore and POSTs to 'https://openrouter.ai/api/v1/chat/completions'. Checks VITE_USE_MOCK_DATA; if true, delegates to mock functions and returns after simulated delay."
+          progress_file: ".agent-progress/P5__interview-wizard-agent.md"
+
+      acceptance_checks:
+        - "Discovery page shows 3 complete sessions grouped by type for Precision Dynamics."
+        - "Clicking a session opens SessionDetail with transcript visible and extracted_data displayed."
+        - "scaffolding_sections_affected badges visible on each completed session."
+        - "New Session form creates a session with status=scheduled."
+        - "'Start Interview' button visible on a scheduled session."
+        - "Starting an interview with Precision Dynamics stakeholder_interview session type renders the 8-step flow."
+        - "Advancing through all 8 steps with mock text input completes the session (status becomes 'complete') with no console errors."
+        - "With VITE_USE_MOCK_DATA=true, no real HTTP request to openrouter.ai is made (confirm in DevTools Network tab)."
+        - "npm run build exits 0."
+
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
+
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.6.0] — P5: Discovery page with session list, interview wizard, AI extraction with mock fallback.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P5): discovery page — session list, interview wizard, mock AI extraction, openrouter client\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Sessions display grouped correctly. (2) Run full interview wizard for one session —
+          confirm it completes and session status updates. (3) No real API calls in mock mode (Network tab).
+          Confirm before P6.
+
+    # ─────────────────────────────────────────────
+    # P6 — Scaffolding Page
+    # ─────────────────────────────────────────────
+    - id: "P6"
+      name: "Scaffolding Page"
+      goal: "Deliver the two-tier Scaffolding page with section editors, completion indicators, terminology decoder management, export, and validation check."
+      parallel_workstreams:
+        - agent: "scaffolding-layout-agent"
+          depends_on: []
+          tasks:
+            - "Create src/pages/ScaffoldingPage.tsx with engagement selector defaulting to Precision Dynamics."
+            - "Create src/components/scaffolding/ScaffoldingLayout.tsx: renders a two-column or two-tier visual layout. Tier 1 header: 'Operational Intelligence', Tier 2 header: 'Build Intelligence'. Use amber accent for tier headers."
+            - "Tier 1 sections: Process & Workflow, Culture Profile, Data & Systems (3 cards)."
+            - "Tier 2 sections: Company Context, Brand Standards, Tech Preferences, Quality Standards, Security Patterns (5 cards)."
+            - "Each section card shows: section title, SectionCompletionStatus badge (empty=gray, draft=amber, reviewed=blue, validated=emerald), last edited timestamp, 'Edit' button."
+            - "SectionCompletionStatus is derived automatically: empty if all section fields are empty strings/null, draft if any field has content, reviewed if manually set, validated if manually set. The Edit modal allows the consultant to manually promote status to reviewed or validated."
+            - "Create src/components/scaffolding/SectionEditor.tsx (shadcn/ui Dialog or Sheet): shows the section name and a dynamic form. Each top-level key in the section's JSON object is rendered as a labeled Textarea. Saves via updateSection on dialog close."
+            - "Add 'Validate Package' button: checks all 8 sections are non-empty (draft or above). Shows a validation summary dialog listing any empty sections. If all pass, calls updatePackage with validation_status=validated."
+            - "Add 'Export Package' button: serializes the ScaffoldingPackage to JSON and triggers a browser download as 'scaffolding-[clientName]-v[version].json'. On success, calls updatePackage with exported_at=now, validation_status=exported."
+          progress_file: ".agent-progress/P6__scaffolding-layout-agent.md"
+
+        - agent: "terminology-agent"
+          depends_on: []
+          tasks:
+            - "Create src/components/scaffolding/TerminologyDecoder.tsx: full-screen or drawer panel accessible from the Scaffolding page via a 'Terminology' tab or button."
+            - "Shows a searchable (by client_term or universal_concept), sortable (by client_term A–Z, by universal_concept A–Z) table of TerminologyEntry records for the active scaffolding package."
+            - "Each row: client_term, universal_concept, context (truncated), source_session link (if set, shows session title). Actions: Edit (inline row edit or Dialog), Delete (with confirm)."
+            - "Add 'New Entry' button: opens a form Dialog with client_term, universal_concept, context, source_session_id (optional Select from discovery sessions for this engagement)."
+            - "Add 'Import from Discovery' button: opens a Dialog showing all completed discovery sessions for the engagement. Each session's extracted_data keys are listed as selectable rows. Selecting rows and clicking 'Import' creates TerminologyEntry records for each selected item (client_term = key, universal_concept = value if string, context = session title)."
+            - "Add 'Export' button: downloads terminology entries as JSON (array) and as CSV. Filename: 'terminology-[clientName].json' and 'terminology-[clientName].csv'."
+            - "Integrate TerminologyDecoder into ScaffoldingPage as a 'Terminology' tab alongside the two-tier layout."
+          progress_file: ".agent-progress/P6__terminology-agent.md"
+
+      acceptance_checks:
+        - "Scaffolding page shows two-tier layout with correct section counts (3 Tier 1, 5 Tier 2)."
+        - "Precision Dynamics sections all show 'validated' (green) badges from sample data."
+        - "Midwest Distribution Co sections show 'draft' for Tier 1 sections, 'empty' for Tier 2 sections."
+        - "Editing a Tier 1 section updates the store and the badge reflects the change on re-render."
+        - "Validate Package: if all sections non-empty, sets validation_status=validated."
+        - "Export Package: triggers browser file download of valid JSON."
+        - "Terminology tab shows 30+ entries for Precision Dynamics."
+        - "Text search filters entries. New entry form adds to store. Import from Discovery creates entries."
+        - "Export terminology triggers JSON and CSV download."
+        - "npm run build exits 0."
+
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
+
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.7.0] — P6: Scaffolding page with two-tier editor, completion indicators, terminology decoder, export.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P6): scaffolding page — two-tier editor, section completion, terminology decoder, validate & export\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Both clients' scaffolding packages render with correct completion badges.
+          (2) Edit a section — confirm save. (3) Export — confirm download. (4) Terminology import works.
+          Confirm before P7.
+
+    # ─────────────────────────────────────────────
+    # P7 — OCAI Page
+    # ─────────────────────────────────────────────
+    - id: "P7"
+      name: "OCAI Page"
+      goal: "Deliver the OCAI page with assessment dashboard, Level 1 and Level 2 builders, response collection, CVF radar chart, and gap analysis."
+      parallel_workstreams:
+        - agent: "ocai-builder-agent"
+          depends_on: []
+          tasks:
+            - "Create src/pages/OcaiPage.tsx with engagement selector defaulting to Precision Dynamics."
+            - "Create src/components/ocai/AssessmentDashboard.tsx: lists all assessments for the selected engagement. Groups by level. Shows status badge, target_scope, question count, response count for each."
+            - "Create src/components/ocai/Level1Builder.tsx: 'Generate L1 Baseline Assessment' form. Input: target_scope (defaults to 'Organization-wide'), respondent groups (multi-select: Leadership, Staff, Managers, Front-line). On 'Generate': if mock mode, call mockOcaiGenerate('level1', scope) from mock-ai.ts (returns 10–12 canned behavioral scenario questions after 1s delay). If live, call OpenRouter with a prompt asking for 10–12 behavioral scenario questions for an organizational culture baseline assessment. Store result via addAssessment with status=draft, level=baseline_1."
+            - "Create src/components/ocai/Level2Builder.tsx: 'Generate L2 Workflow Assessment' form. Reads Tier 1 Process & Workflow section from the engagement's ScaffoldingPackage. Lists detected workflow names (parsed from the JSON keys). Consultant selects 1–3 workflows. On 'Generate': if mock mode, returns 2–3 canned questions per selected workflow. If live, calls OpenRouter with workflow context + prompt. Stores result via addAssessment with status=draft, level=workflow_2."
+            - "Create src/components/ocai/ResponseCollection.tsx: for an assessment in status=deployed or collecting, displays each question and a textarea for entering the response. 'Save Responses' button calls updateAssessment with responses=[...] and status=collecting. 'Mark Complete' button sets status=complete."
+            - "Create src/components/ocai/AnalysisPanel.tsx: for an assessment in status=complete or analyzed, shows 'Analyze' button. On 'Analyze': if mock mode, calls mockOcaiGenerate('analysis', assessment) which returns a CVF analysis object {clan: number, adhocracy: number, hierarchy: number, market: number, gaps: string[], summary: string}. If live, calls OpenRouter with responses and asks for CVF quadrant scoring. Calls updateAssessment with analysis object and status=analyzed."
+            - "Add 'Deploy' button on draft assessments: sets status=deployed."
+          progress_file: ".agent-progress/P7__ocai-builder-agent.md"
+
+        - agent: "ocai-viz-agent"
+          depends_on: ["ocai-builder-agent"]
+          tasks:
+            - "Create src/components/ocai/CvfRadarChart.tsx: renders a radar/spider chart with 4 axes (Clan, Adhocracy, Hierarchy, Market) using either a lightweight SVG implementation or the recharts library if already present in Control's dependencies. If recharts is not present, implement as a pure SVG radar chart. Values are 0–100. Amber fill for the primary dataset."
+            - "Create src/components/ocai/GapAnalysisView.tsx: displays a side-by-side comparison for engagements that have both a complete Leadership L1 and a complete Staff L1 assessment (or any two analyzed assessments). Shows CVF radar chart for each, plus a 'gaps' text list from the analysis JSON."
+            - "Integrate CvfRadarChart and GapAnalysisView into AnalysisPanel — show chart above gap list."
+            - "Add 'Gap Analysis' tab to OcaiPage that renders GapAnalysisView using all analyzed assessments for the selected engagement."
+          progress_file: ".agent-progress/P7__ocai-viz-agent.md"
+
+      acceptance_checks:
+        - "OCAI page shows Precision Dynamics assessments: L1 (analyzed), L2 (collecting)."
+        - "Midwest Distribution Co shows L1 (deployed)."
+        - "L1 Builder generates 10–12 questions in mock mode with no API call."
+        - "L2 Builder reads Process & Workflow section from Precision Dynamics scaffolding and lists workflow names."
+        - "ResponseCollection renders all questions with textareas."
+        - "AnalysisPanel for the analyzed Precision Dynamics L1 shows CVF radar chart with 4 axes populated from sample data."
+        - "Radar chart renders SVG with amber fill — no console errors."
+        - "GapAnalysisView renders for Precision Dynamics (two analyzed assessments in sample data)."
+        - "npm run build exits 0."
+
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
+
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.8.0] — P7: OCAI page with L1/L2 builders, response collection, CVF radar chart, gap analysis.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P7): ocai page — L1/L2 builders, response collection, CVF radar chart, gap analysis view\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) L1 builder generates questions in mock mode. (2) Radar chart renders correctly.
+          (3) Gap analysis visible for Precision Dynamics. Confirm before P8.
+
+    # ─────────────────────────────────────────────
+    # P8 — Terminology Page
+    # ─────────────────────────────────────────────
+    - id: "P8"
+      name: "Terminology Page"
+      goal: "Deliver a standalone Terminology page as a first-class view of the terminology decoder across all scaffolding packages."
+      parallel_workstreams:
+        - agent: "terminology-page-agent"
+          depends_on: []
+          tasks:
+            - "Create src/pages/TerminologyPage.tsx."
+            - "Add an engagement/scaffolding selector at top (dropdown of all scaffolding packages with client name + version labels, derived by joining scaffolding store with clients + engagements stores)."
+            - "Render the full TerminologyDecoder component (already built in P6) scoped to the selected scaffolding package. Reuse the component — do not duplicate."
+            - "Add a page-level header showing the selected client name, current package version, and validation_status badge."
+            - "Add a stat row: total entries, entries with source session linked, entries without source session."
+            - "Confirm 'Export JSON' and 'Export CSV' buttons work from this page context (reusing TerminologyDecoder's export logic)."
+            - "Add 'Bulk Delete' capability: checkbox column in table, 'Delete Selected' button that removes checked entries after confirm dialog."
+          progress_file: ".agent-progress/P8__terminology-page-agent.md"
+
+      acceptance_checks:
+        - "Terminology page at /terminology renders with Precision Dynamics selected by default."
+        - "30+ entries visible, searchable, and sortable."
+        - "Stat row shows correct total count."
+        - "Switching scaffolding selector to Midwest Distribution Co shows that package's entries (fewer entries from partial scaffolding)."
+        - "Bulk delete: check 3 entries, click 'Delete Selected', confirm — 3 removed from store and table."
+        - "JSON export and CSV export both trigger downloads."
+        - "npm run build exits 0."
+
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run build"
+
+      phase_closeout:
+        docs:
+          - "Add CHANGELOG.md entry: '## [0.9.0] — P8: Terminology page complete.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P8): terminology page — full decoder view, bulk delete, stats, export\""
+          - "git push origin HEAD"
+        human_review: >
+          Review: (1) Terminology page loads with Precision Dynamics data. (2) Bulk delete works.
+          (3) Exports download. Confirm before P9.
+
+    # ─────────────────────────────────────────────
+    # P9 — Polish, Smoke Tests, and Build Verification
+    # ─────────────────────────────────────────────
+    - id: "P9"
+      name: "Polish, Smoke Tests, and Final Build Verification"
+      goal: "Harden the application with smoke tests for every page, fix any cross-page navigation issues, verify zero dead imports, and produce a clean final build."
+      parallel_workstreams:
+        - agent: "polish-agent"
+          depends_on: []
+          tasks:
+            - "Audit all 7 pages for consistent amber/gold accent on page-level headers, action buttons, and active states."
+            - "Confirm shadcn/ui Button variant='default' uses amber primary color inherited from the CSS override."
+            - "Confirm all loading states (AI mock delays) show an appropriate skeleton or spinner — no blank/frozen UI during the 600–1200ms mock delay."
+            - "Add a global error boundary in App.tsx (React ErrorBoundary component) that catches render errors and shows a recovery UI rather than a blank page."
+            - "Confirm cross-page navigation links work: Clients detail panel 'View Scaffolding' → Scaffolding page. Engagements detail tabs 'Go to Discovery' → Discovery page. Discovery session 'scaffolding_sections_affected' badges link to Scaffolding page."
+            - "Run 'grep -r \"from.*Control\\|from.*level-set\\|import.*mock-server\" src/' — confirm zero results."
+            - "Run 'grep -rn \"dev-portal\\|issue-reporter\\|issue-scoring\\|agents-skills\" src/' — confirm zero results."
+            - "Audit localStorage keys on a fresh load (clear localStorage, reload) — confirm exactly these keys are created: director-clients, director-engagements, director-discovery, director-scaffolding, director-ocai, director-terminology, director-settings, director-data-version. No other 'director-' keys."
+          progress_file: ".agent-progress/P9__polish-agent.md"
+
+        - agent: "test-agent"
+          depends_on: []
+          tasks:
+            - "Create or update src/test/smoke.test.ts (inherited from Control) to cover Director routes."
+            - "Add smoke tests for: App renders without crashing, / redirects to /clients, /settings renders 'OpenRouter API Key' text, /clients renders 'Precision Dynamics', /engagements renders without crashing, /discovery renders without crashing, /scaffolding renders 'Operational Intelligence', /ocai renders without crashing, /terminology renders without crashing."
+            - "Add a test for the DATA_VERSION seeding: mock localStorage as empty, render App, confirm useClientsStore has 2 clients after mount."
+            - "Add a test for mock mode: import useSettingsStore, confirm initial mock_mode is true when VITE_USE_MOCK_DATA=true."
+            - "Ensure all existing Vitest tests still pass (including SettingsPage.test.tsx from P2)."
+            - "Run 'npm run test' — all tests green."
+          progress_file: ".agent-progress/P9__test-agent.md"
+
+      acceptance_checks:
+        - "'npm run test' passes — all smoke and unit tests green, zero failures."
+        - "grep for removed Control module references returns zero results."
+        - "localStorage audit on fresh load confirms exactly the 8 expected 'director-' keys."
+        - "All 7 pages render in browser with amber accent on active nav items and page headers."
+        - "AI mock delay (Discovery interview wizard, OCAI builder, Analysis) shows spinner/skeleton during the delay — no frozen UI."
+        - "Error boundary renders recovery UI when a child component throws (verified by temporarily throwing in one component)."
+        - "'npm run build' exits 0 with zero TypeScript errors and zero lint warnings."
+        - "dist/ directory contains index.html and hashed asset files."
+
+      required_commands:
+        - "npx tsc --noEmit"
+        - "npm run lint"
+        - "npm run test"
+        - "npm run build"
+
+      phase_closeout:
+        docs:
+          - "Update README.md to final state: setup instructions, port, DATA_VERSION note, VITE_USE_MOCK_DATA explanation, list of all 7 pages."
+          - "Add CHANGELOG.md entry: '## [1.0.0] — P9: Polish, smoke tests, final build verification. Director MVP complete.'"
+        git:
+          - "git add -A"
+          - "git commit -m \"phase(P9): polish, error boundary, smoke tests, final build verification — Director MVP 1.0.0\""
+          - "git push origin HEAD"
+        human_review: >
+          Final review: (1) Run full app walkthrough — both sample clients, all 7 pages, complete one
+          discovery interview, validate and export a scaffolding package, generate an OCAI assessment.
+          (2) npm run test — all green. (3) npm run build — clean. Director MVP is complete.
+
+  non_negotiables_recheck:
+    - "Clone-and-strip is verifiably clean: grep for all removed module names returns zero results."
+    - "Port 3950 is the only port used. vite.config.ts server.port === 3950."
+    - "All Zustand persist stores use 'director-' key prefix. No store uses a non-prefixed key."
+    - "DATA_VERSION in App.tsx triggers full re-seed when incremented. Verified by incrementing and confirming localStorage is rebuilt."
+    - "VITE_USE_MOCK_DATA=true in .env. All AI features (interview wizard, OCAI builder, OCAI analysis) have mock fallbacks with 600–1200ms simulated delay and zero real HTTP calls to openrouter.ai in mock mode."
+    - "TypeScript strict mode: 'npx tsc --noEmit' exits 0. No ts-ignore without comment."
+    - "index.css design system tokens are unmodified except for the single --primary: hsl(38, 92%, 50%) amber/gold override with a documenting comment."
+    - "shadcn/ui components in src/components/ui/* were not reinstalled or regenerated — they are exactly as inherited from Control."
+    - "No server, no API, no database, no authentication layer exists in this repository."
+    - "npm run build exits 0 with zero TypeScript errors and zero lint warnings."
+    - "npm run test passes — all smoke and unit tests green."
+    - "Sample data seeds correctly on fresh localStorage and re-seeds on DATA_VERSION increment: 2 clients, 2 engagements, 5 discovery sessions, 2 scaffolding packages (all 8 sections populated for Precision Dynamics), 3 OCAI assessments, 30+ terminology entries."

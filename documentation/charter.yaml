@@ -1,648 +1,371 @@
-# ============================================================================
-# Control — Project Charter
-# Client-Facing AI Development Operations Hub
-# ============================================================================
-# This charter governs the prototype build of Control, the client-facing
-# application delivered as part of an AI consulting engagement. Control
-# serves as the client's ongoing development operations hub for prioritizing
-# work, generating charters and execution plans, and managing bugs and
-# feature requests. It operates in conjunction with a scaffolding package
-# produced during the initial consulting discovery process.
-# ============================================================================
-
-project:
-  name: Control
-  type: web-application
-  stage: prototype
+charter:
+  project: "Director Application"
+  type: "Web Application"
+  stage: "MVP"
+  charter_version: "2.0.0"
+  charter_date: "2026-03-21"
+  revision_notes:
+    - "v1.0.0: Initial charter with monorepo extraction approach."
+    - "v1.1.0: Aligned tech stack with Control README."
+    - "v2.0.0: Replaced monorepo approach with clone-and-strip. Director is an independent repo cloned from Control, with client-specific code removed and consultant-specific pages built in its place. No shared package, no workspace orchestration."
   description: >
-    Control is a client-facing AI development operations hub. It is the
-    central tool a client uses after an AI consulting engagement to manage
-    their ongoing development lifecycle. Clients use it to capture process
-    improvement ideas, score and prioritize application opportunities, generate
-    project charters and execution plans for agentic coding tools, and track
-    bugs and feature requests from end users. The scaffolding package produced
-    during the consulting discovery process lives inside Control and
-    governs all charter output.
+    Clone the Control (client-facing) application into a new repository and
+    strip out all client-specific functionality, retaining the design system,
+    layout shell, shared components, and infrastructure patterns. Build the
+    Director (consultant-facing) application on that foundation. Director is
+    the governance and pre-production tool used exclusively by Project Foundry
+    consultants — it never deploys to clients. It guides discovery, manages
+    scaffolding assembly, administers OCAI assessments, and produces the
+    scaffolding packages that feed everything downstream. The two applications
+    share the same visual identity because they share the same origin.
 
-# ============================================================================
-# TECH STACK
-# ============================================================================
+owners:
+  product_owner: "James — technical architect, methodology designer, lead consultant"
+  tech_owner: "James"
 
-stack:
-  framework: react
-  bundler: vite
-  language: typescript
-  css: tailwind-css-v3
-  components: shadcn-ui-v2
-  icons: lucide-react
-  font: inter
-  animations: pure-css # No Framer Motion. @keyframes and conic-gradient rotation.
-  state: zustand # Lightweight, minimal boilerplate
-  routing: react-router-dom
-  api-client: anthropic-sdk # For charter generation via Claude API
-  package-manager: npm
+tech_stack:
+  note: "Inherited from Control. No changes to the stack."
+  runtime: "Node.js 20.x"
+  framework: "React 19.x, TypeScript 5.9.x (strict mode)"
+  bundler: "Vite 7.x (SPA, no SSR)"
+  css: "Tailwind CSS 4.x"
+  component_library: "shadcn/ui (Radix UI primitives)"
+  state_management: "Zustand 5.x with persist middleware (localStorage)"
+  routing: "React Router DOM 7.x"
+  drag_and_drop: "dnd-kit"
+  icons: "Lucide React 0.575.x"
+  animation: "CSS-based (conic-gradient borders, backdrop-blur, transitions)"
+  ai_conversation: "OpenRouter for multi-model routing (configured at runtime in Settings)"
+  testing: "Vitest 4.x, jsdom, Testing Library"
+  fonts: "Inter variable font"
+  package_manager: "npm"
 
-  notes:
-    - Single Page Application, no SSR
-    - Standard #root mount via Vite
-    - shadcn/ui v2 uses full HSL token system with CSS custom properties
-    - All colors defined as HSL values on :root enabling opacity modifiers
+architecture:
+  approach: >
+    Clone Control's repository into a new directory. Remove all client-specific
+    pages, modules, stores, and libs. Retain the design system (index.css, all
+    CSS tokens and animations), layout components (AppShell, Sidebar), shared
+    UI components (components/ui/*, components/shared/*, components/wizard/*,
+    components/kanban/*), hooks (useDictation), and infrastructure (lib/utils.ts,
+    Vite config, tsconfig, test setup). Build Director's pages and stores on
+    top of what remains.
 
-# ============================================================================
-# DESIGN SYSTEM
-# ============================================================================
+  what_stays:
+    design_system:
+      - "src/index.css — all HSL custom property tokens, global styles, animation keyframes"
+      - "src/components/ui/* — all shadcn/ui Radix primitives (button, card, badge, tabs, dialog, dropdown-menu, input, textarea, select, tooltip, etc.)"
+    layout:
+      - "src/components/layout/AppShell.tsx — update nav config and branding for Director"
+      - "src/components/layout/Sidebar.tsx — update nav items for Director routes"
+    shared_components:
+      - "src/components/shared/GradientButton.tsx"
+      - "src/components/shared/SegmentedToggle.tsx"
+      - "src/components/shared/wizard/* (WizardSuggestionTags, index.ts)"
+      - "src/components/wizard/WizardCard.tsx"
+      - "src/components/kanban/* (KanbanBoard, KanbanColumn, KanbanCard)"
+      - "src/components/DictationButton.tsx (if present at component root)"
+    hooks:
+      - "src/hooks/useDictation.ts"
+    lib:
+      - "src/lib/utils.ts — ID generation, date formatting, cn() helper"
+    infrastructure:
+      - "vite.config.ts — update port to 3950, update allowed hosts"
+      - "vitest.config.ts"
+      - "tsconfig.app.json, tsconfig.node.json"
+      - "tailwind config"
+      - ".eslintrc, .prettierrc"
+      - ".env — update variable names/defaults for Director"
+      - "src/test/setup.ts, src/test/smoke.test.ts"
 
-design:
-  philosophy: >
-    Dark glassmorphism aesthetic. Elegant, not heavy. font-light everywhere.
-    Color through gradients, not fills. Generous whitespace. The UI should
-    feel like mission control — precise, calm, information-dense without
-    feeling cluttered.
+  what_gets_removed:
+    pages:
+      - "src/pages/DashboardPage.tsx"
+      - "src/pages/IntakePage.tsx"
+      - "src/pages/IssueReportPage.tsx"
+      - "src/pages/IdeasListPage.tsx"
+      - "src/pages/IdeaDetailPage.tsx"
+      - "src/pages/ChartersListPage.tsx"
+      - "src/pages/CharterViewPage.tsx"
+      - "src/pages/IssuesPage.tsx"
+      - "src/pages/ScaffoldingPage.tsx (replaced by Director's editable scaffolding page)"
+      - "src/pages/NewPage.tsx"
+    modules:
+      - "src/modules/issue-reporter/* (entire module)"
+      - "src/modules/issue-scoring/* (entire module)"
+      - "src/modules/agents-skills/* (entire module)"
+    components:
+      - "src/components/dev-portal/* (agent build monitor — client-specific)"
+      - "src/components/admin/* (client admin panel — replaced by Director settings)"
+      - "src/components/production/* (production dashboard — client-specific)"
+      - "src/components/scoring/* (score breakdown — client-specific)"
+      - "src/components/timeline/* (idea history — client-specific)"
+      - "src/components/idea-views/* (status-specific idea views — client-specific)"
+    stores:
+      - "src/stores/ideas.ts"
+      - "src/stores/charters.ts"
+      - "src/stores/issues.ts"
+      - "src/stores/activity.ts"
+      - "src/stores/agent-sessions.ts"
+      - "src/stores/agents-skills.ts"
+      - "src/stores/scaffolding.ts (replaced by Director's editable scaffolding store)"
+      - "src/stores/settings.ts (replaced by Director's settings store)"
+      - "src/stores/users.ts (replaced — Director is single-user consultant tool)"
+      - "src/stores/dev-settings.ts"
+    libs:
+      - "src/lib/scoring.ts"
+      - "src/lib/charter-generator.ts"
+      - "src/lib/agent-connection.ts"
+      - "src/lib/abstraction-layer.ts"
+      - "src/lib/permissions.ts"
+      - "src/lib/sample-data.ts (replaced by Director's sample data)"
+    hooks:
+      - "src/hooks/useIdeaTimeline.ts"
+      - "src/hooks/useAgentConnection.ts"
+    types:
+      - "src/types/index.ts (replaced by Director's domain types)"
+    other:
+      - "mock-server/* (WebSocket mock agent server — client-specific)"
+      - "public/level-set-logo.svg (replaced by Director branding)"
+      - "documentation/* (Control-specific charter and design docs)"
 
-  palette:
-    background: '225 64% 11%' # Deep navy, NOT pure black
-    foreground: '220 14% 96%' # Near-white
-    card: '225 50% 15%' # Slightly lighter navy
-    card-foreground: '220 14% 96%'
-    primary: '217 100% 61%' # Vivid blue
-    primary-foreground: '0 0% 100%'
-    secondary: '225 30% 25%'
-    secondary-foreground: '220 14% 91%'
-    muted: '225 30% 20%'
-    muted-foreground: '220 14% 55%' # Grey text for descriptions
-    accent: '225 40% 22%'
-    accent-foreground: '220 14% 91%'
-    destructive: '0 72% 51%'
-    border: '225 30% 20%'
-    input: '225 30% 20%'
-    ring: '217 100% 61%'
-    radius: '9999px' # Pill shape by default for buttons/badges
+  director_data_model:
+    entities:
+      client:
+        fields:
+          - "id: string (uuid)"
+          - "name: string"
+          - "industry: string"
+          - "size_range: enum (small, mid, large)"
+          - "status: enum (prospect, discovery, scaffolding, building, active, archived)"
+          - "primary_contact: string"
+          - "notes: text"
+          - "created_at: datetime"
+          - "updated_at: datetime"
 
-  semantic-colors:
-    active: '175 63% 47%' # Teal — running/in-progress
-    queued: '217 100% 61%' # Blue — waiting/primary
-    completed: '142 71% 45%' # Green — success/done
-    error: '0 72% 51%' # Red — failed/destructive
-    idle: '225 30% 20%' # Muted — inactive
+      engagement:
+        fields:
+          - "id: string (uuid)"
+          - "client_id: FK → client"
+          - "phase: enum (discovery, scaffolding, first_build, handoff, subscription)"
+          - "start_date: date"
+          - "target_end_date: date | null"
+          - "actual_end_date: date | null"
+          - "status: enum (active, paused, complete)"
+        relationships:
+          - "belongs_to: client"
+          - "has_many: discovery_sessions, scaffolding_sections, ocai_assessments"
 
-  gradient:
-    stops:
-      - 'hsl(217, 100%, 60%)' # Blue
-      - 'hsl(175, 80%, 55%)' # Teal
-      - 'hsl(263, 80%, 65%)' # Purple/Rose
-    usage: >
-      Three-stop gradient used for animated card borders (conic-gradient
-      rotating via ::before pseudo-element with CSS mask), primary action
-      buttons (linear-gradient), and hero/emphasis text (background-clip text).
+      discovery_session:
+        fields:
+          - "id: string (uuid)"
+          - "engagement_id: FK → engagement"
+          - "session_type: enum (stakeholder_interview, system_walkthrough, workflow_observation, brand_collection)"
+          - "title: string"
+          - "participants: string[]"
+          - "transcript: text (AI conversation log)"
+          - "extracted_data: jsonb (structured findings)"
+          - "scaffolding_sections_affected: string[]"
+          - "status: enum (scheduled, in_progress, complete, reviewed)"
+          - "session_date: datetime"
 
-  key-patterns:
-    - 'font-light on all headings and body copy'
-    - 'Pill-shaped buttons and badges (radius 9999px)'
-    - 'Tags and cards use rounded-md / rounded-xl to differentiate from pills'
-    - 'Bottom-border-only inputs — no boxed fields, bg-transparent'
-    - 'Glassmorphism cards: bg-card/50 backdrop-blur-sm'
-    - 'Animated gradient borders: rotating conic-gradient on ::before'
-    - 'Muted helper text at 55% lightness, placeholders at /40 opacity'
-    - 'Generous whitespace: py-20, mb-12, gap-6'
-    - 'Full-screen particle canvas behind all content (z-index 0, pointer-events none)'
+      scaffolding_package:
+        fields:
+          - "id: string (uuid)"
+          - "engagement_id: FK → engagement"
+          - "version: string (semver)"
+          - "tier1_process_workflow: jsonb"
+          - "tier1_culture_profile: jsonb"
+          - "tier1_data_systems: jsonb"
+          - "tier2_company_context: jsonb"
+          - "tier2_brand_standards: jsonb"
+          - "tier2_tech_preferences: jsonb"
+          - "tier2_quality_standards: jsonb"
+          - "tier2_security_patterns: jsonb"
+          - "validation_status: enum (draft, review, validated, exported)"
+          - "exported_at: datetime | null"
 
-# ============================================================================
-# APPLICATION STRUCTURE
-# ============================================================================
+      ocai_assessment:
+        fields:
+          - "id: string (uuid)"
+          - "engagement_id: FK → engagement"
+          - "level: enum (1_baseline, 2_workflow, 3_idea)"
+          - "target_scope: string (org-wide for L1, workflow name for L2, idea ref for L3)"
+          - "questions: jsonb (generated question set)"
+          - "responses: jsonb (collected responses)"
+          - "analysis: jsonb (CVF quadrant scores, gap analysis)"
+          - "status: enum (draft, deployed, collecting, complete, analyzed)"
 
-views:
-  # --------------------------------------------------------------------------
-  # VIEW 1: Dashboard — The landing page and operations overview
-  # --------------------------------------------------------------------------
-  dashboard:
-    route: /
-    description: >
-      Primary view when the client opens Control. Shows a high-level
-      snapshot of their development pipeline: active projects, queued ideas
-      ranked by priority score, recent bug reports, and quick-access to
-      start a new charter.
-    sections:
-      priority-queue:
-        description: >
-          Ranked list of application ideas and process improvements. Each
-          item shows its name, a brief description, and its composite
-          priority score. Items are color-coded by score tier (critical,
-          high, medium, low). Clicking an item opens its detail view.
-        data-model: ideas[]
-        sort: priority-score descending
+      terminology_entry:
+        fields:
+          - "id: string (uuid)"
+          - "scaffolding_id: FK → scaffolding_package"
+          - "client_term: string"
+          - "universal_concept: string"
+          - "context: string (where/how this term is used)"
+          - "source_session: FK → discovery_session | null"
 
-      active-projects:
-        description: >
-          Cards showing projects that have an active charter. Each card
-          shows project name, current status (in-progress, review, deployed),
-          and a progress indicator. Clicking opens the charter detail.
-        data-model: charters[]
-        filter: status in [active, review]
+  director_persistence: >
+    All data lives in localStorage, same architecture as Control. Each Zustand
+    store writes to a dedicated key prefixed 'director-'. DATA_VERSION constant
+    in App.tsx triggers full clear and re-seed when incremented. The app is fully
+    demonstrable without any server infrastructure or API keys.
 
-      recent-activity:
-        description: >
-          Compact feed showing recent bug reports, feature requests, and
-          status changes. Timestamps relative (e.g., "2 hours ago").
-          Serves as the pulse of ongoing development activity.
-        data-model: activity[]
-        limit: 10
-
-      quick-actions:
-        description: >
-          Prominent buttons for the two most common actions: "New Idea"
-          (opens the intake wizard) and "Report Issue" (opens the bug/
-          feature request form). Styled with the gradient button treatment.
-
-  # --------------------------------------------------------------------------
-  # VIEW 2: Intake Wizard — Capturing new ideas and opportunities
-  # --------------------------------------------------------------------------
-  intake-wizard:
-    route: /new
-    description: >
-      Multi-step wizard card for capturing a new process improvement idea
-      or application opportunity. Uses the animated gradient border card
-      component. The card container stays mounted across all steps — only
-      inner content transitions. AI-generated suggestion tags appear on
-      steps 2+ based on previous answers.
-    component-style: >
-      Centered card (max-w-3xl), glassmorphism with animated rotating
-      conic-gradient border. Navigation via step dots and back button.
-      Bottom-border-only textarea input. Suggestion tags as clickable
-      pills. Action bar with gradient OK button, Enter hint, optional
-      Skip, and voice mic placeholder.
-    steps:
-      - id: problem
-        question: 'What process or pain point are you looking to address?'
-        placeholder: 'Describe the problem or opportunity...'
-        required: true
-        input-type: textarea
-
-      - id: impact
-        question: 'Who does this affect and how often?'
-        placeholder: 'Teams, frequency, downstream effects...'
-        required: true
-        input-type: textarea
-        suggestions: ai-generated # Based on step 1 answer
-
-      - id: current-state
-        question: 'How is this handled today?'
-        placeholder: 'Current tools, workarounds, manual steps...'
-        required: true
-        input-type: textarea
-        suggestions: ai-generated
-
-      - id: desired-outcome
-        question: 'What does success look like?'
-        placeholder: 'Ideal end state, measurable improvements...'
-        required: true
-        input-type: textarea
-        suggestions: ai-generated
-
-      - id: constraints
-        question: 'Any constraints or considerations?'
-        placeholder: 'Budget, timeline, integration requirements, compliance...'
-        required: false
-        input-type: textarea
-        suggestions:
-          - 'Must integrate with existing ERP'
-          - 'Needs to work on mobile devices'
-          - 'Compliance or audit requirements'
-          - 'Limited internal technical resources'
-
-      - id: urgency
-        question: 'How urgent is this?'
-        required: true
-        input-type: select
-        suggestions:
-          - 'Blocking other work'
-          - 'Causing daily friction'
-          - 'Would improve efficiency'
-          - 'Exploring for the future'
-        submit-label: 'Score & Prioritize'
-
-    on-complete: >
-      Submit all answers to the scoring engine. Generate a composite
-      priority score based on impact, urgency, feasibility, and alignment
-      with organizational goals from the scaffolding. Transition to the
-      scored result view showing where this idea ranks in the queue.
-
-  # --------------------------------------------------------------------------
-  # VIEW 3: Idea Detail — Deep view of a scored opportunity
-  # --------------------------------------------------------------------------
-  idea-detail:
-    route: /ideas/:id
-    description: >
-      Full detail view for a scored idea. Shows all intake answers, the
-      composite priority score with breakdown by dimension (impact, urgency,
-      feasibility, alignment), and an action to generate a charter from
-      this idea.
-    sections:
-      score-breakdown:
-        description: >
-          Visual breakdown of the four scoring dimensions. Each dimension
-          shown as a horizontal bar or radial indicator with its individual
-          score and the composite total prominent. Uses semantic colors
-          (green for high scores, amber for medium, red for low).
-        dimensions:
-          - impact # How many people/processes affected, severity
-          - urgency # Time sensitivity, blocking nature
-          - feasibility # Technical complexity, resource requirements
-          - alignment # Fit with organizational goals from scaffolding
-
-      intake-summary:
-        description: >
-          Clean rendering of all wizard answers. Each step's question
-          and response displayed in sequence. Editable — client can
-          refine answers after initial intake and rescore.
-
-      actions:
-        - generate-charter # Primary action — creates charter from this idea
-        - edit # Return to wizard with answers pre-filled
-        - archive # Remove from active queue
-        - link-issues # Associate existing bug reports or feature requests
-
-  # --------------------------------------------------------------------------
-  # VIEW 4: Charter View — The generated execution plan
-  # --------------------------------------------------------------------------
-  charter-view:
-    route: /charters/:id
-    description: >
-      Displays a generated charter and execution plan for a specific
-      project. This is the primary output of Control — the document
-      that gets fed to an agentic coding tool alongside the scaffolding
-      package. The charter is generated via Claude API using the idea's
-      intake data combined with the client's scaffolding context.
-    sections:
-      charter-document:
-        description: >
-          The full charter rendered in a clean, readable format. Includes
-          project overview, objectives, technical approach, acceptance
-          criteria, estimated timeline, and the execution plan with
-          sequenced tasks. Rendered as structured content, not raw YAML.
-        format: structured-display
-        exportable: true # Download as YAML, Markdown, or copy to clipboard
-
-      scaffolding-context:
-        description: >
-          Collapsible section showing which scaffolding documents were
-          referenced during charter generation. Gives the client
-          transparency into how their organizational standards shaped
-          the output.
-
-      status-tracking:
-        description: >
-          Simple status progression for the charter: Draft → Reviewed →
-          In Progress → Complete. Client can advance status manually.
-          Status changes appear in the dashboard activity feed.
-        statuses:
-          - draft
-          - reviewed
-          - in-progress
-          - complete
-
-      linked-issues:
-        description: >
-          Any bug reports or feature requests associated with this
-          project. Displayed as a compact list with severity/type badges.
-
-  # --------------------------------------------------------------------------
-  # VIEW 5: Issues — Bug and feature request tracking
-  # --------------------------------------------------------------------------
-  issues:
-    route: /issues
-    description: >
-      Central view for all bug reports and feature requests submitted by
-      end users of applications the client has built. Filterable by type
-      (bug, feature request), severity, associated project, and status.
-      This is the feedback loop that informs development priorities.
-    sections:
-      issue-list:
-        description: >
-          Filterable, sortable list of all issues. Each row shows type
-          badge (bug or feature), title, associated project, severity,
-          status, and submission date. Clicking opens detail.
-        filters:
-          - type: [bug, feature-request]
-          - severity: [critical, high, medium, low]
-          - status: [open, in-progress, resolved, closed]
-          - project: [linked charter/project names]
-
-      issue-detail:
-        description: >
-          Full issue view with description, steps to reproduce (for bugs),
-          expected vs actual behavior, screenshots or attachments, and
-          a comment thread for internal discussion.
-
-      new-issue-form:
-        description: >
-          Streamlined form for submitting a new issue. Uses the same
-          bottom-border input aesthetic as the wizard. Fields: title,
-          type selector (bug/feature), severity, associated project
-          (dropdown), description, and optional attachment.
-
-  # --------------------------------------------------------------------------
-  # VIEW 6: Scaffolding — View and manage the foundation documents
-  # --------------------------------------------------------------------------
-  scaffolding:
-    route: /scaffolding
-    description: >
-      Read-only view of the scaffolding package that was produced during
-      the consulting engagement. Organized by document type. This is the
-      reference material that the client's team can review to understand
-      what governs their AI development standards. Editing is intentionally
-      limited in the prototype — scaffolding updates should be deliberate.
-    document-types:
-      - company-context # Who the organization is, their domain
-      - technology-preferences # Tech stack, hosting, infrastructure choices
-      - brand-standards # Voice, terminology, design language
-      - security-patterns # Auth, data handling, compliance requirements
-      - quality-standards # Testing, documentation, code standards
-
-# ============================================================================
-# DATA MODELS
-# ============================================================================
-
-data:
-  storage: local-storage # Prototype only — no backend for initial build
-  note: >
-    All data persisted to browser localStorage for the prototype. Structure
-    the data layer with clear interfaces so migration to a real backend
-    (Supabase, API, etc.) is straightforward. Use Zustand stores with
-    persistence middleware.
-
-  models:
-    idea:
-      fields:
-        - id: string # UUID
-        - title: string # Generated from intake or user-provided
-        - status: enum # new, scored, charter-generated, archived
-        - intake-answers: map # Step ID → answer text
-        - scores: map # Dimension → numeric score (0-100)
-        - composite-score: number
-        - created-at: datetime
-        - updated-at: datetime
-        - linked-charter-id: string | null
-        - linked-issue-ids: string[]
-
-    charter:
-      fields:
-        - id: string
-        - idea-id: string # Source idea
-        - title: string
-        - content: object # Structured charter document
-        - status: enum # draft, reviewed, in-progress, complete
-        - scaffolding-refs: string[] # Which scaffolding docs were used
-        - created-at: datetime
-        - updated-at: datetime
-        - linked-issue-ids: string[]
-
-    issue:
-      fields:
-        - id: string
-        - type: enum # bug, feature-request
-        - title: string
-        - description: string
-        - severity: enum # critical, high, medium, low
-        - status: enum # open, in-progress, resolved, closed
-        - project-id: string | null # Linked charter/project
-        - created-at: datetime
-        - updated-at: datetime
-        - comments: comment[]
-
-    comment:
-      fields:
-        - id: string
-        - author: string
-        - content: string
-        - created-at: datetime
-
-    activity:
-      fields:
-        - id: string
-        - type: enum # idea-created, charter-generated, issue-filed, status-changed
-        - entity-id: string
-        - entity-type: enum # idea, charter, issue
-        - summary: string
-        - created-at: datetime
-
-# ============================================================================
-# SCORING ENGINE
-# ============================================================================
-
-scoring:
-  description: >
-    When an idea completes the intake wizard, it is scored across four
-    dimensions. For the prototype, scoring uses a rules-based approach
-    with weighted heuristics derived from the intake answers. Future
-    iterations will use Claude API to score with scaffolding context.
-
-  dimensions:
-    impact:
-      weight: 0.30
-      factors:
-        - Number of people/teams affected
-        - Frequency of the problem
-        - Downstream consequences
-
-    urgency:
-      weight: 0.25
-      factors:
-        - Blocking nature (from urgency step)
-        - Time sensitivity signals in answers
-
-    feasibility:
-      weight: 0.25
-      factors:
-        - Technical complexity signals
-        - Integration requirements
-        - Resource constraints mentioned
-
-    alignment:
-      weight: 0.20
-      factors:
-        - Match with organizational goals from scaffolding
-        - Fit with existing technology preferences
-        - Consistency with stated strategic direction
-
-  output:
-    per-dimension: 0-100
-    composite: weighted-average
-    tiers:
-      critical: 80-100
-      high: 60-79
-      medium: 40-59
-      low: 0-39
-
-# ============================================================================
-# CHARTER GENERATION
-# ============================================================================
-
-charter-generation:
-  description: >
-    When the client clicks "Generate Charter" on a scored idea, the system
-    combines the intake answers with the relevant scaffolding documents
-    and sends them to the Claude API. The response is a structured charter
-    document with project overview, objectives, technical approach,
-    acceptance criteria, timeline estimate, and a sequenced execution plan.
-
-  api:
-    provider: anthropic
-    model: claude-sonnet-4-20250514
-    approach: >
-      Construct a system prompt that includes the relevant scaffolding
-      context (company context, tech preferences, quality standards).
-      The user message includes the full intake data and scoring
-      breakdown. Request structured output in a defined schema.
-
-  output-schema:
-    project-overview: string
-    objectives: string[]
-    technical-approach: string
-    acceptance-criteria: string[]
-    estimated-timeline: string
-    execution-plan:
-      - phase: string
-        tasks: string[]
-        duration: string
-        dependencies: string[]
-
-  prototype-note: >
-    For the prototype, charter generation can use mock/simulated output
-    if API access is not configured. Include a toggle or environment
-    variable to switch between live API calls and mock data so the
-    prototype is demonstrable without requiring API keys.
-
-# ============================================================================
-# UI COMPONENTS — REFERENCE
-# ============================================================================
-
-components:
-  wizard-card:
-    description: >
-      The primary multi-step intake component. See the Control UI
-      Reference document for full implementation details including animated
-      gradient border CSS, step dot navigation, bottom-border textarea,
-      suggestion tags, and action bar patterns.
-    file: WIZARD_CARD_REFERENCE.md # The attached UI reference document
-
-  particle-background:
-    description: >
-      Full-screen canvas or CSS radial gradient fallback behind all content.
-      Fixed position, pointer-events none, z-index 0. For the prototype,
-      the CSS-only approach is sufficient.
-    css-fallback: |
-      body {
-        background-color: hsl(225, 64%, 11%);
-        background-image:
-          radial-gradient(ellipse at 20% 50%, hsla(217, 100%, 61%, 0.08) 0%, transparent 50%),
-          radial-gradient(ellipse at 80% 20%, hsla(175, 80%, 55%, 0.06) 0%, transparent 50%),
-          radial-gradient(ellipse at 50% 80%, hsla(263, 80%, 65%, 0.04) 0%, transparent 50%);
-      }
-
-  score-display:
-    description: >
-      Reusable component for showing priority scores. Horizontal bar or
-      radial gauge per dimension, color-coded by tier. Composite score
-      shown prominently. Used in idea detail and dashboard priority queue.
-
-  status-badge:
-    description: >
-      Small pill badge showing entity status. Uses semantic colors.
-      Applied to charters (draft/reviewed/in-progress/complete),
-      issues (open/in-progress/resolved/closed), and ideas (new/scored/
-      charter-generated/archived).
-
-  gradient-button:
-    description: >
-      Primary action button with three-stop gradient background
-      (blue → teal → purple). Pill-shaped, text-white, font-medium.
-      Active state scales down (active:scale-95). Used for primary
-      CTAs across all views.
-
-# ============================================================================
-# PROTOTYPE SCOPE & CONSTRAINTS
-# ============================================================================
+  director_environment:
+    port: 3950
+    env_variables:
+      - "VITE_USE_MOCK_DATA: boolean — when true, all AI features use mock fallbacks. Default: true"
+    allowed_hosts:
+      - "lab.ahaus.com"
+      - "director.ahaus.com"
 
 scope:
   included:
-    - Full intake wizard flow with all six steps
-    - Dashboard with priority queue, active projects, and activity feed
-    - Idea detail view with score breakdown
-    - Charter generation (mock or live API)
-    - Charter display with structured rendering
-    - Issue tracking list and submission form
-    - Scaffolding document viewer (read-only, populated with sample data)
-    - Local storage persistence
-    - Responsive layout (desktop-first, functional on tablet)
+    clone_and_strip:
+      - "Clone Control repository into a new directory"
+      - "Remove all client-specific pages, modules, components, stores, libs, hooks, and types listed in architecture.what_gets_removed"
+      - "Remove mock-server/ directory"
+      - "Remove Control-specific documentation/"
+      - "Update App.tsx: remove Control routing, remove Control DATA_VERSION and seeding logic, add Director routing and seeding"
+      - "Update Sidebar.tsx: replace Control nav items with Director nav items (Clients, Engagements, Discovery, Scaffolding, OCAI, Terminology, Settings)"
+      - "Update AppShell.tsx: replace Control branding with Director branding"
+      - "Update vite.config.ts: port 3950, allowed hosts (lab.ahaus.com, director.ahaus.com)"
+      - "Update .env: VITE_USE_MOCK_DATA=true, remove VITE_ANTHROPIC_API_KEY and VITE_AGENT_WS_URL"
+      - "Update package.json: rename to 'director', remove mock-server scripts and dependencies (ws)"
+      - "Replace public/level-set-logo.svg with Director branding asset"
+      - "Verify: npm install, npm run dev starts on port 3950, app renders the shell with empty placeholder pages, npm run build succeeds with zero errors"
+
+    director_types_and_stores:
+      - "src/types/index.ts — all Director domain interfaces and enums (Client, Engagement, DiscoverySession, ScaffoldingPackage, OCAIAssessment, TerminologyEntry, and their status/phase enums)"
+      - "src/stores/clients.ts — Zustand persist store (localStorage key 'director-clients'). CRUD for client organizations."
+      - "src/stores/engagements.ts — Zustand persist store ('director-engagements'). CRUD for engagements linked to clients."
+      - "src/stores/discovery.ts — Zustand persist store ('director-discovery'). Session management, transcript storage, extracted data."
+      - "src/stores/scaffolding.ts — Zustand persist store ('director-scaffolding'). Per-section editing, validation status tracking, version history."
+      - "src/stores/ocai.ts — Zustand persist store ('director-ocai'). Assessment lifecycle, response collection, analysis results."
+      - "src/stores/terminology.ts — Zustand persist store ('director-terminology'). Decoder entries linked to scaffolding packages."
+      - "src/stores/settings.ts — Zustand persist store ('director-settings'). AI provider config, OpenRouter key (runtime entry)."
+      - "src/lib/sample-data.ts — comprehensive mock data for two fictional clients at different engagement phases"
+
+    director_clients_page:
+      - "Client list view: filterable by status, sortable by name/date/status"
+      - "Client detail panel: engagement history, current phase indicator, quick-access to scaffolding and discovery sessions"
+      - "New client creation form: name, industry, size range, primary contact, notes"
+      - "Client status progression visualization (prospect → discovery → scaffolding → building → active)"
+
+    director_engagements_page:
+      - "Engagement list for the selected client, showing phase, dates, and status"
+      - "Engagement creation: link to client, set phase, start date, target end date"
+      - "Phase progression controls: advance engagement through discovery → scaffolding → first_build → handoff → subscription"
+      - "Engagement detail view with tabs or sections linking to discovery sessions, scaffolding, and OCAI assessments for that engagement"
+
+    director_discovery_page:
+      - "Session list for the active engagement, grouped by session type"
+      - "Session creation: select type (stakeholder interview, system walkthrough, workflow observation, brand collection), add participants, set date"
+      - "AI-guided interview interface using the WizardCard pattern — conversation flows that follow scripted sequences per session type"
+      - "Session transcript view with extracted data highlights"
+      - "Scaffolding section linkage: each session shows which scaffolding sections it contributes to"
+
+    director_scaffolding_page:
+      - "Two-tier visual layout matching the scaffolding specification (Tier 1: Operational Intelligence, Tier 2: Build Intelligence)"
+      - "Section-by-section editor for each scaffolding component (process & workflow, culture profile, data & systems, company context, brand standards, tech preferences, quality standards, security patterns)"
+      - "Completion indicators per section (empty, draft, reviewed, validated)"
+      - "Terminology decoder management: add, edit, search, import from discovery sessions"
+      - "Scaffolding export: generate portable package (JSON or YAML) for handoff"
+      - "Validation check: flag incomplete or inconsistent sections before export"
+
+    director_ocai_page:
+      - "Assessment management dashboard: view all assessments across levels for the active engagement"
+      - "Level 1 baseline builder: generate 10-12 behavioral scenario questions, configure target respondent groups (leadership vs. staff), deploy assessment"
+      - "Level 2 workflow-specific builder: auto-generate questions from scaffolding's process & workflow intelligence, 2-3 questions per critical workflow"
+      - "Response collection interface: display questions, capture responses, track completion rates"
+      - "CVF quadrant visualization: radar chart showing Clan, Adhocracy, Hierarchy, Market scores"
+      - "Gap analysis view: stated values (leadership L1) vs. actual behavior (staff L1) vs. workflow-specific patterns (L2)"
+
+    director_terminology_page:
+      - "Full terminology decoder view: searchable, sortable table of all entries for the active scaffolding"
+      - "Add/edit/delete entries: client term, universal concept, context, source session link"
+      - "Bulk import from discovery session extracted data"
+      - "Export as standalone JSON or CSV"
+
+    director_settings_page:
+      - "AI provider configuration: OpenRouter API key entry (stored in localStorage at runtime), model selection per function"
+      - "Mock data toggle: visual indicator of VITE_USE_MOCK_DATA state"
+      - "About section: Director version, build date"
 
   excluded:
-    - User authentication and multi-tenancy
-    - Real backend or database
-    - File upload / attachment handling
-    - Voice input (mic button is placeholder only)
-    - Real-time collaboration
-    - Export to external formats beyond clipboard copy
-    - Scaffolding editing capabilities
-    - Integration with external agentic coding tools
+    - "BackStage server application — Director is frontend-only in this charter; BackStage API is a separate charter"
+    - "Live API integration — all data is mock/localStorage in this build"
+    - "Level 3 OCAI (idea-level) — requires charter generation pipeline, which lives in Control"
+    - "Cross-client pattern library — requires multiple client datasets; deferred to post-launch"
+    - "Adaptive AI question generation for discovery interviews — the interview AI follows scripted flows per session type; adaptive generation is a module charter"
+    - "Scaffolding-to-charter pipeline — that generation logic lives in Control"
+    - "Authentication and authorization — Director runs on consultant hardware; auth is deferred until multi-consultant support is needed"
+    - "Mobile/responsive optimization — Director is a desktop tool used on consultant laptops"
+    - "Production deployment pipeline — Director runs locally via npm run dev; deployment is a separate concern"
+    - "Data migration from existing scaffolding documents — manual entry or import tooling is a module charter"
+    - "Print/PDF export of scaffolding — deferred to module charter"
+    - "Real-time collaboration — single-consultant tool"
+    - "Synchronizing shared components back to Control — the apps are independent; if a component improvement is made in one, it is manually ported to the other as needed"
 
-  sample-data: >
-    Include realistic sample data for demonstration purposes. At least
-    three scored ideas at different priority tiers, one generated charter
-    in draft status, five issues of mixed types and severities, and a
-    complete scaffolding package representing a fictional manufacturing
-    company. This allows the prototype to be demonstrated without any
-    setup.
+  sample_data:
+    - "Two fictional client organizations: 'Precision Dynamics' (mid-size manufacturer, 180 employees, in scaffolding phase) and 'Midwest Distribution Co' (distributor, 95 employees, in discovery phase)"
+    - "Precision Dynamics has a complete scaffolding package with all eight sections populated, three completed discovery sessions, a Level 1 OCAI with analyzed results, and a Level 2 in progress"
+    - "Midwest Distribution has two discovery sessions (one complete, one in-progress), a partial scaffolding (Tier 1 started, Tier 2 empty), and a Level 1 OCAI deployed but not yet complete"
+    - "Terminology decoder for Precision Dynamics with 30+ entries covering their ERP terms, shop floor language, and organizational roles"
+    - "Six sample discovery session transcripts across different session types"
 
-# ============================================================================
-# FILE STRUCTURE
-# ============================================================================
+design_system:
+  inheritance: >
+    Inherited directly from Control via the clone. Same index.css, same
+    shadcn/ui components, same layout patterns. The UX matches because
+    the code is the same code.
 
-structure:
-  src/:
-    main.tsx: 'App entry point'
-    App.tsx: 'Root component with router'
-    index.css: 'Global styles, CSS custom properties, gradient animations'
+  color_tokens:
+    background: "hsl(225, 64%, 11%) — deep navy page background"
+    card: "hsl(225, 50%, 15%) — slightly lighter navy card backgrounds"
+    primary: "hsl(217, 100%, 61%) — vivid blue (Control default — see accent_differentiation)"
+    active: "hsl(175, 63%, 47%) — teal for running/in-progress states"
+    completed: "hsl(142, 71%, 45%) — green for success/done states"
+    error: "hsl(0, 72%, 51%) — red for failed/destructive states"
 
-    components/:
-      ui/: 'shadcn/ui components (button, card, badge, progress, tabs, tooltip)'
-      wizard/: 'Wizard card, step navigation, suggestion tags, action bar'
-      dashboard/: 'Priority queue, active projects, activity feed, quick actions'
-      scoring/: 'Score display, dimension bars, tier badges'
-      charter/: 'Charter document renderer, status tracker'
-      issues/: 'Issue list, issue detail, new issue form'
-      scaffolding/: 'Document viewer, document type navigation'
-      layout/: 'App shell, sidebar navigation, header'
-      shared/: 'Status badges, gradient button, animated border card'
+  patterns:
+    glassmorphism: "Cards use bg-card/50 backdrop-blur-sm"
+    featured_cards: "Animated rotating conic-gradient border via CSS ::before pseudo-element"
+    gradient_buttons: "Three-stop gradient (Blue → Teal → Purple)"
+    inputs: "Bottom-border only with transparent backgrounds (no boxed fields)"
+    typography: "Inter variable font at font-light weight throughout"
+    border_radius: "Radix UI radius set to 9999px (pill) for buttons and badges"
 
-    stores/:
-      ideas.ts: 'Zustand store for ideas with localStorage persistence'
-      charters.ts: 'Zustand store for charters'
-      issues.ts: 'Zustand store for issues'
-      activity.ts: 'Zustand store for activity feed'
-      scaffolding.ts: 'Zustand store for scaffolding documents'
+  director_specific:
+    accent_differentiation: >
+      Director overrides --primary to an amber/gold tone (approximately hsl(38, 92%, 50%))
+      to give consultants an immediate visual signal of which application they are in.
+      This affects the sidebar active indicator, page headers, and gradient button first
+      stop. All other tokens remain identical. The override is a single CSS custom property
+      change in Director's index.css.
+    sidebar_branding: >
+      Sidebar footer shows Director branding instead of the Level Set AI logo.
+      Nav items: Clients, Engagements, Discovery, Scaffolding, OCAI, Terminology, Settings.
 
-    lib/:
-      scoring.ts: 'Scoring engine logic'
-      charter-generator.ts: 'Charter generation (API call or mock)'
-      sample-data.ts: 'Demo data loader'
-      utils.ts: 'Shared utilities'
+non_negotiables:
+  - "The clone-and-strip must be clean — no dead imports, no orphaned files, no references to removed modules. After stripping, the app builds with zero TypeScript errors and zero lint warnings."
+  - "Director uses Zustand 5.x with persist middleware writing to localStorage with 'director-' key prefix. DATA_VERSION seeding pattern from Control must be replicated."
+  - "VITE_USE_MOCK_DATA=true is the default. All AI-powered features must have mock fallbacks with simulated delays. The app must be fully demonstrable without any API keys."
+  - "TypeScript 5.9.x strict mode. No implicit any. No ts-ignore without documented justification."
+  - "The design system (index.css tokens, shadcn/ui components, layout patterns) is not modified during the strip — only the accent color override and branding are changed."
+  - "Every phase closes with: lint passes, typecheck passes, app builds successfully, app renders with sample data on port 3950."
 
-    types/:
-      index.ts: 'All TypeScript interfaces and enums'
-
-# ============================================================================
-# BUILD & RUN
-# ============================================================================
-
-setup:
-  commands:
-    - 'npm create vite@latest control -- --template react-ts'
-    - 'cd control && npm install'
-    - 'npx shadcn@latest init' # New York style, Slate base, CSS variables: yes
-    - 'npx shadcn@latest add button card badge progress tabs tooltip'
-    - 'npm install lucide-react zustand react-router-dom'
-    - 'npm install @fontsource-variable/inter'
-
-  environment:
-    VITE_ANTHROPIC_API_KEY: 'optional — enables live charter generation'
-    VITE_USE_MOCK_DATA: 'true — set false when API key is available'
+definition_of_done:
+  - "Director repository exists as an independent project, cloned from Control with all client-specific code removed."
+  - "'npm install && npm run dev' starts Director on port 3950 with no errors."
+  - "'npm run build' produces dist/ with zero TypeScript errors and zero lint warnings."
+  - "Director's dark glassmorphism aesthetic matches Control exactly, with amber/gold accent color as the only visual differentiation."
+  - "Director Clients page displays the two sample client organizations with filtering by status, sorting, and status progression visualization."
+  - "Director Engagements page shows engagement list per client with phase progression controls."
+  - "Director Discovery page shows session list grouped by type, allows session creation, and renders the interview wizard with scripted conversation flows."
+  - "Director Scaffolding page renders the two-tier layout (Operational Intelligence / Build Intelligence) with section editors, completion indicators (empty/draft/reviewed/validated), and terminology decoder management."
+  - "Director OCAI page shows assessment dashboard, Level 1 and Level 2 builders, response collection interface, and CVF radar chart visualization."
+  - "Director Terminology page shows searchable decoder table with add/edit/delete and bulk import from discovery sessions."
+  - "Director Settings page has OpenRouter API key configuration stored in localStorage and mock data toggle indicator."
+  - "Sample data for both fictional clients (Precision Dynamics, Midwest Distribution Co) auto-seeds on first load and renders correctly across all pages."
+  - "DATA_VERSION in App.tsx triggers full re-seed when incremented."
+  - "No references to removed Control modules remain in the codebase. No dead imports. No orphaned store keys."
