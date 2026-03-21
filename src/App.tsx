@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import AppShell from '@/components/layout/AppShell'
@@ -8,14 +9,39 @@ import ScaffoldingPage from '@/pages/ScaffoldingPage'
 import OcaiPage from '@/pages/OcaiPage'
 import TerminologyPage from '@/pages/TerminologyPage'
 import SettingsPage from '@/pages/SettingsPage'
+import { seedSampleData } from '@/lib/sample-data'
 
 const DATA_VERSION = 1
 const VERSION_KEY = 'director-data-version'
+
+function SeedData() {
+  useEffect(() => {
+    const storedVersion = localStorage.getItem(VERSION_KEY)
+    const currentVersion = parseInt(storedVersion ?? '0', 10)
+
+    if (currentVersion < DATA_VERSION) {
+      // Clear all director stores
+      localStorage.removeItem('director-clients')
+      localStorage.removeItem('director-engagements')
+      localStorage.removeItem('director-discovery')
+      localStorage.removeItem('director-scaffolding')
+      localStorage.removeItem('director-ocai')
+      localStorage.removeItem('director-terminology')
+      localStorage.removeItem('director-settings')
+
+      seedSampleData()
+      localStorage.setItem(VERSION_KEY, String(DATA_VERSION))
+    }
+  }, [])
+
+  return null
+}
 
 function App() {
   return (
     <BrowserRouter>
       <TooltipProvider>
+        <SeedData />
         <Routes>
           <Route element={<AppShell />}>
             <Route path="/" element={<Navigate to="/clients" replace />} />
@@ -44,6 +70,5 @@ function App() {
   )
 }
 
-// Exported for use in P1 seeding logic
 export { DATA_VERSION, VERSION_KEY }
 export default App
