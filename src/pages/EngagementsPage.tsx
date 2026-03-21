@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useClientsStore } from '@/stores/clients'
@@ -10,13 +10,16 @@ import type { Engagement } from '@/types'
 
 function EngagementsPage() {
   const clients = useClientsStore((s) => s.clients)
-  const getByClient = useEngagementsStore((s) => s.getEngagementsByClientId)
+  const allEngagements = useEngagementsStore((s) => s.engagements)
 
   const [selectedClientId, setSelectedClientId] = useState(clients[0]?.id ?? '')
   const [selectedEngagement, setSelectedEngagement] = useState<Engagement | null>(null)
   const [showNewForm, setShowNewForm] = useState(false)
 
-  const engagements = getByClient(selectedClientId)
+  const engagements = useMemo(
+    () => allEngagements.filter((e) => e.client_id === selectedClientId),
+    [allEngagements, selectedClientId],
+  )
 
   return (
     <div className="space-y-6">

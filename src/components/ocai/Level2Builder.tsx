@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useOcaiStore } from '@/stores/ocai'
@@ -11,7 +11,8 @@ interface Level2BuilderProps {
 
 function Level2Builder({ engagementId }: Level2BuilderProps) {
   const addAssessment = useOcaiStore((s) => s.addAssessment)
-  const scaffolding = useScaffoldingStore((s) => s.getPackageByEngagementId(engagementId))
+  const allPackages = useScaffoldingStore((s) => s.packages)
+  const scaffolding = useMemo(() => allPackages.find((p) => p.engagement_id === engagementId), [allPackages, engagementId])
 
   const [generating, setGenerating] = useState(false)
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([])

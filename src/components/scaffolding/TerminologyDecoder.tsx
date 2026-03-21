@@ -12,10 +12,12 @@ interface TerminologyDecoderProps {
 }
 
 function TerminologyDecoder({ scaffoldingId, engagementId, clientName }: TerminologyDecoderProps) {
-  const entries = useTerminologyStore((s) => s.getEntriesByScaffoldingId(scaffoldingId))
+  const allEntries = useTerminologyStore((s) => s.entries)
+  const entries = useMemo(() => allEntries.filter((e) => e.scaffolding_id === scaffoldingId), [allEntries, scaffoldingId])
   const addEntry = useTerminologyStore((s) => s.addEntry)
   const deleteEntry = useTerminologyStore((s) => s.deleteEntry)
-  const sessions = useDiscoveryStore((s) => s.getSessionsByEngagementId(engagementId))
+  const allSessions = useDiscoveryStore((s) => s.sessions)
+  const sessions = useMemo(() => allSessions.filter((s) => s.engagement_id === engagementId), [allSessions, engagementId])
 
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<'client_term' | 'universal_concept'>('client_term')

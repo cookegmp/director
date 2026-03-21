@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -24,7 +25,8 @@ interface ClientDetailPanelProps {
 
 function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
   const navigate = useNavigate()
-  const engagements = useEngagementsStore((s) => s.getEngagementsByClientId(client.id))
+  const allEngagements = useEngagementsStore((s) => s.engagements)
+  const engagements = useMemo(() => allEngagements.filter((e) => e.client_id === client.id), [allEngagements, client.id])
   const updateClient = useClientsStore((s) => s.updateClient)
 
   return (

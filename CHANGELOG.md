@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.0] — P9: Polish, smoke tests, final build verification. Director MVP complete.
+
+- Added global ErrorBoundary in App.tsx with recovery UI
+- Fixed Zustand derived selector infinite loop issue — all components now use useMemo for filtered store data
+- Comprehensive smoke tests for all 7 pages (14 tests total, all passing)
+- Verified zero dead imports, zero references to removed Control modules
+- Version bumped to 1.0.0
+- Final build verification: zero TypeScript errors, zero lint warnings, clean dist/ output
+
 ## [0.9.0] — P8: Terminology page complete
 
 - Standalone terminology page with scaffolding package selector (client name + version)

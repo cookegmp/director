@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -18,9 +19,12 @@ interface EngagementDetailProps {
 function EngagementDetail({ engagement }: EngagementDetailProps) {
   const navigate = useNavigate()
   const updateEngagement = useEngagementsStore((s) => s.updateEngagement)
-  const sessions = useDiscoveryStore((s) => s.getSessionsByEngagementId(engagement.id))
-  const scaffolding = useScaffoldingStore((s) => s.getPackageByEngagementId(engagement.id))
-  const assessments = useOcaiStore((s) => s.getAssessmentsByEngagementId(engagement.id))
+  const allSessions = useDiscoveryStore((s) => s.sessions)
+  const sessions = useMemo(() => allSessions.filter((s) => s.engagement_id === engagement.id), [allSessions, engagement.id])
+  const allPackages = useScaffoldingStore((s) => s.packages)
+  const scaffolding = useMemo(() => allPackages.find((p) => p.engagement_id === engagement.id), [allPackages, engagement.id])
+  const allAssessments = useOcaiStore((s) => s.assessments)
+  const assessments = useMemo(() => allAssessments.filter((a) => a.engagement_id === engagement.id), [allAssessments, engagement.id])
 
   const allSections = [...SCAFFOLDING_TIER1_SECTIONS, ...SCAFFOLDING_TIER2_SECTIONS]
   const completedSections = scaffolding

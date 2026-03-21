@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useClientsStore } from '@/stores/clients'
@@ -21,7 +21,11 @@ function DiscoveryPage() {
   const [showNewForm, setShowNewForm] = useState(false)
   const [wizardSession, setWizardSession] = useState<DiscoverySession | null>(null)
 
-  const sessions = useDiscoveryStore((s) => s.getSessionsByEngagementId(selectedEngagementId))
+  const allSessions = useDiscoveryStore((s) => s.sessions)
+  const sessions = useMemo(
+    () => allSessions.filter((s) => s.engagement_id === selectedEngagementId),
+    [allSessions, selectedEngagementId],
+  )
 
   // Build engagement options with client names
   const engagementOptions = engagements.map((e) => {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { useClientsStore } from '@/stores/clients'
@@ -15,13 +15,16 @@ import type { OCAIAssessment } from '@/types'
 function OcaiPage() {
   const clients = useClientsStore((s) => s.clients)
   const engagements = useEngagementsStore((s) => s.engagements)
-  const getAssessments = useOcaiStore((s) => s.getAssessmentsByEngagementId)
+  const allAssessments = useOcaiStore((s) => s.assessments)
   const updateAssessment = useOcaiStore((s) => s.updateAssessment)
 
   const [selectedEngagementId, setSelectedEngagementId] = useState(engagements[0]?.id ?? '')
   const [selectedAssessment, setSelectedAssessment] = useState<OCAIAssessment | null>(null)
 
-  const assessments = getAssessments(selectedEngagementId)
+  const assessments = useMemo(
+    () => allAssessments.filter((a) => a.engagement_id === selectedEngagementId),
+    [allAssessments, selectedEngagementId],
+  )
 
   const engagementOptions = engagements.map((e) => {
     const c = clients.find((cl) => cl.id === e.client_id)
