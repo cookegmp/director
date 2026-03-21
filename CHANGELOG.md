@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0] — P4: Engagements page complete
+
+- Per-client engagement list with phase and status badges
+- Phase progression stepper with Advance/Revert controls and confirm dialogs
+- Engagement detail with tabbed view: Overview (stats), Discovery (count + link), Scaffolding (completion % + link), OCAI (count + link), Settings (status edit)
+- New engagement creation dialog with phase selector and date inputs
+- Client selector dropdown defaults to first client
+
 ## [0.4.0] — P3: Clients page complete
 
 - Client list with status badges, filter by status dropdown, text search, sortable columns (name, status, updated)
