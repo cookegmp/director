@@ -11,9 +11,9 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3940,
+    port: 3950,
     host: true,
     cors: true,
-    allowedHosts: ['lab.ahaus.com', 'control.ahaus.com'],
+    allowedHosts: ['lab.ahaus.com', 'director.ahaus.com', 'localhost', '127.0.0.1'],
   },
 })

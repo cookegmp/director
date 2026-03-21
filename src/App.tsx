@@ -1,130 +1,42 @@
-import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import AppShell from '@/components/layout/AppShell'
-import DashboardPage from '@/pages/DashboardPage'
-import IntakePage from '@/pages/IntakePage'
-import IssueReportPage from '@/pages/IssueReportPage'
-import IdeasListPage from '@/pages/IdeasListPage'
-import IdeaDetailPage from '@/pages/IdeaDetailPage'
-import ChartersListPage from '@/pages/ChartersListPage'
-import CharterViewPage from '@/pages/CharterViewPage'
-import IssuesPage from '@/pages/IssuesPage'
+import ClientsPage from '@/pages/ClientsPage'
+import EngagementsPage from '@/pages/EngagementsPage'
+import DiscoveryPage from '@/pages/DiscoveryPage'
 import ScaffoldingPage from '@/pages/ScaffoldingPage'
-import AdminPage from '@/components/admin/AdminPage'
-import { useIdeasStore } from '@/stores/ideas'
-import { useChartersStore } from '@/stores/charters'
-import { useIssuesStore } from '@/stores/issues'
-import { useActivityStore } from '@/stores/activity'
-import { useScaffoldingStore } from '@/stores/scaffolding'
-import { useAgentSessionsStore } from '@/stores/agent-sessions'
-import { useUsersStore } from '@/stores/users'
-import { useSettingsStore } from '@/stores/settings'
-import { useIssueScoresStore } from '@/modules/issue-scoring/stores/issue-scores'
-import { useRemediationSessionsStore } from '@/modules/issue-scoring/stores/remediation-sessions'
-import {
-  sampleIdeas,
-  sampleCharters,
-  sampleIssues,
-  sampleActivities,
-  sampleScaffolding,
-  sampleAgentSessions,
-  sampleUsers,
-  sampleServers,
-  sampleAISettings,
-  sampleIssueScores,
-  sampleRemediationSessions,
-} from '@/lib/sample-data'
+import OcaiPage from '@/pages/OcaiPage'
+import TerminologyPage from '@/pages/TerminologyPage'
+import SettingsPage from '@/pages/SettingsPage'
 
-// Increment this when the data model changes shape to force a re-seed
-const DATA_VERSION = 13
-const VERSION_KEY = 'control-data-version'
-
-function SeedData() {
-  useEffect(() => {
-    const storedVersion = localStorage.getItem(VERSION_KEY)
-    const currentVersion = parseInt(storedVersion ?? '0', 10)
-
-    // If version mismatch, clear all stores and re-seed
-    if (currentVersion < DATA_VERSION) {
-      localStorage.removeItem('control-ideas')
-      localStorage.removeItem('control-charters')
-      localStorage.removeItem('control-issues')
-      localStorage.removeItem('control-activity')
-      localStorage.removeItem('control-scaffolding')
-      localStorage.removeItem('control-agent-sessions')
-      localStorage.removeItem('control-users')
-      localStorage.removeItem('control-settings')
-      localStorage.removeItem('control-reported-issues')
-      localStorage.removeItem('control-issue-scores')
-      localStorage.removeItem('control-remediation-settings')
-      localStorage.removeItem('control-remediation-sessions')
-
-      useIdeasStore.setState({ ideas: sampleIdeas })
-      useChartersStore.setState({ charters: sampleCharters })
-      useIssuesStore.setState({ issues: sampleIssues })
-      useActivityStore.setState({ activities: sampleActivities })
-      useScaffoldingStore.getState().setDocuments(sampleScaffolding)
-      useAgentSessionsStore.setState({ sessions: sampleAgentSessions })
-      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' })
-      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings })
-      useIssueScoresStore.setState({ scores: sampleIssueScores })
-      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] })
-
-      localStorage.setItem(VERSION_KEY, String(DATA_VERSION))
-      return
-    }
-
-    // Only seed if all stores are empty (fresh browser)
-    const ideas = useIdeasStore.getState().ideas
-    const charters = useChartersStore.getState().charters
-    const issues = useIssuesStore.getState().issues
-    const activities = useActivityStore.getState().activities
-    const scaffolding = useScaffoldingStore.getState().documents
-
-    if (
-      ideas.length === 0 &&
-      charters.length === 0 &&
-      issues.length === 0 &&
-      activities.length === 0 &&
-      scaffolding.length === 0
-    ) {
-      useIdeasStore.setState({ ideas: sampleIdeas })
-      useChartersStore.setState({ charters: sampleCharters })
-      useIssuesStore.setState({ issues: sampleIssues })
-      useActivityStore.setState({ activities: sampleActivities })
-      useScaffoldingStore.getState().setDocuments(sampleScaffolding)
-      useAgentSessionsStore.setState({ sessions: sampleAgentSessions })
-      useUsersStore.setState({ users: sampleUsers, currentUserId: 'user-001' })
-      useSettingsStore.setState({ servers: sampleServers, aiSettings: sampleAISettings })
-      useIssueScoresStore.setState({ scores: sampleIssueScores })
-      useRemediationSessionsStore.setState({ sessions: sampleRemediationSessions, queue: [] })
-
-      localStorage.setItem(VERSION_KEY, String(DATA_VERSION))
-    }
-  }, [])
-
-  return null
-}
+const DATA_VERSION = 1
+const VERSION_KEY = 'director-data-version'
 
 function App() {
   return (
     <BrowserRouter>
       <TooltipProvider>
-        <SeedData />
         <Routes>
           <Route element={<AppShell />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/new" element={<Navigate to="/new/idea" replace />} />
-            <Route path="/new/idea" element={<IntakePage />} />
-            <Route path="/report" element={<IssueReportPage />} />
-            <Route path="/ideas" element={<IdeasListPage />} />
-            <Route path="/ideas/:id" element={<IdeaDetailPage />} />
-            <Route path="/charters" element={<ChartersListPage />} />
-            <Route path="/charters/:id" element={<CharterViewPage />} />
-            <Route path="/issues" element={<IssuesPage />} />
+            <Route path="/" element={<Navigate to="/clients" replace />} />
+            <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/engagements" element={<EngagementsPage />} />
+            <Route path="/discovery" element={<DiscoveryPage />} />
             <Route path="/scaffolding" element={<ScaffoldingPage />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/ocai" element={<OcaiPage />} />
+            <Route path="/terminology" element={<TerminologyPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route
+              path="*"
+              element={
+                <div className="text-center py-20">
+                  <h1 className="text-2xl font-light mb-2">Page not found</h1>
+                  <p className="text-muted-foreground">
+                    The page you are looking for does not exist.
+                  </p>
+                </div>
+              }
+            />
           </Route>
         </Routes>
       </TooltipProvider>
@@ -132,4 +44,6 @@ function App() {
   )
 }
 
+// Exported for use in P1 seeding logic
+export { DATA_VERSION, VERSION_KEY }
 export default App

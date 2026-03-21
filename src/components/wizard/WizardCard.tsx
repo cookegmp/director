@@ -1,107 +1,34 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import DictationButton from '@/components/DictationButton'
 import GradientButton from '@/components/shared/GradientButton'
-import { useIdeasStore } from '@/stores/ideas'
-import { useActivityStore } from '@/stores/activity'
-import { useRemediationSettingsStore } from '@/modules/issue-scoring/stores/remediation-settings'
-import { generateId } from '@/lib/utils'
-import { scoreIdea } from '@/lib/scoring'
-import type { WizardStep } from '@/types'
 
-const STEPS: WizardStep[] = [
-  {
-    id: 'problem',
-    question: 'What process or pain point are you looking to address?',
-    placeholder: 'Describe the problem or opportunity...',
-    required: true,
-    inputType: 'textarea',
-  },
-  {
-    id: 'impact',
-    question: 'Who does this affect and how often?',
-    placeholder: 'Teams, frequency, downstream effects...',
-    required: true,
-    inputType: 'textarea',
-    suggestions: [
-      'Affects entire production floor daily',
-      'Engineering team spends hours weekly',
-      'Causes delays in customer deliveries',
-      'Quality issues downstream',
-    ],
-  },
-  {
-    id: 'current-state',
-    question: 'How is this handled today?',
-    placeholder: 'Current tools, workarounds, manual steps...',
-    required: true,
-    inputType: 'textarea',
-    suggestions: [
-      'Manual spreadsheet tracking',
-      'Paper-based process with handoffs',
-      'Using outdated legacy software',
-      'No current solution — completely manual',
-    ],
-  },
-  {
-    id: 'desired-outcome',
-    question: 'What does success look like?',
-    placeholder: 'Ideal end state, measurable improvements...',
-    required: true,
-    inputType: 'textarea',
-    suggestions: [
-      'Real-time visibility into status',
-      'Automated data capture and reporting',
-      'Reduced cycle time by 50%+',
-      'Elimination of manual data entry',
-    ],
-  },
-  {
-    id: 'constraints',
-    question: 'Any constraints or considerations?',
-    placeholder: 'Budget, timeline, integration requirements, compliance...',
-    required: false,
-    inputType: 'textarea',
-    suggestions: [
-      'Must integrate with existing ERP',
-      'Needs to work on mobile devices',
-      'Compliance or audit requirements',
-      'Limited internal technical resources',
-    ],
-  },
-  {
-    id: 'urgency',
-    question: 'How urgent is this?',
-    required: true,
-    inputType: 'select',
-    suggestions: [
-      'Blocking other work',
-      'Causing daily friction',
-      'Would improve efficiency',
-      'Exploring for the future',
-    ],
-    submitLabel: 'Score & Prioritize',
-  },
-]
+export interface WizardStep {
+  id: string
+  question: string
+  placeholder?: string
+  required?: boolean
+  inputType: 'textarea' | 'select'
+  suggestions?: string[]
+  submitLabel?: string
+}
 
-function WizardCard() {
+interface WizardCardProps {
+  steps: WizardStep[]
+  onComplete: (answers: Record<string, string>) => void
+  isProcessing?: boolean
+}
+
+function WizardCard({ steps, onComplete, isProcessing = false }: WizardCardProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [currentAnswer, setCurrentAnswer] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
 
-  // Tracks the text before dictation interim results so we can append cleanly
   const dictationBaseRef = useRef('')
 
-  const navigate = useNavigate()
-  const addIdea = useIdeasStore((s) => s.addIdea)
-  const addActivity = useActivityStore((s) => s.addActivity)
-  const ideaWeights = useRemediationSettingsStore((s) => s.settings.idea_weights)
-
-  const step = STEPS[currentStep]
-  const isLastStep = currentStep === STEPS.length - 1
+  const step = steps[currentStep]
+  const isLastStep = currentStep === steps.length - 1
   const canSubmitStep = step?.required ? currentAnswer.trim().length > 0 : true
 
   const handleNext = useCallback(() => {
@@ -111,70 +38,17 @@ function WizardCard() {
     setAnswers(updatedAnswers)
 
     if (isLastStep) {
-      setIsProcessing(true)
-
-      // Generate title from the problem description
-      const problemText = updatedAnswers.problem ?? ''
-      const title =
-        problemText.length > 60 ? problemText.slice(0, 57) + '...' : problemText || 'Untitled Idea'
-
-      const scores = scoreIdea(updatedAnswers)
-      const compositeScore =
-        scores.impact * ideaWeights.impact +
-        scores.urgency * ideaWeights.urgency +
-        scores.feasibility * ideaWeights.feasibility +
-        scores.alignment * ideaWeights.alignment
-
-      const ideaId = generateId()
-      const now = new Date().toISOString()
-
-      addIdea({
-        id: ideaId,
-        title,
-        status: 'scored',
-        intakeAnswers: updatedAnswers,
-        scores,
-        compositeScore,
-        createdAt: now,
-        updatedAt: now,
-        linkedCharterId: null,
-        linkedIssueIds: [],
-        activeSessionId: null,
-        sortOrder: Date.now(),
-      })
-
-      addActivity({
-        id: generateId(),
-        type: 'idea-created',
-        entityId: ideaId,
-        entityType: 'idea',
-        summary: `New idea scored: "${title}" (${Math.round(compositeScore)})`,
-        createdAt: now,
-      })
-
-      setTimeout(() => {
-        navigate(`/ideas/${ideaId}`)
-      }, 600)
+      onComplete(updatedAnswers)
     } else {
       setCurrentStep((s) => s + 1)
       setCurrentAnswer('')
       setSelectedTag(null)
     }
-  }, [
-    canSubmitStep,
-    step,
-    answers,
-    currentAnswer,
-    isLastStep,
-    addIdea,
-    addActivity,
-    navigate,
-    ideaWeights,
-  ])
+  }, [canSubmitStep, step, answers, currentAnswer, isLastStep, onComplete])
 
   const handleBack = () => {
     if (currentStep > 0) {
-      const prevStep = STEPS[currentStep - 1]
+      const prevStep = steps[currentStep - 1]
       setCurrentStep((s) => s - 1)
       setCurrentAnswer(prevStep ? (answers[prevStep.id] ?? '') : '')
       setSelectedTag(null)
@@ -227,7 +101,7 @@ function WizardCard() {
             </button>
           )}
           <div className="flex items-center gap-2">
-            {STEPS.map((_, i) => (
+            {steps.map((_, i) => (
               <div
                 key={i}
                 className={`w-2 h-2 rounded-full transition-colors ${
@@ -300,7 +174,7 @@ function WizardCard() {
               'Processing...'
             ) : (
               <>
-                {step.submitLabel ?? (isLastStep ? 'Score & Prioritize' : 'OK')}
+                {step.submitLabel ?? (isLastStep ? 'Submit' : 'OK')}
                 <Check className="w-4 h-4" />
               </>
             )}
@@ -325,7 +199,6 @@ function WizardCard() {
           {step.inputType === 'textarea' && (
             <DictationButton
               onResult={(text) => {
-                // Final result: commit to base so next interim appends after it
                 const committed = dictationBaseRef.current + text
                 dictationBaseRef.current = committed
                 setCurrentAnswer(committed)
@@ -337,7 +210,6 @@ function WizardCard() {
               }}
               onListeningChange={(listening) => {
                 if (listening) {
-                  // Snapshot whatever is in the field as the base
                   dictationBaseRef.current = currentAnswer
                 }
               }}
@@ -351,3 +223,4 @@ function WizardCard() {
 }
 
 export default WizardCard
+export type { WizardStep as WizardStepType }

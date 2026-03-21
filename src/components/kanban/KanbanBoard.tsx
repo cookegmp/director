@@ -9,138 +9,85 @@ import {
   closestCorners,
 } from '@dnd-kit/core'
 import type { DragStartEvent, DragOverEvent, DragEndEvent } from '@dnd-kit/core'
-import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { useIdeasStore } from '@/stores/ideas'
-import { useActivityStore } from '@/stores/activity'
-import { generateId } from '@/lib/utils'
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { KanbanCardContent } from './KanbanCard'
 import KanbanColumn from './KanbanColumn'
-import { STATUS_LABELS } from '@/types'
-import type { Idea, IdeaStatus } from '@/types'
+import type { KanbanItem } from './KanbanCard'
 
-const COLUMNS: { status: IdeaStatus; label: string; accent: string }[] = [
-  { status: 'scored', label: 'Scored', accent: 'bg-gray-400' },
-  { status: 'on-deck', label: 'On Deck', accent: 'bg-blue-500' },
-  { status: 'development', label: 'Development', accent: 'bg-teal-500' },
-  { status: 'production', label: 'Production', accent: 'bg-green-500' },
-]
+export interface KanbanColumnDef {
+  id: string
+  label: string
+  accent: string
+}
 
-function KanbanBoard() {
-  const ideas = useIdeasStore((s) => s.ideas)
-  const reorderIdeas = useIdeasStore((s) => s.reorderIdeas)
-  const moveIdea = useIdeasStore((s) => s.moveIdea)
-  const addActivity = useActivityStore((s) => s.addActivity)
+interface KanbanBoardProps {
+  columns: KanbanColumnDef[]
+  items: Record<string, KanbanItem[]>
+  onDragEnd?: (itemId: string, fromColumn: string, toColumn: string) => void
+}
 
-  const [activeIdea, setActiveIdea] = useState<Idea | null>(null)
+function KanbanBoard({ columns, items, onDragEnd: onDragEndProp }: KanbanBoardProps) {
+  const [activeItem, setActiveItem] = useState<KanbanItem | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
-  // Get ideas for a column, sorted by sortOrder
-  const getColumnIdeas = useCallback(
-    (status: IdeaStatus) =>
-      ideas.filter((i) => i.status === status).sort((a, b) => a.sortOrder - b.sortOrder),
-    [ideas],
-  )
-
-  // Find which column an idea belongs to
   const findColumn = useCallback(
-    (id: string): IdeaStatus | null => {
-      const idea = ideas.find((i) => i.id === id)
-      return idea?.status ?? null
+    (itemId: string): string | null => {
+      for (const col of columns) {
+        if (items[col.id]?.some((i) => i.id === itemId)) {
+          return col.id
+        }
+      }
+      return null
     },
-    [ideas],
+    [columns, items],
   )
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
-      const idea = ideas.find((i) => i.id === event.active.id)
-      setActiveIdea(idea ?? null)
-    },
-    [ideas],
-  )
-
-  const handleDragOver = useCallback(
-    (event: DragOverEvent) => {
-      const { active, over } = event
-      if (!over) return
-
-      const activeId = active.id as string
-      const overId = over.id as string
-
-      const activeColumn = findColumn(activeId)
-      if (!activeColumn) return
-
-      // Determine the target column
-      let overColumn: IdeaStatus | null = null
-      if (overId.startsWith('column-')) {
-        overColumn = overId.replace('column-', '') as IdeaStatus
-      } else {
-        overColumn = findColumn(overId)
+      const id = event.active.id as string
+      for (const col of columns) {
+        const item = items[col.id]?.find((i) => i.id === id)
+        if (item) {
+          setActiveItem(item)
+          break
+        }
       }
-      if (!overColumn || activeColumn === overColumn) return
-
-      // Move the idea to the new column (visual feedback mid-drag)
-      const destIdeas = getColumnIdeas(overColumn)
-      const overIndex = destIdeas.findIndex((i) => i.id === overId)
-      const newIndex = overIndex >= 0 ? overIndex : destIdeas.length
-
-      moveIdea(activeId, overColumn, newIndex)
     },
-    [findColumn, getColumnIdeas, moveIdea],
+    [columns, items],
   )
+
+  const handleDragOver = useCallback((_event: DragOverEvent) => {
+    // Visual feedback handled by dnd-kit
+  }, [])
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event
-      setActiveIdea(null)
-
+      setActiveItem(null)
       if (!over) return
 
       const activeId = active.id as string
       const overId = over.id as string
-      const activeColumn = findColumn(activeId)
-      if (!activeColumn) return
+      const fromColumn = findColumn(activeId)
+      if (!fromColumn) return
 
-      // Same-column reorder
-      let overColumn: IdeaStatus | null = null
+      let toColumn: string | null = null
       if (overId.startsWith('column-')) {
-        overColumn = overId.replace('column-', '') as IdeaStatus
+        toColumn = overId.replace('column-', '')
       } else {
-        overColumn = findColumn(overId)
+        toColumn = findColumn(overId)
       }
-      if (!overColumn) return
+      if (!toColumn) return
 
-      const columnIdeas = getColumnIdeas(overColumn)
-      const oldIndex = columnIdeas.findIndex((i) => i.id === activeId)
-      const newIndex = columnIdeas.findIndex((i) => i.id === overId)
-
-      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-        const reordered = arrayMove(
-          columnIdeas.map((i) => i.id),
-          oldIndex,
-          newIndex,
-        )
-        reorderIdeas(overColumn, reordered)
-      }
-
-      // Log activity if status changed
-      const originalIdea = activeIdea
-      if (originalIdea && originalIdea.status !== overColumn) {
-        const idea = ideas.find((i) => i.id === activeId)
-        addActivity({
-          id: generateId(),
-          type: 'status-changed',
-          entityId: activeId,
-          entityType: 'idea',
-          summary: `"${idea?.title ?? 'Idea'}" moved from ${STATUS_LABELS[originalIdea.status]} to ${STATUS_LABELS[overColumn]}`,
-          createdAt: new Date().toISOString(),
-        })
+      if (fromColumn !== toColumn && onDragEndProp) {
+        onDragEndProp(activeId, fromColumn, toColumn)
       }
     },
-    [findColumn, getColumnIdeas, reorderIdeas, ideas, activeIdea, addActivity],
+    [findColumn, onDragEndProp],
   )
 
   return (
@@ -152,19 +99,19 @@ function KanbanBoard() {
       onDragEnd={handleDragEnd}
     >
       <div className="kanban-scroll flex gap-4 overflow-x-auto pb-4 -mx-2 px-2">
-        {COLUMNS.map((col) => (
+        {columns.map((col) => (
           <KanbanColumn
-            key={col.status}
-            status={col.status}
+            key={col.id}
+            id={col.id}
             label={col.label}
-            ideas={getColumnIdeas(col.status)}
+            items={items[col.id] ?? []}
             accentColor={col.accent}
           />
         ))}
       </div>
 
       <DragOverlay>
-        {activeIdea ? <KanbanCardContent idea={activeIdea} isDragging /> : null}
+        {activeItem ? <KanbanCardContent item={activeItem} isDragging /> : null}
       </DragOverlay>
     </DndContext>
   )
