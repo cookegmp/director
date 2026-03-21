@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.0] — P1: Domain types, Zustand stores, comprehensive sample data seeded
+
+- Created `src/types/index.ts` with all Director domain interfaces and enums (Client, Engagement, DiscoverySession, ScaffoldingPackage, OCAIAssessment, TerminologyEntry)
+- Created 7 Zustand persist stores with `director-` key prefix (clients, engagements, discovery, scaffolding, ocai, terminology, settings)
+- Created comprehensive sample data for two fictional clients:
+  - Precision Dynamics: scaffolding phase, 3 completed discovery sessions, validated scaffolding package with all 8 sections, analyzed L1 OCAI, L2 in progress, 32 terminology entries
+  - Midwest Distribution Co: discovery phase, 2 sessions (1 complete, 1 in-progress), partial scaffolding, deployed L1 OCAI
+- Implemented DATA_VERSION seeding in App.tsx — clears and re-seeds all stores on version mismatch
+
 ## [0.1.0] — P0: Clone and strip Control, establish Director identity
 
 - Cloned Control repository, removed all client-specific pages, modules, components, stores, libs, hooks, and types
