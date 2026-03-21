@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0] — P3: Clients page complete
+
+- Client list with status badges, filter by status dropdown, text search, sortable columns (name, status, updated)
+- Client detail panel with engagement history, status progression stepper, quick-action navigation links
+- Status progression visualization (prospect → discovery → scaffolding → building → active) with click-to-change and confirm dialog
+- New client creation dialog with validation (name required)
+- Sample data renders correctly: Precision Dynamics (scaffolding), Midwest Distribution Co (discovery)
+
 ## [0.3.0] — P2: Full routing, Director shell verified, Settings page complete
 
 - All 7 routes wired with root redirect (/ → /clients) and 404 catch-all
