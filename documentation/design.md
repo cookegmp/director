@@ -1,10 +1,10 @@
-# StageManager UI Reference: Wizard Card Component
+# Control UI Reference: Wizard Card Component
 
 ## Overview
 
-This document describes the design system and interaction pattern for the primary input component in StageManager — a multi-step wizard card inspired by killorbuild.com. This is the central UI element users interact with for project intake, agent configuration, and consultation scaffolding.
+This document describes the design system and interaction pattern for the primary input component in Control — a multi-step wizard card inspired by killorbuild.com. This is the central UI element users interact with for project intake, agent configuration, and consultation scaffolding.
 
-Claude Code: read this file before building any wizard, intake form, or multi-step card component for the StageManager application.
+Claude Code: read this file before building any wizard, intake form, or multi-step card component for the Control application.
 
 ---
 
@@ -67,7 +67,7 @@ All colors are HSL values set as CSS custom properties on `:root`. This enables 
 
 ### Semantic Domain Colors
 
-Define these for StageManager orchestration states:
+Define these for Control orchestration states:
 
 ```css
 :root {
@@ -382,7 +382,7 @@ interface WizardState {
 5. If AI suggestions are needed, they load async (can show skeleton/placeholder tags while loading)
 6. On final step submit → transition to processing/results view
 
-### Step Configuration for StageManager
+### Step Configuration for Control
 
 Adapt the step sequence for your domain. Example for a consultation intake:
 
@@ -460,11 +460,11 @@ body {
 
 ## File Dependencies
 
-When scaffolding the StageManager project, install:
+When scaffolding the Control project, install:
 
 ```bash
-npm create vite@latest stage-manager -- --template react-ts
-cd stage-manager
+npm create vite@latest control -- --template react-ts
+cd control
 npm install
 npx shadcn@latest init
 # Choose: New York style, Slate base, CSS variables: yes

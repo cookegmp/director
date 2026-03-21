@@ -66,6 +66,6 @@ export const useAgentSessionsStore = create<AgentSessionsState>()(
 
       getSessionByIdeaId: (ideaId) => get().sessions.find((s) => s.ideaId === ideaId),
     }),
-    { name: 'stagemanager-agent-sessions' },
+    { name: 'control-agent-sessions' },
   ),
 )

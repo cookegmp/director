@@ -220,6 +220,6 @@ export const useAgentsSkillsStore = create<AgentsSkillsState>()(
         get().setSyncStatus(skillId, environment, success ? 'synced' : 'error')
       },
     }),
-    { name: 'stagemanager-agents-skills' },
+    { name: 'control-agents-skills' },
   ),
 )

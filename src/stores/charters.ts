@@ -22,6 +22,6 @@ export const useChartersStore = create<ChartersState>()(
         })),
       getCharter: (id) => get().charters.find((c) => c.id === id),
     }),
-    { name: 'stagemanager-charters' },
+    { name: 'control-charters' },
   ),
 )

@@ -1,9 +1,9 @@
 # ============================================================================
-# StageManager — Project Charter
+# Control — Project Charter
 # Client-Facing AI Development Operations Hub
 # ============================================================================
-# This charter governs the prototype build of StageManager, the client-facing
-# application delivered as part of an AI consulting engagement. StageManager
+# This charter governs the prototype build of Control, the client-facing
+# application delivered as part of an AI consulting engagement. Control
 # serves as the client's ongoing development operations hub for prioritizing
 # work, generating charters and execution plans, and managing bugs and
 # feature requests. It operates in conjunction with a scaffolding package
@@ -11,17 +11,17 @@
 # ============================================================================
 
 project:
-  name: StageManager
+  name: Control
   type: web-application
   stage: prototype
   description: >
-    StageManager is a client-facing AI development operations hub. It is the
+    Control is a client-facing AI development operations hub. It is the
     central tool a client uses after an AI consulting engagement to manage
     their ongoing development lifecycle. Clients use it to capture process
     improvement ideas, score and prioritize application opportunities, generate
     project charters and execution plans for agentic coding tools, and track
     bugs and feature requests from end users. The scaffolding package produced
-    during the consulting discovery process lives inside StageManager and
+    during the consulting discovery process lives inside Control and
     governs all charter output.
 
 # ============================================================================
@@ -117,7 +117,7 @@ views:
   dashboard:
     route: /
     description: >
-      Primary view when the client opens StageManager. Shows a high-level
+      Primary view when the client opens Control. Shows a high-level
       snapshot of their development pipeline: active projects, queued ideas
       ranked by priority score, recent bug reports, and quick-access to
       start a new charter.
@@ -268,7 +268,7 @@ views:
     route: /charters/:id
     description: >
       Displays a generated charter and execution plan for a specific
-      project. This is the primary output of StageManager — the document
+      project. This is the primary output of Control — the document
       that gets fed to an agentic coding tool alongside the scaffolding
       package. The charter is generated via Claude API using the idea's
       intake data combined with the client's scaffolding context.
@@ -519,7 +519,7 @@ charter-generation:
 components:
   wizard-card:
     description: >
-      The primary multi-step intake component. See the StageManager UI
+      The primary multi-step intake component. See the Control UI
       Reference document for full implementation details including animated
       gradient border CSS, step dot navigation, bottom-border textarea,
       suggestion tags, and action bar patterns.
@@ -636,8 +636,8 @@ structure:
 
 setup:
   commands:
-    - 'npm create vite@latest stage-manager -- --template react-ts'
-    - 'cd stage-manager && npm install'
+    - 'npm create vite@latest control -- --template react-ts'
+    - 'cd control && npm install'
     - 'npx shadcn@latest init' # New York style, Slate base, CSS variables: yes
     - 'npx shadcn@latest add button card badge progress tabs tooltip'
     - 'npm install lucide-react zustand react-router-dom'

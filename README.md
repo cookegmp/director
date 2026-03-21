@@ -1,10 +1,10 @@
-# StageManager
+# Control
 
 AI development operations hub for capturing ideas, scoring opportunities, generating project charters, tracking issues, and monitoring agentic build sessions.
 
 ## Purpose
 
-StageManager is the development lifecycle tool used after an AI consulting engagement to manage ongoing development operations. It gives the team a structured way to:
+Control is the development lifecycle tool used after an AI consulting engagement to manage ongoing development operations. It gives the team a structured way to:
 
 - Capture process improvement ideas through a guided intake wizard
 - Score and prioritize opportunities across impact, urgency, feasibility, and alignment dimensions
@@ -43,7 +43,7 @@ All data persists to browser `localStorage` — there is no backend or database.
 
    ```bash
    git clone <repo-url>
-   cd stagemanager
+   cd control
    ```
 
 2. Install dependencies:
@@ -150,7 +150,7 @@ npm run test:watch   # Watch mode
 ## Project Structure
 
 ```
-stagemanager/
+control/
 ├── src/
 │   ├── App.tsx                  # Root component, routing, data version check, and seeding
 │   ├── main.tsx                 # Vite entry point
@@ -373,7 +373,7 @@ Available on intake wizard text fields, issue report wizard, and build monitor i
 
 ## Design System
 
-StageManager uses a dark glassmorphism aesthetic. Colors are defined as HSL custom properties in `src/index.css` using the shadcn/ui token system, enabling opacity modifiers throughout.
+Control uses a dark glassmorphism aesthetic. Colors are defined as HSL custom properties in `src/index.css` using the shadcn/ui token system, enabling opacity modifiers throughout.
 
 | Token | Value | Usage |
 |-------|-------|-------|
@@ -399,22 +399,22 @@ All data lives in `localStorage`. Each Zustand store writes to a dedicated key:
 
 | Store | localStorage Key |
 |-------|-----------------|
-| Ideas | `stagemanager-ideas` |
-| Charters | `stagemanager-charters` |
-| Issues | `stagemanager-issues` |
-| Activity | `stagemanager-activity` |
-| Agent Sessions | `stagemanager-agent-sessions` |
-| Agents & Skills | `stagemanager-agents-skills` |
-| Scaffolding | `stagemanager-scaffolding` |
-| Settings (servers, AI) | `stagemanager-settings` |
-| Users | `stagemanager-users` |
-| Dev Settings | `stagemanager-dev-settings` |
-| Reported Issues (module) | `stagemanager-reported-issues` |
-| Issue Scores (module) | `stagemanager-issue-scores` |
-| Remediation Settings (module) | `stagemanager-remediation-settings` |
-| Remediation Sessions (module) | `stagemanager-remediation-sessions` |
+| Ideas | `control-ideas` |
+| Charters | `control-charters` |
+| Issues | `control-issues` |
+| Activity | `control-activity` |
+| Agent Sessions | `control-agent-sessions` |
+| Agents & Skills | `control-agents-skills` |
+| Scaffolding | `control-scaffolding` |
+| Settings (servers, AI) | `control-settings` |
+| Users | `control-users` |
+| Dev Settings | `control-dev-settings` |
+| Reported Issues (module) | `control-reported-issues` |
+| Issue Scores (module) | `control-issue-scores` |
+| Remediation Settings (module) | `control-remediation-settings` |
+| Remediation Sessions (module) | `control-remediation-sessions` |
 
-Data version is tracked under `stagemanager-data-version`. Incrementing `DATA_VERSION` in `src/App.tsx` clears all keys above and re-seeds from `src/lib/sample-data.ts` on the next page load.
+Data version is tracked under `control-data-version`. Incrementing `DATA_VERSION` in `src/App.tsx` clears all keys above and re-seeds from `src/lib/sample-data.ts` on the next page load.
 
 ## Build and Deployment
 
@@ -433,7 +433,7 @@ The dev server runs on port 3940. NGINX handles SSL termination externally. The 
 Allowed hosts configured in `vite.config.ts`:
 
 - `lab.ahaus.com`
-- `stagemanager.ahaus.com`
+- `control.ahaus.com`
 
 For production, serve the `dist/` bundle via NGINX with a fallback to `index.html` for client-side routing:
 

@@ -46,7 +46,7 @@ function Sidebar() {
     <aside className="w-64 bg-sidebar-background border-r border-sidebar-border flex flex-col h-screen sticky top-0 shrink-0">
       <div className="p-6">
         <h1 className="text-xl font-light tracking-tight">
-          <span className="animated-gradient-text">StageManager</span>
+          <span className="animated-gradient-text">Control</span>
         </h1>
         <p className="text-xs text-muted-foreground mt-1">Development Operations Hub</p>
       </div>

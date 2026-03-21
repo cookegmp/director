@@ -69,7 +69,7 @@ const PREVIEW_DATA: Record<
     label: 'Verbose — Full visibility',
     entries: [
       {
-        text: 'Creating the project at /app/stage-manager using React 18 with TypeScript',
+        text: 'Creating the project at /app/control using React 18 with TypeScript',
         type: 'progress',
       },
       {

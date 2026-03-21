@@ -13,6 +13,6 @@ export const useActivityStore = create<ActivityState>()(
       activities: [],
       addActivity: (activity) => set((state) => ({ activities: [activity, ...state.activities] })),
     }),
-    { name: 'stagemanager-activity' },
+    { name: 'control-activity' },
   ),
 )

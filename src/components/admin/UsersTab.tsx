@@ -55,7 +55,7 @@ function UsersTab() {
         <div>
           <h2 className="text-lg font-light text-foreground">Users & Roles</h2>
           <p className="text-sm text-muted-foreground">
-            Manage who has access to StageManager and what they can do.
+            Manage who has access to Control and what they can do.
           </p>
         </div>
         <Button onClick={() => setAddOpen(true)} className="gap-2">

@@ -29,6 +29,6 @@ export const useIssuesStore = create<IssuesState>()(
           ),
         })),
     }),
-    { name: 'stagemanager-issues' },
+    { name: 'control-issues' },
   ),
 )

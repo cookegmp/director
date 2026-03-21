@@ -19,6 +19,6 @@ export const useDevSettingsStore = create<DevSettingsState>()(
       setEnvironment: (environment) => set({ environment }),
       setModel: (model) => set({ model }),
     }),
-    { name: 'stagemanager-dev-settings' },
+    { name: 'control-dev-settings' },
   ),
 )

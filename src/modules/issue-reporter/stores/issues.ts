@@ -42,6 +42,6 @@ export const useReportedIssuesStore = create<ReportedIssuesState>()(
 
       getIssuesByProject: (projectId) => get().issues.filter((i) => i.project_id === projectId),
     }),
-    { name: 'stagemanager-reported-issues' },
+    { name: 'control-reported-issues' },
   ),
 )

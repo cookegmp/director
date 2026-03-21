@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 | Field | Value |
 |-------|-------|
-| **App** | StageManager — AI development operations hub |
+| **App** | Control — AI development operations hub |
 | **Stack** | React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5 |
 | **Port** | 3940 (frontend), 4100 (mock WebSocket server) |
 | **Database** | None — all data in browser localStorage |
@@ -27,7 +27,7 @@ No test framework is configured.
 
 ## Architecture
 
-**Frontend-only SPA.** No backend, no database. All persistence is browser localStorage via Zustand `persist` middleware. Each store writes to `stagemanager-{storename}` keys.
+**Frontend-only SPA.** No backend, no database. All persistence is browser localStorage via Zustand `persist` middleware. Each store writes to `control-{storename}` keys.
 
 ### State Management
 
@@ -108,12 +108,12 @@ Project charters and design references live in `documentation/`. The primary cha
 ## Global Rules
 
 This project follows shared conventions in `~/.claude/rules/`. Key references:
-- `branding.md` — Ahaus corporate branding (not used here; StageManager has its own dark theme)
+- `branding.md` — Ahaus corporate branding (not used here; Control has its own dark theme)
 - `code-style.md` — TypeScript patterns, naming, imports
 - `technology-preferences.md` — Stack defaults
 - `architecture.md` — Project structure patterns
 
-**Note:** StageManager departs from global defaults in these ways:
+**Note:** Control departs from global defaults in these ways:
 - No backend/GraphQL/MS SQL — frontend-only prototype
 - Dark glassmorphism theme instead of Ahaus corporate branding
 - Zustand instead of Context API

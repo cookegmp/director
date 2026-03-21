@@ -1,30 +1,30 @@
 # ============================================================================
-# StageManager — Issue Reporter Module Charter
+# Control — Issue Reporter Module Charter
 # ============================================================================
 # Version: 3.0.0
 # Date: 2025-02-25
 #
 # This charter governs the build of the AI-driven issue reporter module
-# for StageManager. The module uses the same wizard card interface as the
+# for Control. The module uses the same wizard card interface as the
 # idea intake but operates as a completely independent system. The AI
 # guides the user through a conversational intake, classifies the
 # submission as a bug or feature request, checks for duplicates against
 # existing issues, and produces a structured report informed by the
 # project's governing documents and charter execution plan.
 #
-# StageManager is a pure frontend application. All persistence is handled
+# Control is a pure frontend application. All persistence is handled
 # by BackStage (the backend system). This module uses mock data until
 # BackStage integration is implemented.
 # ============================================================================
 
 charter:
-  project: 'StageManager Issue Reporter Module'
-  repo: 'stage-manager'
+  project: 'Control Issue Reporter Module'
+  repo: 'control'
   charter_version: '3.0.0'
   charter_date: '2025-02-25'
 
   description: >
-    An AI-driven issue reporting module for StageManager that guides users
+    An AI-driven issue reporting module for Control that guides users
     through a conversational intake process to produce structured bug reports
     and feature requests. The module shares the wizard card interface and
     visual language with the idea intake module but is completely independent
@@ -48,10 +48,10 @@ charter:
 
   architecture:
     frontend: >
-      StageManager is a pure frontend React SPA. It has no database and no
+      Control is a pure frontend React SPA. It has no database and no
       server-side API of its own. All data persistence, retrieval, and
       server-side logic is handled by BackStage, a separate backend system
-      that StageManager connects to via API.
+      that Control connects to via API.
     backend: >
       BackStage (not built yet). For this module, all data operations use
       mock data and Zustand stores with localStorage persistence. The data
@@ -74,7 +74,7 @@ charter:
     - 'The AI drives the conversation. There are no fixed steps. The wizard renders whatever the AI decides to ask next.'
     - "The AI classifies the submission as 'bug' or 'feature' — the user never selects this themselves."
     - 'The AI must have access to governing documents, existing issues, and the charter execution plan for the relevant project.'
-    - 'StageManager has no database. All persistence uses mock data / localStorage for now. Data layer interfaces must be BackStage-ready.'
+    - 'Control has no database. All persistence uses mock data / localStorage for now. Data layer interfaces must be BackStage-ready.'
     - 'Do not modify the idea intake module in any way.'
     - 'Do not create shared stores or shared state between the issue reporter and the idea intake.'
 
@@ -84,7 +84,7 @@ charter:
 
   entry_point:
     description: >
-      A single "New" action is available throughout StageManager (dashboard
+      A single "New" action is available throughout Control (dashboard
       quick actions, sidebar, etc.). When activated, it presents a soft
       pre-filter — two clear paths the user can choose between. This is
       not a classification step; it simply routes the user to the correct
@@ -493,7 +493,7 @@ charter:
         - description: string # AI-generated structured description
         - severity: enum # critical, high, medium, low (AI-assessed, user-editable)
         - status: enum # open, in_progress, resolved, closed, wont_fix
-        - project_id: string | null # Linked StageManager project/idea
+        - project_id: string | null # Linked Control project/idea
         - app_id: string | null # Source application identifier
         - source: enum # internal, external
         - environment: enum | null # dsp, development, production
@@ -504,7 +504,7 @@ charter:
         - desired_outcome: string | null # Features only
         - reporter_name: string | null
         - reporter_email: string | null
-        - reporter_user_id: string | null # StageManager user ID if internal
+        - reporter_user_id: string | null # Control user ID if internal
         - screenshot: string | null # Base64 PNG (localStorage) or path (BackStage)
         - metadata: object # Auto-captured: userAgent, URL, viewport, etc.
         - conversation_summary: string | null # Brief summary of AI conversation
@@ -647,7 +647,7 @@ charter:
   do_not:
     - 'Do not share state, stores, or AI prompts with the idea intake module.'
     - 'Do not modify the idea intake module in any way.'
-    - 'Do not create a database or backend API — StageManager is frontend only.'
+    - 'Do not create a database or backend API — Control is frontend only.'
     - 'Do not use fixed wizard steps — the AI controls the conversation flow.'
     - 'Do not ask the user to classify their submission as bug or feature.'
     - 'Do not use getDisplayMedia for screenshots — not supported on iOS Safari.'

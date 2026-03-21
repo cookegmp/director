@@ -190,6 +190,6 @@ export const useSettingsStore = create<SettingsState>()(
           aiSettings: { ...state.aiSettings, translationVerbosity: level },
         })),
     }),
-    { name: 'stagemanager-settings' },
+    { name: 'control-settings' },
   ),
 )

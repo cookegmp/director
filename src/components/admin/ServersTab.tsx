@@ -9,7 +9,7 @@ function ServersTab() {
       <div>
         <h2 className="text-lg font-light text-foreground">Environment Servers</h2>
         <p className="text-sm text-muted-foreground">
-          Configure the environment servers StageManager connects to for agentic coding sessions.
+          Configure the environment servers Control connects to for agentic coding sessions.
         </p>
       </div>
 

@@ -58,7 +58,7 @@ function buildSystemPrompt(creationType: CreationType): string {
     .join('\n')
 
   if (creationType === 'agent') {
-    return `You are an AI configuration specialist helping a user define a new agent for their development operations platform (StageManager). An agent is an AI-powered worker that performs specific tasks — like generating charters, scoring issues, or translating build output.
+    return `You are an AI configuration specialist helping a user define a new agent for their development operations platform (Control). An agent is an AI-powered worker that performs specific tasks — like generating charters, scoring issues, or translating build output.
 
 ## Your Goal
 Guide the user through defining a new agent. You need to determine:
@@ -125,7 +125,7 @@ When you have enough information:
 Respond ONLY with the JSON object. No markdown, no explanation, no code fences.`
   }
 
-  return `You are an AI configuration specialist helping a user define a new skill for their development operations platform (StageManager). A skill is a triggered capability that can be invoked by users or the system — like generating a charter, scoring an issue, or checking for duplicates. Skills are optionally linked to agents.
+  return `You are an AI configuration specialist helping a user define a new skill for their development operations platform (Control). A skill is a triggered capability that can be invoked by users or the system — like generating a charter, scoring an issue, or checking for duplicates. Skills are optionally linked to agents.
 
 ## Your Goal
 Guide the user through defining a new skill. You need to determine:
@@ -324,7 +324,7 @@ export async function sendConversationMessage(
       Authorization: `Bearer ${aiSettings.openrouterApiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
-      'X-Title': 'StageManager Agent & Skill Creator',
+      'X-Title': 'Control Agent & Skill Creator',
     },
     body: JSON.stringify({
       model: aiSettings.conversationModel || 'anthropic/claude-sonnet-4',

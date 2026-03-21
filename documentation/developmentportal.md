@@ -1,4 +1,4 @@
-# StageManager Charter — Revision Notes
+# Control Charter — Revision Notes
 
 ## Changes from Initial Draft to Current Version
 
@@ -6,13 +6,13 @@
 
 ### Project Description
 
-Updated to reflect the full idea-to-production lifecycle. StageManager is no longer described as just a prioritization and charter generation tool — it now encompasses initiating and monitoring agentic coding builds directly from the interface, managing deployed applications in production, and translating technical agent output into plain English through an abstraction layer.
+Updated to reflect the full idea-to-production lifecycle. Control is no longer described as just a prioritization and charter generation tool — it now encompasses initiating and monitoring agentic coding builds directly from the interface, managing deployed applications in production, and translating technical agent output into plain English through an abstraction layer.
 
 ---
 
 ### Tech Stack
 
-Added `websocket` as a dependency under a new `realtime` key. This supports the streaming connection between StageManager and the client's development server for real-time agent output during builds.
+Added `websocket` as a dependency under a new `realtime` key. This supports the streaming connection between Control and the client's development server for real-time agent output during builds.
 
 ---
 
@@ -96,7 +96,7 @@ Entirely new charter section defining the translation engine that sits between r
 
 ### New Section: Agent Connection
 
-Entirely new charter section defining the WebSocket protocol between StageManager and the development server:
+Entirely new charter section defining the WebSocket protocol between Control and the development server:
 
 **Client-to-Server Messages:** `start-build` (with charter and scaffolding payload), `pause-build`, `resume-build`, `stop-build`
 

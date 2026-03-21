@@ -78,6 +78,6 @@ export const useUsersStore = create<UsersState>()(
         return state.users.filter((u) => u.role === 'admin' && u.status === 'active').length <= 1
       },
     }),
-    { name: 'stagemanager-users' },
+    { name: 'control-users' },
   ),
 )

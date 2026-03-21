@@ -52,6 +52,6 @@ export const useRemediationSessionsStore = create<RemediationSessionsState>()(
           queue: state.queue.filter((id) => id !== issueId),
         })),
     }),
-    { name: 'stagemanager-remediation-sessions' },
+    { name: 'control-remediation-sessions' },
   ),
 )

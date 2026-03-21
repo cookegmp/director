@@ -38,7 +38,7 @@ import {
 
 // Increment this when the data model changes shape to force a re-seed
 const DATA_VERSION = 13
-const VERSION_KEY = 'stagemanager-data-version'
+const VERSION_KEY = 'control-data-version'
 
 function SeedData() {
   useEffect(() => {
@@ -47,18 +47,18 @@ function SeedData() {
 
     // If version mismatch, clear all stores and re-seed
     if (currentVersion < DATA_VERSION) {
-      localStorage.removeItem('stagemanager-ideas')
-      localStorage.removeItem('stagemanager-charters')
-      localStorage.removeItem('stagemanager-issues')
-      localStorage.removeItem('stagemanager-activity')
-      localStorage.removeItem('stagemanager-scaffolding')
-      localStorage.removeItem('stagemanager-agent-sessions')
-      localStorage.removeItem('stagemanager-users')
-      localStorage.removeItem('stagemanager-settings')
-      localStorage.removeItem('stagemanager-reported-issues')
-      localStorage.removeItem('stagemanager-issue-scores')
-      localStorage.removeItem('stagemanager-remediation-settings')
-      localStorage.removeItem('stagemanager-remediation-sessions')
+      localStorage.removeItem('control-ideas')
+      localStorage.removeItem('control-charters')
+      localStorage.removeItem('control-issues')
+      localStorage.removeItem('control-activity')
+      localStorage.removeItem('control-scaffolding')
+      localStorage.removeItem('control-agent-sessions')
+      localStorage.removeItem('control-users')
+      localStorage.removeItem('control-settings')
+      localStorage.removeItem('control-reported-issues')
+      localStorage.removeItem('control-issue-scores')
+      localStorage.removeItem('control-remediation-settings')
+      localStorage.removeItem('control-remediation-sessions')
 
       useIdeasStore.setState({ ideas: sampleIdeas })
       useChartersStore.setState({ charters: sampleCharters })

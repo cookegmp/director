@@ -1,33 +1,33 @@
 # ============================================================================
-# StageManager — Issue Scoring & Auto-Remediation Charter
+# Control — Issue Scoring & Auto-Remediation Charter
 # ============================================================================
 # Version: 1.0.0
 # Date: 2025-02-25
 #
 # This charter governs the build of the issue scoring engine and
-# auto-remediation trigger system for StageManager. Issues (bugs and
+# auto-remediation trigger system for Control. Issues (bugs and
 # feature requests) are children of ideas — every issue belongs to a
 # parent project. The scoring engine evaluates issues in the context of
 # their parent project's charter, scaffolding, and existing issue history.
 #
 # Bugs that exceed configurable thresholds can automatically trigger
-# agentic coding remediation attempts through StageManager's development
+# agentic coding remediation attempts through Control's development
 # portal. The system uses a three-tier threshold model with admin-
 # configurable boundaries and target environments.
 #
-# StageManager is a pure frontend application. All persistence uses
+# Control is a pure frontend application. All persistence uses
 # mock data / localStorage until BackStage integration is implemented.
 # ============================================================================
 
 charter:
-  project: 'StageManager Issue Scoring & Auto-Remediation'
-  repo: 'stage-manager'
+  project: 'Control Issue Scoring & Auto-Remediation'
+  repo: 'control'
   charter_version: '1.0.0'
   charter_date: '2025-02-25'
 
   description: >
     A scoring engine for issues (bugs and feature requests) filed against
-    StageManager projects, plus a threshold-based system that can
+    Control projects, plus a threshold-based system that can
     automatically trigger agentic coding remediation for high-scoring bugs.
     Issues are always children of an idea (project). Scoring evaluates each
     issue in the context of its parent project's charter execution plan,
@@ -46,7 +46,7 @@ charter:
 
   architecture:
     parent_child_model: >
-      Ideas are the top-level entity in StageManager. Issues (bugs and
+      Ideas are the top-level entity in Control. Issues (bugs and
       feature requests) are children of ideas. Every issue has a parent
       project — there are no orphan issues. The issue reporter AI
       establishes the parent project during the intake conversation.
@@ -62,7 +62,7 @@ charter:
       The remediation uses the parent project's charter and scaffolding
       as context, plus the structured bug report as the task definition.
     backend: >
-      StageManager is frontend-only. Scoring runs client-side using the
+      Control is frontend-only. Scoring runs client-side using the
       AI model configured in admin settings (via OpenRouter). All data
       uses localStorage / Zustand stores until BackStage is implemented.
 
@@ -352,7 +352,7 @@ charter:
     description: >
       A three-tier threshold system that determines what happens when a
       bug is scored. Thresholds and target environments are configurable
-      by admins in the StageManager settings panel. Auto-remediation
+      by admins in the Control settings panel. Auto-remediation
       only applies to bugs — feature requests are never auto-triggered.
 
     applies_to: bugs_only
@@ -438,7 +438,7 @@ charter:
 
   admin_settings:
     description: >
-      The auto-remediation settings are managed in the StageManager admin
+      The auto-remediation settings are managed in the Control admin
       panel. These should be added as a new section within the existing
       admin interface, either as a new tab or as a sub-section of an
       existing tab.
@@ -546,7 +546,7 @@ charter:
 
   score_display:
     description: >
-      How and where scores are rendered in the StageManager UI. Scoring
+      How and where scores are rendered in the Control UI. Scoring
       visuals are consistent with the idea scoring display but use
       distinct color treatments to avoid confusion.
 
@@ -740,7 +740,7 @@ charter:
     - 'Do not auto-trigger remediation if the remediation_confidence dimension is below the configured floor.'
     - 'Do not modify the idea scoring engine — issue scoring is a separate system with separate dimensions.'
     - 'Do not merge bug and feature scoring into a single dimension set — they evaluate different things.'
-    - 'Do not create a backend or database — StageManager is frontend only.'
+    - 'Do not create a backend or database — Control is frontend only.'
     - 'Do not allow more concurrent remediation sessions than the configured maximum.'
     - 'Do not auto-deploy remediation fixes — completed fixes are always staged for human review.'
     - 'Do not score issues that have no parent project — the scoring context requires a charter.'

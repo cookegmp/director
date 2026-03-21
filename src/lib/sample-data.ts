@@ -13,7 +13,7 @@ import type { IssueScore, RemediationSession } from '@/modules/issue-scoring/typ
 
 // ============================================================================
 // AHAUS Tool & Engineering — Sample Data
-// Fictional manufacturing company demo data for StageManager prototype
+// Fictional manufacturing company demo data for Control prototype
 // ============================================================================
 
 const NOW = new Date()

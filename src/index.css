@@ -48,7 +48,7 @@
   --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* StageManager — Dark glassmorphism palette (always dark, no light mode) */
+/* Control — Dark glassmorphism palette (always dark, no light mode) */
 :root {
   --background: 225 64% 11%;
   --foreground: 220 14% 96%;

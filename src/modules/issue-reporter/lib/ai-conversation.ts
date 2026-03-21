@@ -170,7 +170,7 @@ export async function sendConversationMessage(
       Authorization: `Bearer ${aiSettings.openrouterApiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
-      'X-Title': 'StageManager Issue Reporter',
+      'X-Title': 'Control Issue Reporter',
     },
     body: JSON.stringify({
       model: aiSettings.conversationModel || 'anthropic/claude-sonnet-4',

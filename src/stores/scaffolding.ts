@@ -15,6 +15,6 @@ export const useScaffoldingStore = create<ScaffoldingState>()(
       setDocuments: (docs) => set({ documents: docs }),
       getByType: (type) => get().documents.find((d) => d.type === type),
     }),
-    { name: 'stagemanager-scaffolding' },
+    { name: 'control-scaffolding' },
   ),
 )

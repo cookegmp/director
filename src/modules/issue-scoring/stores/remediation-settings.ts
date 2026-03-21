@@ -55,7 +55,7 @@ export const useRemediationSettingsStore = create<RemediationSettingsState>()(
       resetDefaults: () => set({ settings: { ...DEFAULT_REMEDIATION_SETTINGS } }),
     }),
     {
-      name: 'stagemanager-remediation-settings',
+      name: 'control-remediation-settings',
       merge: (persisted, current) => {
         const merged = {
           ...current,

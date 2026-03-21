@@ -1,14 +1,14 @@
 # ============================================================================
 
-# StageManager — Admin Interface Charter
+# Control — Admin Interface Charter
 
 # ============================================================================
 
-# This charter governs the build of the Admin interface for StageManager.
+# This charter governs the build of the Admin interface for Control.
 
 # The admin page is where the client’s technical lead or IT person configures
 
-# StageManager after deployment. It covers user management with role-based
+# Control after deployment. It covers user management with role-based
 
 # access control, environment server connections, AI provider configuration
 
@@ -16,7 +16,7 @@
 
 # 
 
-# This is a sub-charter of the main StageManager project charter. It
+# This is a sub-charter of the main Control project charter. It
 
 # inherits the design system, tech stack, and component patterns defined
 
@@ -31,9 +31,9 @@
 # ============================================================================
 
 context:
-application: StageManager
+application: Control
 description: >
-StageManager is a client-facing AI development operations hub. Clients
+Control is a client-facing AI development operations hub. Clients
 use it to capture process improvement ideas, score and prioritize
 application opportunities, generate project charters, initiate and
 monitor agentic coding builds, and manage deployed applications in
@@ -113,7 +113,7 @@ admin-specific-patterns:
 - “Destructive actions (remove user, etc.) use destructive color with confirmation dialog”
 - “All settings save automatically or via explicit Save button with success feedback”
 - “Warning callouts (DSP environment) use a subtle amber/warning treatment”
-- “font-light on all headings, consistent with the rest of StageManager”
+- “font-light on all headings, consistent with the rest of Control”
 
 # ============================================================================
 
@@ -151,7 +151,7 @@ icon: Languages
 users-and-roles:
 label: “Users & Roles”
 description: >
-Manage users who have access to StageManager and assign their roles.
+Manage users who have access to Control and assign their roles.
 The role determines what a user can see and do within the application.
 
 roles:
@@ -284,7 +284,7 @@ add-user:
 environment-servers:
 label: “Environment Servers”
 description: >
-Configure the three environment servers that StageManager connects to
+Configure the three environment servers that Control connects to
 for agentic coding sessions. Each environment serves a distinct purpose
 and has its own connection settings. When initiating a build from the
 development portal, the user selects which environment to target.
@@ -339,7 +339,7 @@ shared-fields:
 description: >
 All three environment cards share identical field structure. Fields
 use the bottom-border-only input style consistent with the rest of
-StageManager.
+Control.
 fields:
 - host:
 label: “Server Host”
@@ -400,7 +400,7 @@ ai-configuration:
 label: “AI Configuration”
 description: >
 Configure the AI provider and model settings for all AI-powered features
-in StageManager. All AI calls route through OpenRouter as the single
+in Control. All AI calls route through OpenRouter as the single
 API endpoint. The client selects which models to use from the models
 available through their OpenRouter account.
 
@@ -454,7 +454,7 @@ model-selection:
     behavior.
   description: >
     Assign which OpenRouter model handles each AI function within
-    StageManager. Each function can use a different model, allowing
+    Control. Each function can use a different model, allowing
     the client to balance cost, speed, and quality per task.
 
   model-dropdown:
@@ -618,7 +618,7 @@ during builds.
         for technically curious clients who want full visibility
         without reading raw output.
       example-output:
-        - "Creating the project at /app/stage-manager using React 18 with TypeScript"
+        - "Creating the project at /app/control using React 18 with TypeScript"
         - "Configuring Tailwind CSS version 3 with custom color tokens for the design system"
         - "Installing lucide-react for icons, zustand for state management, react-router-dom for navigation"
         - "Created Dashboard.tsx (245 lines) — includes priority queue sorted by composite score, active project cards, and a 10-item activity feed"

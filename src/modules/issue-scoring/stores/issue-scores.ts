@@ -62,6 +62,6 @@ export const useIssueScoresStore = create<IssueScoresState>()(
           ),
         })),
     }),
-    { name: 'stagemanager-issue-scores' },
+    { name: 'control-issue-scores' },
   ),
 )

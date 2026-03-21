@@ -65,6 +65,6 @@ export const useIdeasStore = create<IdeasState>()(
           }
         }),
     }),
-    { name: 'stagemanager-ideas' },
+    { name: 'control-ideas' },
   ),
 )
