@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0] — P6: Scaffolding page with two-tier editor, completion indicators, terminology decoder, export
+
+- Two-tier visual layout: Tier 1 (Operational Intelligence: Process & Workflow, Culture Profile, Data & Systems) and Tier 2 (Build Intelligence: Company Context, Brand Standards, Tech Preferences, Quality Standards, Security Patterns)
+- Section editors with dynamic JSON field editing in modal dialog
+- Completion status badges (empty/draft/reviewed/validated) auto-derived from section content
+- Validate Package: checks all 8 sections are populated, shows validation summary
+- Export Package: downloads scaffolding as JSON with client name and version in filename
+- Terminology decoder tab: searchable/sortable table, add/edit/delete entries, import from discovery session extracted data, JSON and CSV export
+
 ## [0.6.0] — P5: Discovery page with session list, interview wizard, AI extraction with mock fallback
 
 - Session list grouped by type (Stakeholder Interview, System Walkthrough, Workflow Observation, Brand Collection) with status badges
