@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] — P2: Full routing, Director shell verified, Settings page complete
+
+- All 7 routes wired with root redirect (/ → /clients) and 404 catch-all
+- Settings page: OpenRouter API key entry (password with show/hide toggle), model selection per AI function, MOCK MODE badge, About section with version from package.json
+- API key persists in localStorage via Zustand settings store
+- Smoke tests for SettingsPage (3 tests) — all passing
+- Installed @testing-library/react for component testing
+
 ## [0.2.0] — P1: Domain types, Zustand stores, comprehensive sample data seeded
 
 - Created `src/types/index.ts` with all Director domain interfaces and enums (Client, Engagement, DiscoverySession, ScaffoldingPackage, OCAIAssessment, TerminologyEntry)
