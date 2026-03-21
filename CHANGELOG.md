@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.8.0] — P7: OCAI page with L1/L2 builders, response collection, CVF radar chart, gap analysis
+
+- Assessment dashboard grouped by OCAI level with status badges
+- Level 1 Baseline Builder: generates 10-12 behavioral scenario questions via mock AI
+- Level 2 Workflow Builder: reads Process & Workflow from scaffolding, generates workflow-specific questions
+- Response collection interface with range sliders (0-100) per question
+- Analysis panel: triggers mock CVF analysis, renders radar chart with amber fill
+- CVF radar chart: pure SVG with 4 axes (Clan, Adhocracy, Hierarchy, Market), grid rings, and labeled data points
+- Gap analysis view: side-by-side comparison of analyzed assessments with radar charts and gap lists
+- Deploy button for draft assessments
+
 ## [0.7.0] — P6: Scaffolding page with two-tier editor, completion indicators, terminology decoder, export
 
 - Two-tier visual layout: Tier 1 (Operational Intelligence: Process & Workflow, Culture Profile, Data & Systems) and Tier 2 (Build Intelligence: Company Context, Brand Standards, Tech Preferences, Quality Standards, Security Patterns)
