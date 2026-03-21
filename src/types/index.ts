@@ -27,12 +27,6 @@ export type ActivityType =
   | 'remediation-failed'
 export type EntityType = 'idea' | 'charter' | 'issue' | 'agent-session'
 export type ScoreTier = 'critical' | 'high' | 'medium' | 'low'
-export type UrgencyLevel =
-  | 'Blocking other work'
-  | 'Causing daily friction'
-  | 'Would improve efficiency'
-  | 'Exploring for the future'
-
 // --- Agent Session Types ---
 
 export type AgentSessionStatus =

@@ -16,7 +16,6 @@ interface AgentSessionsState {
   appendRawOutput: (id: string, line: RawOutputLine) => void
   appendError: (id: string, error: AgentError) => void
   getSession: (id: string) => AgentSession | undefined
-  getSessionByIdeaId: (ideaId: string) => AgentSession | undefined
 }
 
 export const useAgentSessionsStore = create<AgentSessionsState>()(
@@ -63,8 +62,6 @@ export const useAgentSessionsStore = create<AgentSessionsState>()(
         })),
 
       getSession: (id) => get().sessions.find((s) => s.id === id),
-
-      getSessionByIdeaId: (ideaId) => get().sessions.find((s) => s.ideaId === ideaId),
     }),
     { name: 'control-agent-sessions' },
   ),

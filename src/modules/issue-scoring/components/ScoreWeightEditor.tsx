@@ -224,13 +224,3 @@ export function FeatureWeightEditor() {
   )
 }
 
-function ScoreWeightEditor() {
-  return (
-    <div className="space-y-8">
-      <BugWeightEditor />
-      <FeatureWeightEditor />
-    </div>
-  )
-}
-
-export default ScoreWeightEditor

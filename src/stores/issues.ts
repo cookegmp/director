@@ -1,13 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Issue, Comment } from '@/types'
+import type { Issue } from '@/types'
 
 interface IssuesState {
   issues: Issue[]
   addIssue: (issue: Issue) => void
   updateIssue: (id: string, updates: Partial<Issue>) => void
   getIssue: (id: string) => Issue | undefined
-  addComment: (issueId: string, comment: Comment) => void
 }
 
 export const useIssuesStore = create<IssuesState>()(
@@ -22,12 +21,6 @@ export const useIssuesStore = create<IssuesState>()(
           ),
         })),
       getIssue: (id) => get().issues.find((i) => i.id === id),
-      addComment: (issueId, comment) =>
-        set((state) => ({
-          issues: state.issues.map((i) =>
-            i.id === issueId ? { ...i, comments: [...i.comments, comment] } : i,
-          ),
-        })),
     }),
     { name: 'control-issues' },
   ),

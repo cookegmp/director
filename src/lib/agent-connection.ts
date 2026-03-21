@@ -1,6 +1,6 @@
 import type { ClientMessage, ServerMessage, AgentSessionStatus } from '@/types'
 
-export interface AgentConnectionCallbacks {
+interface AgentConnectionCallbacks {
   onOpen: () => void
   onClose: (code: number, reason: string) => void
   onOutput: (line: string, timestamp: string) => void

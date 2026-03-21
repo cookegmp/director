@@ -41,8 +41,3 @@ export function processQueue(): void {
   }
 }
 
-export function getQueuePosition(issueId: string): number | null {
-  const queue = useRemediationSessionsStore.getState().getQueuedIssues()
-  const index = queue.indexOf(issueId)
-  return index >= 0 ? index + 1 : null
-}

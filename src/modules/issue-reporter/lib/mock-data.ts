@@ -253,10 +253,3 @@ export function getMockResponse(
   return conversation[stepIndex]!
 }
 
-// --- Sample Existing Issues for Seeding ---
-
-export const sampleReportedIssues = [
-  // These are seeded separately in the reported-issues store for demo
-  // The main issues store (src/stores/issues.ts) already has sample issues
-  // that the AI uses for duplicate detection
-]

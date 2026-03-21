@@ -23,7 +23,7 @@ export function mapAIResponseToReport(response: AICompletionResponse): IssueRepo
   }
 }
 
-export function captureBrowserMetadata(): BrowserMetadata {
+function captureBrowserMetadata(): BrowserMetadata {
   return {
     userAgent: navigator.userAgent,
     url: window.location.href,

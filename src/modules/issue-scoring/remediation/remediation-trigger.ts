@@ -11,36 +11,7 @@ import { useIssueScoresStore } from '../stores/issue-scores'
 import { useRemediationSessionsStore } from '../stores/remediation-sessions'
 import { useRemediationSettingsStore } from '../stores/remediation-settings'
 import type { RemediationSession } from '../types'
-import type { ReportedIssue } from '@/modules/issue-reporter/types'
-import type { ScoringContext } from '../engine/context-assembler'
 import { canStartSession } from './session-queue'
-
-export function assembleRemediationPackage(
-  issue: ReportedIssue,
-  context: ScoringContext,
-): Record<string, unknown> {
-  return {
-    bug_report: {
-      title: issue.title,
-      description: issue.description,
-      steps_to_reproduce: issue.steps_to_reproduce,
-      expected_behavior: issue.expected_behavior,
-      actual_behavior: issue.actual_behavior,
-      affected_area: issue.affected_area,
-      severity: issue.severity,
-    },
-    conversation_summary: issue.conversation_summary,
-    screenshot: issue.screenshot ? '[screenshot attached]' : null,
-    parent_charter: context.charterContent || null,
-    scaffolding: context.scaffolding.map((s) => ({ type: s.type, content: s.content })),
-    related_issues: context.existingIssues.slice(0, 5).map((i) => ({
-      id: i.id,
-      type: i.type,
-      title: i.title,
-      status: i.status,
-    })),
-  }
-}
 
 export function triggerRemediation(
   issueId: string,

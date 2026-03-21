@@ -1,6 +1,6 @@
 import type { UserRole } from '@/types'
 
-export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
+const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   admin: [
     'view-dashboard',
     'create-ideas',
@@ -35,7 +35,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   viewer: ['view-dashboard', 'view-charters', 'view-scaffolding', 'file-issues'],
 }
 
-export function hasPermission(role: UserRole, permission: string): boolean {
+function hasPermission(role: UserRole, permission: string): boolean {
   return ROLE_PERMISSIONS[role]?.includes(permission) ?? false
 }
 

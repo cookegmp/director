@@ -7,7 +7,6 @@ interface IdeasState {
   addIdea: (idea: Idea) => void
   updateIdea: (id: string, updates: Partial<Idea>) => void
   getIdea: (id: string) => Idea | undefined
-  removeIdea: (id: string) => void
   reorderIdeas: (status: IdeaStatus, orderedIds: string[]) => void
   moveIdea: (id: string, newStatus: IdeaStatus, newIndex: number) => void
 }
@@ -24,7 +23,6 @@ export const useIdeasStore = create<IdeasState>()(
           ),
         })),
       getIdea: (id) => get().ideas.find((i) => i.id === id),
-      removeIdea: (id) => set((state) => ({ ideas: state.ideas.filter((i) => i.id !== id) })),
       reorderIdeas: (status, orderedIds) =>
         set((state) => ({
           ideas: state.ideas.map((idea) => {

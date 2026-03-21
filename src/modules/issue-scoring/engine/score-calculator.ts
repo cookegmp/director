@@ -4,8 +4,7 @@
 // Shared utilities for weighted average calculation and tier assignment.
 // ============================================================================
 
-import type { DimensionScore, BugScoreTier, FeatureScoreTier } from '../types'
-import { getBugScoreTier, getFeatureScoreTier } from '../types'
+import type { DimensionScore } from '../types'
 
 export function clampScore(n: number): number {
   return Math.max(0, Math.min(100, Math.round(n)))
@@ -16,14 +15,6 @@ export function calculateComposite(dimensions: DimensionScore[]): number {
   if (totalWeight === 0) return 0
   const weightedSum = dimensions.reduce((sum, d) => sum + d.weighted_score, 0)
   return clampScore(weightedSum / totalWeight)
-}
-
-export function assignBugTier(composite: number): BugScoreTier {
-  return getBugScoreTier(composite)
-}
-
-export function assignFeatureTier(composite: number): FeatureScoreTier {
-  return getFeatureScoreTier(composite)
 }
 
 export function buildDimensionScore(
