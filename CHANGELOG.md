@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.0] — P5: Discovery page with session list, interview wizard, AI extraction with mock fallback
+
+- Session list grouped by type (Stakeholder Interview, System Walkthrough, Workflow Observation, Brand Collection) with status badges
+- Session detail panel showing transcript, extracted data (JSON view), and scaffolding sections affected badges
+- New session creation form with type selector, title, participants, and datetime input
+- AI-guided interview wizard with scripted conversation flows per session type
+- Interview flows: stakeholder (8 steps), system walkthrough (6), workflow observation (6), brand collection (5)
+- Mock AI extraction with 600-1200ms simulated delay — no real API calls when VITE_USE_MOCK_DATA=true
+- OpenRouter client module (`src/lib/openrouter.ts`) with mock mode guard and API key from settings store
+- Mock AI stubs (`src/lib/mock-ai.ts`) for extraction and OCAI generation
+
 ## [0.5.0] — P4: Engagements page complete
 
 - Per-client engagement list with phase and status badges
