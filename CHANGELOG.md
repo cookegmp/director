@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0] — P8: Terminology page complete
+
+- Standalone terminology page with scaffolding package selector (client name + version)
+- Stat row: total entries, with source session count, without source count
+- Bulk select with select-all checkbox and "Delete Selected" button with confirm dialog
+- Reuses TerminologyDecoder component for search, add, import, and export actions
+- JSON and CSV export from page context
+
 ## [0.8.0] — P7: OCAI page with L1/L2 builders, response collection, CVF radar chart, gap analysis
 
 - Assessment dashboard grouped by OCAI level with status badges
