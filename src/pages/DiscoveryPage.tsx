@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, Monitor, MonitorOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useClientsStore } from '@/stores/clients'
 import { useEngagementsStore } from '@/stores/engagements'
@@ -48,6 +48,8 @@ function DiscoveryPage() {
     return { id: e.id, label: `${client?.name ?? 'Unknown'} — ${e.phase}` }
   })
 
+  const presenting = usePresentationStore((s) => s.active)
+  const togglePresenting = usePresentationStore((s) => s.toggle)
   const exitPresenting = usePresentationStore((s) => s.exit)
 
   const closeWizard = () => {
@@ -105,50 +107,69 @@ function DiscoveryPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-light tracking-tight">Discovery</h1>
-          <p className="text-muted-foreground mt-1">Interview sessions and data extraction.</p>
+          <h1 className={`font-light tracking-tight ${presenting ? 'text-3xl' : 'text-2xl'}`}>Discovery</h1>
+          {!presenting && (
+            <p className="text-muted-foreground mt-1">Interview sessions and data extraction.</p>
+          )}
         </div>
-        <Button onClick={() => setShowNewForm(true)} disabled={!selectedEngagementId}>
-          <Plus className="w-4 h-4 mr-1" />
-          New Session
-        </Button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={togglePresenting}
+            className="text-muted-foreground/40 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-muted/30"
+            title={presenting ? 'Exit presentation mode' : 'Enter presentation mode'}
+          >
+            {presenting ? <MonitorOff className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
+          </button>
+          {!presenting && (
+            <Button onClick={() => setShowNewForm(true)} disabled={!selectedEngagementId}>
+              <Plus className="w-4 h-4 mr-1" />
+              New Session
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Engagement selector */}
-      <div className="flex items-center gap-3">
-        <label className="text-sm text-muted-foreground">Engagement:</label>
-        <select
-          value={selectedEngagementId}
-          onChange={(e) => {
-            setSelectedEngagementId(e.target.value)
-            setSelectedSession(null)
-          }}
-          className="bg-transparent border-b border-border text-sm text-foreground focus:border-primary focus:outline-none transition-colors py-1.5 px-1 min-w-[250px]"
-        >
-          {engagementOptions.map((opt) => (
-            <option key={opt.id} value={opt.id} className="bg-card">
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Engagement selector — hidden in presentation mode */}
+      {!presenting && (
+        <div className="flex items-center gap-3">
+          <label className="text-sm text-muted-foreground">Engagement:</label>
+          <select
+            value={selectedEngagementId}
+            onChange={(e) => {
+              setSelectedEngagementId(e.target.value)
+              setSelectedSession(null)
+            }}
+            className="bg-transparent border-b border-border text-sm text-foreground focus:border-primary focus:outline-none transition-colors py-1.5 px-1 min-w-[250px]"
+          >
+            {engagementOptions.map((opt) => (
+              <option key={opt.id} value={opt.id} className="bg-card">
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${presenting ? 'items-start' : ''}`}
+        style={presenting ? { minHeight: 'calc(100vh - 10rem)' } : undefined}
+      >
         <SessionList
           sessions={sessions}
           selectedId={selectedSession?.id ?? null}
           onSelect={setSelectedSession}
+          presenting={presenting}
         />
 
         {selectedSession && (
           <SessionDetail
             session={selectedSession}
             onStartInterview={() => setWizardSession(selectedSession)}
+            presenting={presenting}
           />
         )}
       </div>
 
-      {selectedEngagementId && (
+      {!presenting && selectedEngagementId && (
         <NewSessionForm
           open={showNewForm}
           onOpenChange={setShowNewForm}
