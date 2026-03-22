@@ -7,9 +7,12 @@ interface CvfRadarChartProps {
 }
 
 function CvfRadarChart({ clan, adhocracy, hierarchy, market, size = 240 }: CvfRadarChartProps) {
-  const cx = size / 2
-  const cy = size / 2
-  const r = size / 2 - 30
+  const padding = 50
+  const chartSize = size
+  const totalSize = chartSize + padding * 2
+  const cx = totalSize / 2
+  const cy = totalSize / 2
+  const r = chartSize / 2 - 10
 
   // Axes: top=Clan, right=Adhocracy, bottom=Market, left=Hierarchy
   const axes = [
@@ -33,7 +36,7 @@ function CvfRadarChart({ clan, adhocracy, hierarchy, market, size = 240 }: CvfRa
   const polygonStr = points.map((p) => `${p.x},${p.y}`).join(' ')
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="mx-auto">
+    <svg viewBox={`0 0 ${totalSize} ${totalSize}`} className="mx-auto w-full max-w-sm">
       {/* Grid rings */}
       {rings.map((ring) => {
         const ringPoints = axes.map((a) => toXY(a.angle, ring))
