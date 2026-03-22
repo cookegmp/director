@@ -11,6 +11,7 @@ import ResponseCollection from '@/components/ocai/ResponseCollection'
 import AnalysisPanel from '@/components/ocai/AnalysisPanel'
 import GapAnalysisView from '@/components/ocai/GapAnalysisView'
 import InterviewWizard from '@/components/shared/InterviewWizard'
+import { usePresentationStore } from '@/stores/presentation'
 import { OCAI_LEVEL_LABELS } from '@/types'
 import type { InterviewStep } from '@/components/shared/InterviewWizard'
 import type { OCAIAssessment } from '@/types'
@@ -61,7 +62,10 @@ function OcaiPage() {
     ? assessments.find((a) => a.id === selectedAssessment.id) ?? selectedAssessment
     : null
 
+  const exitPresenting = usePresentationStore((s) => s.exit)
+
   const closeWizard = () => {
+    exitPresenting()
     setWizardAssessment(null)
   }
 

@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { ArrowLeft, ArrowRight, Check, Pause, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Pause, X, Monitor, MonitorOff } from 'lucide-react'
 import DictationButton from '@/components/DictationButton'
 import GradientButton from '@/components/shared/GradientButton'
+import { usePresentationStore } from '@/stores/presentation'
 
 export interface InterviewStep {
   id: string
@@ -52,6 +53,9 @@ function InterviewWizard({
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
 
   const dictationBaseRef = useRef('')
+  const presenting = usePresentationStore((s) => s.active)
+  const togglePresenting = usePresentationStore((s) => s.toggle)
+  const exitPresenting = usePresentationStore((s) => s.exit)
 
   const step = steps[currentStep]
   const isLastStep = currentStep === steps.length - 1
@@ -107,6 +111,7 @@ function InterviewWizard({
       ? { ...answers, [step.id]: currentAnswer }
       : answers
     onSave?.(updatedAnswers, currentStep)
+    exitPresenting()
     onClose()
   }
 
@@ -134,36 +139,63 @@ function InterviewWizard({
   const progress = ((currentStep + 1) / steps.length) * 100
 
   return (
-    <section className="min-h-[calc(100vh-8rem)] flex flex-col justify-center px-4 sm:px-8 py-8 max-w-3xl mx-auto w-full">
-      <div className="bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border p-6 sm:p-10">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-sm font-medium text-primary">{title}</h3>
-            {subtitle && (
-              <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {onSave && (
+    <section className={`flex flex-col justify-center w-full ${
+      presenting
+        ? 'min-h-screen px-8 sm:px-16 py-12 max-w-4xl mx-auto'
+        : 'min-h-[calc(100vh-8rem)] px-4 sm:px-8 py-8 max-w-3xl mx-auto'
+    }`}>
+      <div className={`bg-card/50 backdrop-blur-sm rounded-[1rem] border border-border ${
+        presenting ? 'p-8 sm:p-14' : 'p-6 sm:p-10'
+      }`}>
+        {/* Header — consultant controls hidden in presentation mode */}
+        {!presenting && (
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-sm font-medium text-primary">{title}</h3>
+              {subtitle && (
+                <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
               <button
-                onClick={handlePause}
-                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2.5 py-1.5 rounded-lg hover:bg-muted/30"
-                title="Save progress and exit (Esc)"
+                onClick={togglePresenting}
+                className="text-muted-foreground/40 hover:text-primary transition-colors p-1.5 rounded-lg hover:bg-muted/30"
+                title="Enter presentation mode"
               >
-                <Pause className="w-3 h-3" />
-                <span>Pause</span>
+                <Monitor className="w-4 h-4" />
               </button>
-            )}
+              {onSave && (
+                <button
+                  onClick={handlePause}
+                  className="text-muted-foreground/40 hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-muted/30"
+                  title="Save progress and exit (Esc)"
+                >
+                  <Pause className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={() => { exitPresenting(); onClose() }}
+                className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-muted/30"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Presentation mode: minimal top bar with exit button */}
+        {presenting && (
+          <div className="flex items-center justify-end mb-6">
             <button
-              onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-muted/30"
-              title="Close"
+              onClick={togglePresenting}
+              className="text-muted-foreground/30 hover:text-muted-foreground transition-colors p-1.5 rounded-lg hover:bg-muted/20"
+              title="Exit presentation mode"
             >
-              <X className="w-4 h-4" />
+              <MonitorOff className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        )}
 
         {/* Progress bar */}
         <div className="flex items-center gap-3 mb-8">
@@ -173,18 +205,26 @@ function InterviewWizard({
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-xs text-muted-foreground tabular-nums">
-            {currentStep + 1}/{steps.length}
-          </span>
+          {!presenting && (
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {currentStep + 1}/{steps.length}
+            </span>
+          )}
         </div>
 
-        {/* Consultant prompt (what to ask & why) */}
-        <div className="bg-muted/15 rounded-lg px-4 py-3 mb-5 border border-border/50">
-          <p className="text-xs text-muted-foreground leading-relaxed">{step.prompt}</p>
-        </div>
+        {/* Consultant prompt — hidden in presentation mode */}
+        {!presenting && (
+          <div className="bg-muted/15 rounded-lg px-4 py-3 mb-5 border border-border/50">
+            <p className="text-xs text-muted-foreground leading-relaxed">{step.prompt}</p>
+          </div>
+        )}
 
-        {/* Question (what the client hears) */}
-        <h2 className="text-xl sm:text-2xl font-light text-foreground leading-relaxed mb-6">
+        {/* Question (what the client sees) */}
+        <h2 className={`font-light text-foreground leading-relaxed mb-6 ${
+          presenting
+            ? 'text-2xl sm:text-3xl md:text-4xl'
+            : 'text-xl sm:text-2xl'
+        }`}>
           {step.question}
         </h2>
 
@@ -213,8 +253,10 @@ function InterviewWizard({
               setSelectedTag(null)
             }}
             placeholder={step.placeholder ?? 'Type or dictate the response...'}
-            rows={4}
-            className="w-full bg-transparent border-b-2 border-border focus:border-primary text-lg text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors resize-none py-3"
+            rows={presenting ? 5 : 4}
+            className={`w-full bg-transparent border-b-2 border-border focus:border-primary text-foreground placeholder:text-muted-foreground/40 focus:outline-none transition-colors resize-none py-3 ${
+              presenting ? 'text-xl' : 'text-lg'
+            }`}
             autoFocus
           />
         )}
@@ -261,12 +303,14 @@ function InterviewWizard({
             )}
           </GradientButton>
 
-          <span className="text-sm text-muted-foreground">
-            press{' '}
-            <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
-              {step.inputType !== 'select' ? '⌘+Enter' : 'Enter'}
-            </kbd>
-          </span>
+          {!presenting && (
+            <span className="text-sm text-muted-foreground">
+              press{' '}
+              <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                {step.inputType !== 'select' ? '⌘+Enter' : 'Enter'}
+              </kbd>
+            </span>
+          )}
 
           {step.required === false && (
             <button
@@ -299,8 +343,8 @@ function InterviewWizard({
           )}
         </div>
 
-        {/* Answered summary */}
-        {answeredCount > 0 && (
+        {/* Answered summary — hidden in presentation mode */}
+        {!presenting && answeredCount > 0 && (
           <p className="text-xs text-muted-foreground/60 mt-4">
             {answeredCount} of {steps.length} answered
           </p>

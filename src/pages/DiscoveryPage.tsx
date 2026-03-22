@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useClientsStore } from '@/stores/clients'
 import { useEngagementsStore } from '@/stores/engagements'
 import { useDiscoveryStore } from '@/stores/discovery'
+import { usePresentationStore } from '@/stores/presentation'
 import SessionList from '@/components/discovery/SessionList'
 import SessionDetail from '@/components/discovery/SessionDetail'
 import NewSessionForm from '@/components/discovery/NewSessionForm'
@@ -47,7 +48,10 @@ function DiscoveryPage() {
     return { id: e.id, label: `${client?.name ?? 'Unknown'} — ${e.phase}` }
   })
 
+  const exitPresenting = usePresentationStore((s) => s.exit)
+
   const closeWizard = () => {
+    exitPresenting()
     setWizardSession(null)
     setSelectedSession(null)
   }
