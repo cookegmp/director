@@ -7,14 +7,29 @@ import { useDiscoveryStore } from '@/stores/discovery'
 import SessionList from '@/components/discovery/SessionList'
 import SessionDetail from '@/components/discovery/SessionDetail'
 import NewSessionForm from '@/components/discovery/NewSessionForm'
-import InterviewWizard from '@/components/discovery/InterviewWizard'
+import InterviewWizard from '@/components/shared/InterviewWizard'
+import { INTERVIEW_FLOWS } from '@/lib/interview-flows'
+import { SESSION_TYPE_LABELS } from '@/types'
+import type { InterviewStep } from '@/components/shared/InterviewWizard'
 import type { DiscoverySession } from '@/types'
+import type { FlowStep } from '@/lib/interview-flows'
+
+/** Convert FlowStep[] to InterviewStep[] */
+function toInterviewSteps(flow: FlowStep[]): InterviewStep[] {
+  return flow.map((s) => ({
+    id: s.step_id,
+    prompt: s.prompt,
+    question: s.suggested_question,
+    placeholder: 'Type or dictate the response...',
+    required: true,
+  }))
+}
 
 function DiscoveryPage() {
   const clients = useClientsStore((s) => s.clients)
   const engagements = useEngagementsStore((s) => s.engagements)
+  const updateSession = useDiscoveryStore((s) => s.updateSession)
 
-  // Default to first client's first engagement
   const defaultEngagement = engagements[0]
   const [selectedEngagementId, setSelectedEngagementId] = useState(defaultEngagement?.id ?? '')
   const [selectedSession, setSelectedSession] = useState<DiscoverySession | null>(null)
@@ -27,11 +42,60 @@ function DiscoveryPage() {
     [allSessions, selectedEngagementId],
   )
 
-  // Build engagement options with client names
   const engagementOptions = engagements.map((e) => {
     const client = clients.find((c) => c.id === e.client_id)
     return { id: e.id, label: `${client?.name ?? 'Unknown'} — ${e.phase}` }
   })
+
+  const closeWizard = () => {
+    setWizardSession(null)
+    setSelectedSession(null)
+  }
+
+  const handleInterviewComplete = (answers: Record<string, string>) => {
+    if (!wizardSession) return
+
+    const flow = INTERVIEW_FLOWS[wizardSession.session_type]
+    const transcript = flow
+      .map((s) => `Q: ${s.suggested_question}\nA: ${answers[s.step_id] ?? ''}`)
+      .filter((line) => !line.endsWith('A: '))
+      .join('\n\n')
+
+    updateSession(wizardSession.id, {
+      status: 'complete',
+      transcript,
+      extracted_data: answers,
+    })
+    closeWizard()
+  }
+
+  const handleInterviewSave = (answers: Record<string, string>, _stepIndex: number) => {
+    if (!wizardSession) return
+    updateSession(wizardSession.id, {
+      status: 'in_progress',
+      extracted_data: answers,
+    })
+  }
+
+  // When wizard is active, show it full-page instead of the normal layout
+  if (wizardSession) {
+    const flow = INTERVIEW_FLOWS[wizardSession.session_type]
+    const steps = toInterviewSteps(flow)
+    const savedAnswers = (wizardSession.extracted_data ?? {}) as Record<string, string>
+
+    return (
+      <InterviewWizard
+        title={wizardSession.title}
+        subtitle={SESSION_TYPE_LABELS[wizardSession.session_type]}
+        steps={steps}
+        initialAnswers={savedAnswers}
+        onComplete={handleInterviewComplete}
+        onSave={handleInterviewSave}
+        onClose={closeWizard}
+        completeLabel="Finish Interview"
+      />
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -85,19 +149,6 @@ function DiscoveryPage() {
           open={showNewForm}
           onOpenChange={setShowNewForm}
           engagementId={selectedEngagementId}
-        />
-      )}
-
-      {wizardSession && (
-        <InterviewWizard
-          open={!!wizardSession}
-          onOpenChange={(open) => {
-            if (!open) {
-              setWizardSession(null)
-              setSelectedSession(null)
-            }
-          }}
-          session={wizardSession}
         />
       )}
     </div>

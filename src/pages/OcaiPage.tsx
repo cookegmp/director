@@ -10,7 +10,32 @@ import Level2Builder from '@/components/ocai/Level2Builder'
 import ResponseCollection from '@/components/ocai/ResponseCollection'
 import AnalysisPanel from '@/components/ocai/AnalysisPanel'
 import GapAnalysisView from '@/components/ocai/GapAnalysisView'
+import InterviewWizard from '@/components/shared/InterviewWizard'
+import { OCAI_LEVEL_LABELS } from '@/types'
+import type { InterviewStep } from '@/components/shared/InterviewWizard'
 import type { OCAIAssessment } from '@/types'
+
+/** Convert OCAI assessment questions into InterviewSteps for the wizard */
+function toInterviewSteps(assessment: OCAIAssessment): InterviewStep[] {
+  const questions = assessment.questions as { id: string; text: string }[]
+  return questions.map((q, i) => ({
+    id: q.id,
+    prompt: `Question ${i + 1} of ${questions.length} — Discuss this with the team and capture their perspective. Look for consensus or note disagreements.`,
+    question: q.text,
+    placeholder: 'Capture the team discussion and consensus...',
+    required: true,
+  }))
+}
+
+/** Get saved narrative answers from an assessment's responses */
+function getSavedAnswers(assessment: OCAIAssessment): Record<string, string> {
+  const responses = assessment.responses as { question_id: string; narrative?: string; score?: number }[]
+  const answers: Record<string, string> = {}
+  for (const r of responses) {
+    if (r.narrative) answers[r.question_id] = r.narrative
+  }
+  return answers
+}
 
 function OcaiPage() {
   const clients = useClientsStore((s) => s.clients)
@@ -20,6 +45,7 @@ function OcaiPage() {
 
   const [selectedEngagementId, setSelectedEngagementId] = useState(engagements[0]?.id ?? '')
   const [selectedAssessment, setSelectedAssessment] = useState<OCAIAssessment | null>(null)
+  const [wizardAssessment, setWizardAssessment] = useState<OCAIAssessment | null>(null)
 
   const assessments = useMemo(
     () => allAssessments.filter((a) => a.engagement_id === selectedEngagementId),
@@ -31,10 +57,58 @@ function OcaiPage() {
     return { id: e.id, label: `${c?.name ?? 'Unknown'} — ${e.phase}` }
   })
 
-  // Refresh selected assessment from store when it changes
   const currentAssessment = selectedAssessment
     ? assessments.find((a) => a.id === selectedAssessment.id) ?? selectedAssessment
     : null
+
+  const closeWizard = () => {
+    setWizardAssessment(null)
+  }
+
+  const handleWizardComplete = (answers: Record<string, string>) => {
+    if (!wizardAssessment) return
+    const responseArray = Object.entries(answers).map(([qId, narrative]) => ({
+      question_id: qId,
+      respondent_group: 'staff',
+      narrative,
+      score: 50,
+    }))
+    updateAssessment(wizardAssessment.id, { responses: responseArray, status: 'complete' })
+    closeWizard()
+  }
+
+  const handleWizardSave = (answers: Record<string, string>, _stepIndex: number) => {
+    if (!wizardAssessment) return
+    const responseArray = Object.entries(answers)
+      .filter(([, v]) => v.trim())
+      .map(([qId, narrative]) => ({
+        question_id: qId,
+        respondent_group: 'staff',
+        narrative,
+        score: 50,
+      }))
+    updateAssessment(wizardAssessment.id, { responses: responseArray, status: 'collecting' })
+  }
+
+  // Wizard takes over the page when active
+  if (wizardAssessment) {
+    const steps = toInterviewSteps(wizardAssessment)
+    const savedAnswers = getSavedAnswers(wizardAssessment)
+    const levelLabel = OCAI_LEVEL_LABELS[wizardAssessment.level] ?? wizardAssessment.level
+
+    return (
+      <InterviewWizard
+        title={`OCAI: ${wizardAssessment.target_scope}`}
+        subtitle={levelLabel}
+        steps={steps}
+        initialAnswers={savedAnswers}
+        onComplete={handleWizardComplete}
+        onSave={handleWizardSave}
+        onClose={closeWizard}
+        completeLabel="Complete Assessment"
+      />
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -90,9 +164,14 @@ function OcaiPage() {
                   </Button>
                 )}
 
-                {/* Response collection for deployed/collecting */}
+                {/* Conduct interview or response collection for deployed/collecting */}
                 {(currentAssessment.status === 'deployed' || currentAssessment.status === 'collecting') && (
-                  <ResponseCollection assessment={currentAssessment} />
+                  <div className="space-y-4">
+                    <Button onClick={() => setWizardAssessment(currentAssessment)}>
+                      {currentAssessment.status === 'collecting' ? 'Resume Interview' : 'Conduct Interview'}
+                    </Button>
+                    <ResponseCollection assessment={currentAssessment} />
+                  </div>
                 )}
 
                 {/* Analysis for complete/analyzed */}

@@ -69,7 +69,7 @@ function SessionDetail({ session, onStartInterview }: SessionDetailProps) {
 
       {canStartInterview && (
         <Button onClick={onStartInterview}>
-          Start Interview
+          {session.status === 'in_progress' ? 'Resume Interview' : 'Start Interview'}
         </Button>
       )}
     </div>
